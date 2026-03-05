@@ -1,0 +1,20 @@
+<header class="header">
+    <div class="header__header_title">
+        <h3 class="header_title">Manutenção de Equipamentos</h3>
+    </div>
+
+    <nav class="header_nav">
+        <!-- Pendente: adicionarr lógica para ou mostrar rotas para cliente ou para funcionario -->
+        <a routerLink="/cliente">Minhas Solicitações</a>
+        <a routerLink="/funcionario">Solicitações</a>
+        <a routerLink="/funcionario/categorias">Categorias</a>
+        <a routerLink="/funcionario/funcionarios">Funcionários</a>
+    </nav>
+
+    <div class="header_actions">
+        <!-- Pendente: Lógica para mostrar nome user + sair se logado, se não mostrar entrar -->
+        <span class="header_user">Nome do User</span>
+        <button class="btn_logout">Sair</button>
+        <a routerLink="/login" class="btn-login">Entrar</a>
+    </div>
+</header>
