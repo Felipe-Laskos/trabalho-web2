@@ -1,5 +1,3 @@
-<p>home-funcionario works!</p>
-
 <h2>Portal do Funcionário</h2>
 
 <table>
@@ -11,10 +9,11 @@
       <th>-</th>
     </tr>
   </thead>
+<tbody>
 
- <tbody>
+  @for (solicitacao of solicitacoesAbertas; track solicitacao.id) {
 
-    <tr *ngFor="let solicitacao of solicitacoesAbertas">
+    <tr>
 
       <td>
         {{ solicitacao.data | date:'dd/MM/yyyy HH:mm' }}
@@ -36,5 +35,7 @@
 
     </tr>
 
-  </tbody>
+  }
+
+</tbody>
 </table>
