@@ -1,25 +1,25 @@
-<div class="login-container d-flex align-items-center justify-content-center" style="height: 100vh;">
-  <div class="card p-4 shadow" style="width: 400px;">
-    <h3 class="text-center mb-4">Login - Manutenção</h3>
+<div class="login-container">
+  <div class="login-card">
+    <h3>Acesso ao Sistema</h3>
     
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="mb-3">
+      <div class="form-group mb-3">
         <label class="form-label">E-mail</label>
-        <input type="email" formGroupControlName="email" class="form-control" placeholder="usuario@email.com">
+        <input type="email" formControlName="email" class="form-control" placeholder="exemplo@email.com">
       </div>
       
-      <div class="mb-3">
-        <label class="form-label">Senha</label>
-        <input type="password" formGroupControlName="senha" class="form-control" maxlength="4">
+      <div class="form-group mb-4">
+        <label class="form-label">Senha (4 dígitos)</label>
+        <input type="password" formControlName="senha" class="form-control" maxlength="4" placeholder="****">
       </div>
 
-      <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid">
+      <button type="submit" class="btn-login" [disabled]="loginForm.invalid">
         Entrar
       </button>
     </form>
     
-    <div class="text-center mt-3">
-      <small>Não possui conta? <a routerLink="/autocadastro">Cadastre-se aqui</a></small>
+    <div class="register-link">
+      Ainda não tem conta? <a routerLink="/autocadastro">Cadastre-se</a>
     </div>
   </div>
 </div>
