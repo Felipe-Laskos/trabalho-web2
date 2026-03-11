@@ -26,7 +26,6 @@ export interface Funcionario {
 export interface CategoriaEquipamento {
   id?: number;
   nome: string;
-  descricao: string;
   quantidade: number;
   ativa: boolean;
 }
