@@ -1,0 +1,29 @@
+<h2>Lista de Funcionários</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Data de nascimento</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    @for (funcionario of funcionarios; track funcionario.id) {
+        <tr>
+            <td>{{ funcionario.id }}</td>
+            <td>{{ funcionario.nome }}</td>
+            <td>{{ funcionario.email }}</td>
+            <td>{{ funcionario.dataNascimento }}</td>
+        </tr>
+    }
+  </tbody>
+</table>
+
+<div class="container-botoes">
+    <button>Adicionar categoria</button>
+    <button>Atualizar categoria</button>
+    <button (click)="mensagemExclusao()">Excluir</button>
+</div>
