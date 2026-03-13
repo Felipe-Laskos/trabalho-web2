@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CategoriaEquipamento } from '../../models/interfaces';
+import { CategoriaEquipamento } from '../../models/categoria.model';
 
 @Component({
   selector: 'app-crud-categoria',
@@ -11,9 +11,9 @@ import { CategoriaEquipamento } from '../../models/interfaces';
 })
 export class CrudCategoriaComponent {
   categorias: CategoriaEquipamento[] = [
-    { id: 100, nome: 'Notebooks', descricao: 'Inclui laptops e ultrabooks.', quantidade: 50, ativa: true },
-    { id: 200, nome: 'Desktop', descricao: 'Inclui torres e all-in-one.', quantidade: 30, ativa: true },
-    { id: 300, nome: 'Impressoras', descricao: 'Inclui impressoras jato de tinta e laser.', quantidade: 20, ativa: true }
+    { id: 100, nome: 'Notebooks', descricao: 'Inclui laptops e ultrabooks.', ativa: true },
+    { id: 200, nome: 'Desktop', descricao: 'Inclui torres e all-in-one.', ativa: true },
+    { id: 300, nome: 'Impressoras', descricao: 'Inclui impressoras jato de tinta e laser.', ativa: true }
   ];
 
   get categoriasAtivas() {

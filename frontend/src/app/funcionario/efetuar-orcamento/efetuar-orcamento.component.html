@@ -1,0 +1,43 @@
+<div class="container">
+
+<h2>Efetuar Orçamento</h2>
+
+@if (solicitacao) {
+
+<div>
+
+  <h3>Dados da Solicitação</h3>
+
+  <p><b>Equipamento:</b> {{ solicitacao.descricaoEquipamento }}</p>
+  <p><b>Defeito:</b> {{ solicitacao.descricaoDefeito }}</p>
+  <p><b>Data:</b> {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
+
+  <h3>Dados do Cliente</h3>
+
+  <p><b>Nome:</b> {{ solicitacao.cliente?.nome }}</p>
+  <p><b>Email:</b> {{ solicitacao.cliente?.email }}</p>
+    <p>
+    <b>Telefone:</b>
+    ({{ solicitacao.cliente?.telefone | slice:0:2 }})
+    {{ solicitacao.cliente?.telefone | slice:2:7 }}-
+    {{ solicitacao.cliente?.telefone | slice:7 }}
+    </p>
+  <hr>
+
+  <div class="input-valor">
+    <label>Valor do Orçamento</label>
+
+    <input
+      type="number"
+      [(ngModel)]="valorOrcamento"
+      placeholder="Digite o valor"
+    />
+  </div>
+
+  <button (click)="registrarOrcamento()">
+    Salvar Orçamento
+  </button>
+
+</div>
+
+}
