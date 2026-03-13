@@ -16,8 +16,7 @@
     <tr>
 
       <td>
-        {{ solicitacao.data | date:'dd/MM/yyyy HH:mm' }}
-      </td>
+        {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}      </td>
 
       <td>
         {{ solicitacao.cliente?.nome }}
@@ -28,7 +27,7 @@
       </td>
 
       <td>
-        <button>
+        <button (click)="efetuarOrcamento(solicitacao.id)">
           Efetuar Orçamento
         </button>
       </td>

@@ -1,2 +1,7 @@
-export interface SolicitacaoENUM {
+export enum SolicitacaoENUM {
+  ABERTA = "ABERTA",
+  ORCADA = "ORCADA",
+  APROVADA = "APROVADA",
+  REJEITADA = "REJEITADA",
+  FINALIZADA = "FINALIZADA"
 }
