@@ -1,0 +1,102 @@
+<div class="orcamento-container">
+  <div class="orcamento-card">
+    
+    <div class="card-content">
+      
+      <div class="coluna-esquerda">
+        <h1 class="titulo-solicitacao">Detalhes da Solicitação <br> 
+            <span>#{{ solicitacao?.id }}</span></h1>
+
+        <div class="info-group">
+          <div class="info-header">
+            <span class="icon-user"></span> 
+            <h2>CLIENTE:</h2>
+          </div>
+          <div class="info-box">
+            <p class="nome-cliente">{{ cliente?.nome }}</p>
+            <p class="telefone-cliente">{{ cliente?.telefone }}</p>
+          </div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-header">
+            <span class="icon-desktop"></span>
+            <h2>EQUIPAMENTO:</h2>
+          </div>
+          <div class="info-box">
+            <p class="nome-equipamento">{{ solicitacao?.descricaoEquipamento }}</p>
+          </div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-header">
+            <span class="icon-wrench"></span>
+            <h2>DEFEITO:</h2>
+          </div>
+          <div class="info-box">
+            <p class="texto-defeito">{{ solicitacao?.descricaoDefeito }}</p>
+            <a href="#" class="link-leia-mais">Leia mais</a> <!-- AJUSTAR PARA QUE SEJA FUNCIONAL -->
+          </div>
+        </div>
+      </div>
+
+      <div class="divisor-vertical"></div>
+
+      <div class="coluna-direita">
+        
+        <div class="status-badge arrumada"
+         [ngClass]="solicitacao?.estado.toLowerCase()">
+         {{ solicitacao?.estado}}
+        </div>  <!-- AJUSTAR AS CORES DE CADA STATUS -->
+ 
+         <div class="info-group">
+          <h2>LAUDO TÉCNICO:</h2>
+          <div class="info-box box-cinza">
+            <p>Problema no processador</p> <!-- AJUSTAR NO MOCK SOLICIT e ADICIONAR AQUI-->
+          </div>
+        </div>
+      
+        <div class="info-group">
+          <h2>TÉCNICO RESPONSÁVEL:</h2>
+          <div class="info-box box-cinza listagem-precos">
+                 <p>{{ funcionario?.nome }}</p>
+          </div>
+        </div> 
+
+        <div class="info-group valor-total-group">
+          <h2>VALOR TOTAL:</h2>
+          <div class="info-box box-total">
+            <p class="texto-total">R$ {{ solicitacao?.valorOrcamento | number:'1.2-2' }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <button class="btn btn-rejeitar">Rejeitar Serviço</button>  <!-- IMPLEMENTAR FUNÇÃO DE REJEIÇÃO -->
+      <button class="btn btn-aprovar" (click)="aprovarServico()">Aprovar Serviço</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="exibirModal">
+  <div class="modal-box">
+    <div *ngIf="estadoModal === 'confirmacao'">
+      <h2>Confirmar Aprovação?</h2>
+      <p>Ao confirmar, o serviço será agendado.</p>
+      <div class="modal-actions">
+        <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
+        <button class="btn-confirmar" (click)="confirmarAprovacao()">Sim, Confirmar</button>
+      </div>
+    </div>
+
+    <div *ngIf="estadoModal === 'sucesso'">
+      <h2>Tudo pronto!</h2>
+      <p>O orçamento foi aprovado. Você receberá atualizações em breve.</p>
+      <button class="btn btn-aprovar" (click)="fecharModal()">Ok</button>
+    </div>
+
+  </div>
+</div>
