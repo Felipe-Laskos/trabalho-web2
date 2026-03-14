@@ -3,9 +3,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  height: 56px;
-  background: #1976d2;
-  color: #fff;
+  height: 80px;
+  background-color: var(--secondary);
 }
 
 .header__header_title {
@@ -18,15 +17,20 @@
   font-weight: 700;
 }
 
+.header_logo {
+  width: 200px;
+}
+
 .header_nav {
   display: flex;
-  gap: 1.25rem;
+  gap: 5rem;
 }
 
 .header_nav a {
-  color: #fff;
+  color: var(--dark);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   opacity: 0.9;
 }
 
@@ -38,11 +42,13 @@
 .header_actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 3rem;
 }
 
 .header_user {
   font-size: 0.85rem;
+
+  font-weight: 500;
   opacity: 0.9;
 }
 
@@ -68,4 +74,47 @@
 
 .btn-login:hover {
   text-decoration: underline;
+}
+
+.header_actions_user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.header_user {
+  font-size: 1rem;
+}
+
+.header_icon {
+  color: var(--white);
+}
+
+.header_button {
+  border-radius: 10px;
+  padding: 5px 28px;
+  font-weight: 500;
+}
+
+.header_button.header_button_login {
+  background-color: var(--white) !important;
+  color: var(--dark);
+  text-decoration: none;
+}
+
+.header_button.header_button_primary {
+  background-color: var(--sky-blue);
+}
+
+.header_actions_buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 }

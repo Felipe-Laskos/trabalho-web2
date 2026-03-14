@@ -1,7 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+  --primary: #1A889A;
+  --secondary: #AAEAF5;
+  --sky-blue: #35B8CF;
+  --light-blue: #88D9E6;
+  --info-blue: #05ABD0;
+  --gray: #828282;
+  --light-gray: #ECECEC;
+  --light-gray-icon: #dddddd;
+  --black: #171B17;
+  --white: #ffffff;
+  --background-white: #F5F5F5;
+  --background-white-2: #F8FAFC;
+  --red: #FF0000;
+  --green: #1A9A2D;
+}
+
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "inter", sans-serif;
+}
+
