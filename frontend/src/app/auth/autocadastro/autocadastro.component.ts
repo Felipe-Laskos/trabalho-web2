@@ -18,7 +18,9 @@ export class AutocadastroComponent {
     email: '',
     telefone: '',
     cep: '',
-    rua: '',
+    logradouro: '',
+    numero: '',
+    complemento: '',
     bairro: '',
     cidade: '',
     estado: ''
@@ -26,31 +28,29 @@ export class AutocadastroComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  buscarEndereco() {
-    const cepNumeros = this.cliente.cep.replace(/\D/g, '');
+  buscarEnderecoPorCep() {
+    const cepLimpo = this.cliente.cep.replace(/\D/g, '');
     
-    if (cepNumeros.length === 8) {
-      this.http.get(`https://viacep.com.br/ws/${cepNumeros}/json/`).subscribe({
+    if (cepLimpo.length === 8) {
+      this.http.get(`https://viacep.com.br/ws/${cepLimpo}/json/`).subscribe({
         next: (dados: any) => {
           if (!dados.erro) {
-            this.cliente.rua = dados.logradouro;
+            this.cliente.logradouro = dados.logradouro;
             this.cliente.bairro = dados.bairro;
             this.cliente.cidade = dados.localidade;
             this.cliente.estado = dados.uf;
           } else {
-            alert('CEP não encontrado!');
+            alert('CEP não encontrado. Por favor, digite o endereço manualmente.');
           }
         },
-        error: () => {
-          alert('Erro ao consultar o serviço de CEP.');
-        }
+        error: () => alert('Erro ao consultar o serviço de CEP.')
       });
     }
   }
 
-  finalizarCadastro() {
-    console.log('Dados para cadastro:', this.cliente);
-    alert('Cadastro realizado! A senha de 4 dígitos foi enviada para o e-mail informado.');
+  salvarCadastro() {
+    console.log('Gravando dados do cliente:', this.cliente);
+    alert('Cadastro realizado com sucesso! Sua senha de 4 dígitos foi enviada para o e-mail.');
     this.router.navigate(['/login']);
   }
 }
