@@ -1,6 +1,7 @@
-import { Historico } from '../models/historico.model';
+import { HistoricoSolicitacao } from '../models/historico.model';
+import { mockFuncionario } from './funcionario.mock';
 
-export const mockHistorico: Historico[] = [
+export const mockHistoricoSolicitacao: HistoricoSolicitacao[] = [
 
   {
     id: 11,
@@ -8,8 +9,9 @@ export const mockHistorico: Historico[] = [
     estadoAnterior: "ABERTA",
     estadoNovo: "ORCADA",
     dataHora: "2026-03-01 18:00",
-    funcionarioId: 1
+    funcionario: mockFuncionario [0],
+    funcionarioDestino: mockFuncionario [1],
+    observacao: "Orçamento realizado pelo técnico João. Valor estimado: R$ 500,00.",
   }
-
 ];
 
