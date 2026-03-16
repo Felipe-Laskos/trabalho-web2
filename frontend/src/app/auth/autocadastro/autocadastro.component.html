@@ -1,1 +1,23 @@
-<p>autocadastro works!</p>
+<div class="mb-3">
+  <label class="form-label">CEP</label>
+  <input type="text" name="cep" class="form-control" 
+         [(ngModel)]="cliente.cep" 
+         (keyup)="buscarEndereco()" 
+         placeholder="00000-000" maxlength="9">
+</div>
+
+<div class="mb-3">
+  <label class="form-label">Rua</label>
+  <input type="text" name="rua" class="form-control" [(ngModel)]="cliente.rua">
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-3">
+    <label class="form-label">Cidade</label>
+    <input type="text" name="cidade" class="form-control" [(ngModel)]="cliente.cidade">
+  </div>
+  <div class="col-md-6 mb-3">
+    <label class="form-label">Estado</label>
+    <input type="text" name="estado" class="form-control" [(ngModel)]="cliente.estado">
+  </div>
+</div>
