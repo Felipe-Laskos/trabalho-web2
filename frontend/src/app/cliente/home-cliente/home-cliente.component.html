@@ -1,1 +1,35 @@
-<p>home-cliente works!</p>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Minhas Manutenções</h2>
+    <button class="btn btn-primary" routerLink="/cliente/nova-solicitacao">Solicitar</button>
+  </div>
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>Data e Hora</th>
+        <th>Equipamento (Resumo)</th>
+        <th>Estado Atual</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of minhasSolicitacoes">
+        <td>{{ item.data }}</td>
+        <td>{{ item.equipamento | slice:0:30 }}</td>
+        <td>
+          <span class="badge" [ngClass]="{
+            'bg-secondary': item.estado === 'ABERTA',
+            'bg-info': item.estado === 'ORÇADA',
+            'bg-primary': item.estado === 'ARRUMADA'
+          }">{{ item.estado }}</span>
+        </td>
+        <td>
+          <button (click)="abrirAcao(item)" class="btn btn-sm btn-outline-dark">
+            Visualizar / Ação
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
