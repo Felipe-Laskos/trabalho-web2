@@ -1,0 +1,47 @@
+.paginacao {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+}
+
+.paginacao__info {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.paginacao__controles {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.paginacao__numero {
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--dark);
+    padding: 4px 8px;
+}
+
+.paginacao__numero_ativo {
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.paginacao__seta {
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--dark);
+}
+
+.paginacao__seta:hover {
+    opacity: 0.7;
+}
+
+.paginacao__seta_desabilitada {
+    opacity: 0.3;
+    cursor: not-allowed;
+}

@@ -1,0 +1,10 @@
+<mat-form-field appearance="outline" class="pesquisa">
+    <input
+        matInput
+        [placeholder]="placeholder"
+        [ngModel]="valor"
+        (ngModelChange)="onInput($event)"
+        (keyup.enter)="onPesquisar()"
+    >
+    <mat-icon matSuffix class="pesquisa__icon" (click)="onPesquisar()">search</mat-icon>
+</mat-form-field>

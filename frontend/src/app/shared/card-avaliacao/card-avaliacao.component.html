@@ -1,0 +1,17 @@
+<mat-card class="card">
+    <mat-card-header class="card_avaliacao">
+        <mat-icon mat-card-avatar class="card__icon">account_circle</mat-icon>
+        <mat-card-title class="card__titulo">{{ nomeUsuario }}</mat-card-title>
+        <mat-card-subtitle class="card_descricao">
+            @for (preenchida of estrelas; track $index) {
+                <mat-icon class="estrela" [class.preenchida]="preenchida">
+                    {{ preenchida ? 'star' : 'star_border'}}
+                </mat-icon>
+            }
+        </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <p>{{descricao}}</p>
+    </mat-card-content>
+</mat-card>

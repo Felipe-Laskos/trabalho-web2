@@ -1,0 +1,49 @@
+:host {
+    display: block;
+    margin: 0 auto;
+    max-width: 80%;
+}
+
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid #5B5B5B !important;
+}
+
+.tabela__cabecalho {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark);
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #E2E2E2 !important;
+}
+
+.tabela__celula {
+    font-size: 0.9rem;
+    color: var(--dark);
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tabela__header {
+    background-color: #E2E2E2 !important;
+}
+
+.tabela__badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.tabela__botao_acao {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    margin-right: 6px;
+    border-radius: 8px;
+}

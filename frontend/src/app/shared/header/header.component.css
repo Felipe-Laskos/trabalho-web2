@@ -24,14 +24,18 @@
 .header_nav {
   display: flex;
   gap: 5rem;
+  padding: 0 60px;
 }
 
 .header_nav a {
   color: var(--dark);
   text-decoration: none;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   opacity: 0.9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header_nav a:hover {
@@ -46,8 +50,7 @@
 }
 
 .header_user {
-  font-size: 0.85rem;
-
+  font-size: 0.9rem !important;
   font-weight: 500;
   opacity: 0.9;
 }
@@ -94,6 +97,10 @@ mat-icon {
 
 .header_icon {
   color: var(--white);
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header_button {
@@ -117,4 +124,61 @@ mat-icon {
   align-items: center;
   justify-content: center;
   gap: 1rem;
+}
+
+@media screen and (max-width: 1400px) {
+  .header_icon {
+    font-size: 30px;
+  }
+
+  .header_user {
+    font-size: 0.8rem !important;
+  }
+
+  .header_nav a {
+    font-size: 0.8rem;
+  }
+
+  .header_logo {
+    width: 150px;
+  }
+
+  .header_button {
+    padding: 3px 15px;
+    font-size: 0.7rem;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .header_icon {
+    font-size: 25px;
+  }
+
+  .header_user {
+    font-size: 0.7rem !important;
+  }
+
+  .header_nav a {
+    font-size: 0.7rem;
+  }
+
+  .header_logo {
+    width: 130px;
+  }
+
+  .header_button {
+    padding: 3px 10px;
+    font-size: 0.6rem;
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  .header_actions {
+    gap: 1rem;
+  }
+
+  .header_nav {
+    padding: 0 20px;
+    gap: 3rem
+  }
 }
