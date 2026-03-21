@@ -1,0 +1,11 @@
+.botao {
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.botao:hover {
+    opacity: 0.9;
+}

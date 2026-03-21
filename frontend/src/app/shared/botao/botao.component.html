@@ -1,0 +1,13 @@
+<button
+    mat-raised-button
+    class="botao"
+    [color]="cor"
+    [disabled]="desabilitado"
+    (click)="onClick()"
+    type="button"
+>
+    @if (icone) {
+        <mat-icon>{{ icone }}</mat-icon>
+    }
+    {{ texto }}
+</button>

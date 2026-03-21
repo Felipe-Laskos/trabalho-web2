@@ -1,0 +1,41 @@
+.card {
+    width: 250px;
+    height: 200px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 18px;
+}
+
+.card_avaliacao {
+    border-radius: 20px;
+}
+
+.card__titulo {
+    font-size: 1.2rem;
+    padding: 0 !important;
+    margin-left: 10px;
+}
+
+.card_descricao {
+    padding: 0 !important;
+    margin-left: 6px;
+}
+
+.estrela {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    color: #ccc;
+}
+
+.estrela.preenchida {
+    color: #f5c518;
+}
+
+.card__icon {
+    border-radius: 0;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

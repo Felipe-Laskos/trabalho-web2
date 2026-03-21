@@ -1,0 +1,41 @@
+<table mat-table [dataSource]="dados" class="tabela">
+    @for (coluna of colunas; track coluna.campo) {
+        <ng-container [matColumnDef]="coluna.campo">
+            <th mat-header-cell *matHeaderCellDef class="tabela__cabecalho">{{ coluna.titulo }}</th>
+            <td mat-cell *matCellDef="let item" class="tabela__celula">
+
+                @switch (coluna.tipo) {
+                    @case ('data') {
+                        {{ getValor(item, coluna.campo) | date:'dd/MM/yyyy HH:mm' }}
+                    }
+                    @case ('estado') {
+                        <span class="tabela__badge" [style.background-color]="coresEstado[item[campoEstado]]">
+                            {{ item[campoEstado] }}
+                        </span>
+                    }
+                    @case ('acao') {
+                        @for (acao of getAcoesDoItem(item); track acao.acao) {
+                            <button mat-raised-button
+                                class="tabela__botao_acao"
+                                [color]="acao.cor || 'primary'"
+                                (click)="onAcao(acao.acao, item)">
+                                {{ acao.nome }}
+                            </button>
+                        }
+                    }
+                    @default {
+                        @if (coluna.truncar) {
+                            {{ getValor(item, coluna.campo) | slice:0:coluna.truncar }}
+                        } @else {
+                            {{ getValor(item, coluna.campo) }}
+                        }
+                    }
+                }
+
+            </td>
+        </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="camposExibidos" class="tabela__header"></tr>
+    <tr mat-row *matRowDef="let row; columns: camposExibidos;"></tr>
+</table>

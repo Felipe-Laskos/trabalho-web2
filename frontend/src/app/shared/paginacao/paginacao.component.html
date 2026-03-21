@@ -1,0 +1,27 @@
+<div class="paginacao">
+    <span class="paginacao__info">
+        Mostrando {{ primeiroItem }} a {{ ultimoItem }} de {{ totalItens }} resultados
+    </span>
+
+    <div class="paginacao__controles">
+        <mat-icon
+            class="paginacao__seta"
+            [class.paginacao__seta_desabilitada]="paginaAtual === 1"
+            (click)="anterior()"
+        >chevron_left</mat-icon>
+
+        @for (pagina of paginas; track pagina) {
+            <span
+                class="paginacao__numero"
+                [class.paginacao__numero_ativo]="pagina === paginaAtual"
+                (click)="irParaPagina(pagina)"
+            >{{ pagina }}</span>
+        }
+
+        <mat-icon
+            class="paginacao__seta"
+            [class.paginacao__seta_desabilitada]="paginaAtual === totalPaginas"
+            (click)="proxima()"
+        >chevron_right</mat-icon>
+    </div>
+</div>
