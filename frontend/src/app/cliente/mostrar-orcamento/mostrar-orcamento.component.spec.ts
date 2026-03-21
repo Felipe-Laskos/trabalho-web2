@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MostrarOrcamento } from './mostrar-orcamento.component';
+import { MostrarOrcamentoComponent } from './mostrar-orcamento.component';
 
-describe('MostrarOrcamento', () => {
-  let component: MostrarOrcamento;
-  let fixture: ComponentFixture<MostrarOrcamento>;
+describe('MostrarOrcamentoComponent', () => {
+  let component: MostrarOrcamentoComponent;
+  let fixture: ComponentFixture<MostrarOrcamentoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MostrarOrcamento]
+      imports: [MostrarOrcamentoComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MostrarOrcamento);
+    fixture = TestBed.createComponent(MostrarOrcamentoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

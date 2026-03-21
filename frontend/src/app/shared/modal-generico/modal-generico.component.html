@@ -1,0 +1,20 @@
+<div class="modal-overlay" (click)="close()"></div>
+
+<div class="modal-box">
+
+  <mat-dialog-content>
+
+    <h2>{{ data.titulo }}</h2>
+    <p>{{ data.mensagem }}</p>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+
+    <div class="modal-actions">
+      <button class="btn-cancelar" (click)="close()">Fechar</button>
+    </div>
+    
+  </mat-dialog-actions>
+
+</div>
