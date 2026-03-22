@@ -78,15 +78,17 @@ aplicarFiltros() {
     });
   }
 
-  if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
-    const inicio = new Date(this.dataInicio);
-    const fim = new Date(this.dataFim);
+if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
+  const inicio = new Date(this.dataInicio);
 
-    lista = lista.filter(s => {
-      const data = new Date(s.dataHoraCriacao);
-      return data >= inicio && data <= fim;
-    });
-  }
+  const fim = new Date(this.dataFim);
+  fim.setHours(23, 59, 59, 999); 
+  
+  lista = lista.filter(s => {
+    const data = new Date(s.dataHoraCriacao);
+    return data >= inicio && data <= fim;
+  });
+}
 
   this.solicitacoesFiltradas = lista;
 }
