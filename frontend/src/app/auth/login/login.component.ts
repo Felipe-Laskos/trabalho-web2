@@ -39,9 +39,9 @@ export class LoginComponent {
   localStorage.setItem('usuarioSessao', nomeExibicao);
 
     if (this.usuario.email.toLowerCase().includes('func')) {
-      this.router.navigate(['/funcionario/home']);
+      this.router.navigate(['/funcionario']);
     } else {
-      this.router.navigate(['/cliente/home']);
+      this.router.navigate(['/cliente']);
     }
   }
 }

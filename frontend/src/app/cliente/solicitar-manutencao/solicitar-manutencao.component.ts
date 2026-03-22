@@ -30,7 +30,12 @@ export class SolicitarManutencaoComponent {
     descricaoDefeito: ''
   };
 
-  categorias: string[] = ['Notebook', 'Desktop', 'Impressora', 'Monitor', 'Outros'];
+  categorias: string[] = [
+    'Notebook', 
+    'Desktop', 
+    'Impressora', 
+    'Monitor', 
+    'Outros'];
 
   constructor(private dialog: MatDialog, private router: Router) {}
 
@@ -56,7 +61,7 @@ export class SolicitarManutencaoComponent {
 
         console.log('Salvando solicitação:', pedidoFinal);
         alert('Solicitação aberta com sucesso! Status: ABERTA');
-        this.router.navigate(['/cliente/home']);
+        this.router.navigate(['/cliente']);
       }
     });
   }

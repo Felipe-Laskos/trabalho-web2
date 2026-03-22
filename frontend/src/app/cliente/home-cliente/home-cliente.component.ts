@@ -65,9 +65,9 @@ export class HomeClienteComponent implements OnInit {
 
   abrirAcao(solicitacao: any) {
     if (solicitacao.status === 'ORÇADA') {
-      this.router.navigate(['/cliente/orcamento', solicitacao.id]);
+      this.router.navigate(['/cliente/mostrar-orcamento', solicitacao.id]);
     } else {
-      this.router.navigate(['/cliente/visualizar', solicitacao.id]);
+        this.router.navigate(['/cliente/mostrar-orcamento', solicitacao.id]);
     }
   }
 }
