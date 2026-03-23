@@ -1,1 +1,68 @@
-<p>visualizar-solicitacoes works!</p>
+<div class="container">
+
+  <h2>Solicitações Tech Solution</h2>
+
+  <div class="filtros">
+
+    <select [(ngModel)]="filtro" (change)="aplicarFiltros()">
+      <option value="TODAS">Todas</option>
+      <option value="HOJE">Hoje</option>
+      <option value="PERIODO">Período</option>
+    </select>
+
+    @if (filtro === 'PERIODO') {
+      <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">
+      <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltros()">
+    }
+
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Descrição</th>
+        <th>Data/Hora</th>
+        <th>Status</th>
+        <th>Valor</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      @for (s of solicitacoesFiltradas; track s.descricaoEquipamento) {
+        <tr>
+          <td>{{ s.descricaoEquipamento }}</td>
+
+          <td>{{ s.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</td>
+
+          <td>
+            <span class="status" [ngClass]="'status-' + s.estadoAtual">
+              {{ s.estadoAtual }}
+            </span>
+          </td>
+
+          <td>
+            {{ s.valorOrcado ? ('R$ ' + s.valorOrcado) : '-' }}
+          </td>
+
+          <td>
+            <button class="btn" (click)="visualizar(s)">
+              Visualizar
+            </button>
+          </td>
+        </tr>
+      }
+
+      @if (solicitacoesFiltradas.length === 0) {
+        <tr>
+          <td colspan="5" class="sem-dados">
+            Nenhuma solicitação encontrada
+          </td>
+        </tr>
+      }
+
+    </tbody>
+  </table>
+
+</div>
