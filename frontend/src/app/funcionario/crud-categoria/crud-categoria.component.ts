@@ -27,6 +27,8 @@ export class CrudCategoriaComponent {
     return this.categorias.filter(c => c.ativa == true);
   }
 
+categoria: CategoriaEquipamento | undefined;
+
   mensagemExclusao() {
     if (confirm('Tem certeza que deseja excluir esta categoria?')) {
       alert('Categoria excluída com sucesso!');
@@ -35,4 +37,5 @@ export class CrudCategoriaComponent {
     }
   }
 }
+
 

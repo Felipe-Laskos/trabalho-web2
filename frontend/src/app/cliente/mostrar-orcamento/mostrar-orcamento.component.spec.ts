@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MostrarOrcamentoComponent } from './mostrar-orcamento.component';
 
-describe('MostrarOrcamento', () => {
+describe('MostrarOrcamentoComponent', () => {
   let component: MostrarOrcamentoComponent;
   let fixture: ComponentFixture<MostrarOrcamentoComponent>;
 

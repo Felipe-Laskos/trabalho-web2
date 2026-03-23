@@ -48,7 +48,7 @@ export class MostrarOrcamentoComponent implements OnInit {
   confirmarAprovacao(): void {
   if (this.solicitacao) {
     this.solicitacao.estadoAtual = 'APROVADA';
-}
+  }
   this.estadoModal = 'sucesso';
 }
 fecharModal(): void {
