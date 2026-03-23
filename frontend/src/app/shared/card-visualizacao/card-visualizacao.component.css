@@ -1,0 +1,18 @@
+
+:host {
+  display: block; 
+  width: 100%;
+}
+
+.card-visualizacao {
+  background-color: #ffffff;
+  width: 100%;         
+  max-width: 1320px;  
+  margin: 20px auto;   
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+  padding: 32px;       
+  box-sizing: border-box; 
+  min-height: 300px;
+  display: block;
+}

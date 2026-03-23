@@ -1,0 +1,22 @@
+   @if (titulo) {
+  <h4>{{ titulo }}</h4>
+}
+
+<div class="campo-container largura-total">
+  <textarea
+    class="campo-textarea"
+    [placeholder]="placeholder"
+    [value]="valor"
+    (input)="aoDigitar($event)"
+    maxlength="200"
+    #inputRef>
+  </textarea>
+</div>
+
+<div class="contador-container largura-total">
+    <span class="contador-texto"
+       [class.erro]="(inputRef.value.length ||  0) >= 200">
+      {{ inputRef.value.length || 0 }}/200
+    </span>
+</div>
+

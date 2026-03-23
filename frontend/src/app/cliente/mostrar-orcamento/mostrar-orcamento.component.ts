@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-//import { HeaderComponent } from '../../shared/header/header.component';
 import { mockSolicitacao } from '../..//mocks/solicitacao.mock';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { Cliente } from '../../models/cliente.model';
+import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
+import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
+import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
+
 
 @Component({
   selector: 'app-mostrar-orcamento',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,CardVisualizacaoComponent,BotaoCancelarComponent,BotaoAprovarComponent],
   templateUrl: './mostrar-orcamento.component.html',
   styleUrl: './mostrar-orcamento.component.css',
 })
@@ -51,6 +54,14 @@ export class MostrarOrcamentoComponent implements OnInit {
 fecharModal(): void {
   this.exibirModal = false;
   }
+
+clickCancelar() {
+  if(this.solicitacao) {
+     this.solicitacao.estadoAtual = 'REJEITADA'; //AJUSTAR PARA SER UM MODAl
+         console.log("Estado atualizado!");
+         alert('O orçamento foi cancelado com sucesso');
+   }
+ } 
 }
 
 

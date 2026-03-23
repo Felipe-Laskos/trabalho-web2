@@ -1,0 +1,61 @@
+.input-card {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box; 
+}
+
+.input-label {
+  color: #454545;
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+}
+
+.card {
+  background: #f3f3f3;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #e0e0e0;
+  box-sizing: border-box; 
+}
+
+:host input,
+:host textarea,
+:host select {
+  width: 100%;
+  box-sizing: border-box; 
+  border: none;
+  background: white;
+  font-size: 15px;
+  border-radius: 8px;
+  padding: 8px;
+  font-weight: 500;
+  color: #000;
+  outline: none;
+  transition: 0.2s;
+}
+
+:host input:focus,
+:host textarea:focus,
+:host select:focus {
+  outline: none;
+  border-color: #48cdd6;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+:host input::placeholder,
+:host textarea::placeholder {
+  color: #9e9e9e;
+}
+
+:host textarea {
+  resize: none; 
+  height: 120px; 
+  overflow-y: auto; 
+  font-family: inherit; 
+}

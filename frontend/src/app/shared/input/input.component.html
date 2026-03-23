@@ -1,0 +1,13 @@
+  @if (titulo) {
+  <h4>{{ titulo }}</h4>
+}
+
+<input
+  class="campo-input"
+  [placeholder]="placeholder"
+  [value]="valor"
+  (input)="aoDigitar($event)"
+  [type]="tipo">
+
+
+  

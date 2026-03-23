@@ -1,0 +1,21 @@
+:host {
+  display: inline-block;
+}
+
+.btn-aprovar { 
+ font-family: 'Arial', sans-serif;
+ padding: 20px 24px;
+ border: none;
+ border-radius: 8px;
+ font-weight: bold;
+ cursor: pointer;
+ transition: background-color 0.2s ease;
+ background-color: #28a745 !important;
+ color: white !important;
+ letter-spacing: 0.8px;
+ }
+
+.btn-aprovar:active{
+  background-color: #12862d;
+  transform: scale(0.97);
+}

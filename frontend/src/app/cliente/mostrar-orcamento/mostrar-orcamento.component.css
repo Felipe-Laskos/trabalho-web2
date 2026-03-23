@@ -7,19 +7,9 @@ h2 {
 .orcamento-container {
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 20px 20px;
   background-color: #f5f5f5; 
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-
-.orcamento-card {
-  background-color: #ffffff;
-  width: 100%;
-  max-width: 1320px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
-  display: flex;
-  flex-direction: column;
 }
 
 .card-content {
@@ -125,20 +115,6 @@ h2 {
   color: #000;
 }
 
-/* Preço */
-.item-preco {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-}
-
-.linha-pontilhada {
-  flex: 1;
-  border-bottom: 1px dotted #ccc;
-}
-
 .texto-total {
   font-size: 22px !important;
   font-weight: bold;
@@ -161,15 +137,6 @@ h2 {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s ease;
-}
-
-.btn-rejeitar { 
-    background-color: #ff0000; 
-    color: white;
- }
-
-.btn-rejeitar:hover{
-  background-color: #b82020; 
 }
 
 .btn-aprovar { 
@@ -224,8 +191,8 @@ h2 {
 }
 
 .btn-cancelar { 
-  background-color: #ff0000; 
-  color: white;
+  background-color: #e7e7e7; 
+  color: rgb(0, 0, 0);
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
@@ -237,13 +204,31 @@ h2 {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-weight: 700;
   margin: 0 0 10px 0;
-  color: #000000;
+  color: #111827;
 }
 
-.modal-box p {
+.modal-box #paragrafo1 {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: #666;
+  color: #111827;
   margin-bottom: 20px;
+}
+
+#paragrafo2 {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 450;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.btn-ok { 
+  background-color: #35B8CF; 
+  color: white; 
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
 @keyframes surgindo {

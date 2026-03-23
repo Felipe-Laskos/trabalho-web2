@@ -1,6 +1,6 @@
 <div class="orcamento-container" >
-  <div class="orcamento-card">
-    
+ 
+<app-card-visualizacao> 
     <div class="card-content">
       
       <div class="coluna-esquerda">
@@ -69,23 +69,28 @@
             <p class="texto-total">R$ {{ solicitacao?.valorOrcado | number:'1.2-2' }}</p>
           </div>
         </div>
-
       </div>
     </div>
 
     <div class="card-footer">
-      <button class="btn btn-rejeitar">Rejeitar Serviço</button>  <!-- IMPLEMENTAR FUNÇÃO DE REJEIÇÃO -->
-      <button class="btn btn-aprovar" (click)="aprovarServico()">Aprovar Serviço</button>
-    </div>
+      <app-botao-cancelar [confirmacao]="true" 
+      (clicou)="clickCancelar()"> 
+      Rejeitar Serviço
+    </app-botao-cancelar>
 
-  </div>
+    <app-botao-aprovar (clicou)="aprovarServico()">
+      Aprovar Serviço
+    </app-botao-aprovar>
+    </div>
+    </app-card-visualizacao>
 </div>
+
 
 <div class="modal-overlay" *ngIf="exibirModal">
   <div class="modal-box">
     <div *ngIf="estadoModal === 'confirmacao'">
       <h2>Confirmar Aprovação?</h2>
-      <p>Ao confirmar, o serviço será agendado.</p>
+      <p id="paragrafo1">Ao confirmar, o serviço será agendado.</p>
       <div class="modal-actions">
         <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
         <button class="btn-confirmar" (click)="confirmarAprovacao()">Sim, Confirmar</button>
@@ -94,8 +99,9 @@
 
     <div *ngIf="estadoModal === 'sucesso'">
       <h2>Tudo pronto!</h2>
-      <p>O orçamento foi aprovado. Você receberá atualizações em breve.</p>
-      <button class="btn btn-aprovar" (click)="fecharModal()">Ok</button>
+      <p id="paragrafo2"> Serviço Aprovado no Valor: </p>
+         <h3> R$ {{ solicitacao?.valorOrcado | number:'1.2-2' }} </h3>
+      <button class="btn-ok" (click)="fecharModal()">Ok</button>
     </div>
 
   </div>

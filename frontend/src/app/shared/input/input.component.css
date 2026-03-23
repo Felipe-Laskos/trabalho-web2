@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.campo-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  outline: none;
+  font-size: 14px;
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+.campo-input:focus {
+  border-color: #35cccc;
+}
+
+h4 {
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #000000;
+}

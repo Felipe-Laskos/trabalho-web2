@@ -1,0 +1,12 @@
+
+<h4>{{ titulo }}</h4>
+<mat-form-field appearance="outline">
+  <mat-label>{{ label }}</mat-label>
+  <mat-select 
+  [value]="valorSelecionado"
+  (selectionChange)="aoSelecionar($event)">
+    @for (item of lista; track item.value) {
+      <mat-option [value]="item.value">{{ item.viewValue }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>

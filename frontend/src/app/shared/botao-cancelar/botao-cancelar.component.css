@@ -1,0 +1,20 @@
+:host {
+  display: inline-block;
+}
+
+.btn-cancelar { 
+ font-family: 'Arial', sans-serif;
+ padding: 20px 24px;
+ border: none;
+ border-radius: 8px;
+ font-weight: bold;
+ cursor: pointer;
+ transition: background-color 0.2s ease;
+ background-color: #ff0000 !important; 
+ color: white !important;
+ letter-spacing: 0.8px;
+ }
+
+.btn-cancelar:hover{
+  background-color: #b02a37;
+}
