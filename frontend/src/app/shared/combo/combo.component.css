@@ -1,19 +1,26 @@
-
 :host {
   display: block;
+  max-width: 100%;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+mat-form-field {
   width: 100%;
-  max-width: 400px;
-  margin-bottom: 20px;
+  height: 100%;
+}
+
+:host ::ng-deep .mdc-text-field {
+  height: 100%;
+  align-items: center;
 }
 
 :host ::ng-deep .mdc-text-field--outlined {
   --mdc-outlined-text-field-container-shape: 8px;
-}
+} 
 
-:host ::ng-deep .mat-mdc-form-field-flex {
-  height: 52px;
-  display: flex;
-  align-items: center;
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
 
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
@@ -23,8 +30,11 @@
 }
 
 :host ::ng-deep .mat-mdc-select-value-text {
+  display: flex;
+  align-items: center;
+  height: 100%;
   font-family: 'Arial', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: #333;
 }
 

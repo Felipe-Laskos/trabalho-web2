@@ -1,9 +1,9 @@
 
 <h4>{{ titulo }}</h4>
-<mat-form-field appearance="outline">
-  <mat-label>{{ label }}</mat-label>
+<mat-form-field appearance="outline" subscriptSizing="dynamic">
   <mat-select 
   [value]="valorSelecionado"
+  placeholder="Selecione uma opção"
   (selectionChange)="aoSelecionar($event)">
     @for (item of lista; track item.value) {
       <mat-option [value]="item.value">{{ item.viewValue }}</mat-option>

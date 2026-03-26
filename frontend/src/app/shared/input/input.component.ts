@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'app-input',
@@ -12,6 +12,19 @@ export class InputComponent {
   @Input() titulo: string = '';
   @Input() placeholder: string = '';
   @Input() valor: string = '';
+
+  @Input() largura = '100%';
+  @Input() altura = '52px';
+
+  @HostBinding('style.width')
+   get hostWidth() {
+     return this.largura;
+  }
+
+  @HostBinding('style.height')
+   get hostHeight() {
+     return this.altura;
+  }
 
   @Output() mudou = new EventEmitter<string>();
 
