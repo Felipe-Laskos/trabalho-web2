@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
+import { SolicitacaoService } from './services/solicitacao.service';
+import { FuncionarioService } from './services/funcionario.service';
+import { ClienteService } from './services/cliente.service';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +13,8 @@ import { FooterComponent } from './shared/footer/footer.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent {}
+export class AppComponent {
+  private solicitacaoService = inject(SolicitacaoService);
+  private funcionarioService = inject(FuncionarioService);
+  private clienteService = inject(ClienteService);
+}

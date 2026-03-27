@@ -1,19 +1,43 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatHint } from '@angular/material/form-field';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, MatSlideToggleModule, MatDatepickerModule, MatHint, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
 
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  logado: boolean = false;
+  nomeUsuario: string = '';
+  perfil: 'cliente' | 'funcionario' | null = null;
+
+  ngOnInit(): void {
+    this.atualizarSessao();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.atualizarSessao();
+      }
+    });
+  }
+
+  atualizarSessao(): void {
+    this.logado = this.authService.estaLogado();
+    this.nomeUsuario = this.authService.getNome();
+    this.perfil = this.authService.getPerfil();
+  }
+
+  efetuarLogout(): void {
+    this.authService.efetuarLogout();
+  }
 }

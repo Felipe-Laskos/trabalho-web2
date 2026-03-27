@@ -4,23 +4,35 @@
     </div>
 
     <nav class="header_nav">
-        <!-- Pendente: adicionarr lógica para ou mostrar rotas para cliente ou para funcionario -->
-        <a routerLink="/cliente">Minhas Solicitações</a>
-        <a routerLink="/funcionario">Solicitações</a>
-        <a routerLink="/funcionario/categorias">Categorias</a>
-        <a routerLink="/funcionario/funcionarios">Funcionários</a>
+        @if (logado && perfil === 'cliente') {
+            <a routerLink="/cliente">Minhas Solicitações</a>
+            <a routerLink="/cliente/solicitar-manutencao">Nova Solicitação</a>
+        }
+
+        @if (logado && perfil === 'funcionario') {
+            <a routerLink="/funcionario">Solicitações</a>
+            <a routerLink="/funcionario/visualizar-solicitacoes">Visualizar</a>
+            <a routerLink="/funcionario/categorias">Categorias</a>
+            <a routerLink="/funcionario/funcionarios">Funcionários</a>
+            <a routerLink="/funcionario/relatorio-receitas">Relatórios</a>
+        }
     </nav>
 
     <div class="header_actions">
-        <!-- Pendente: Lógica para mostrar nome user + sair se logado, se não mostrar entrar -->
-        <div class="header_actions_user">
-            <mat-icon class="header_icon">account_circle</mat-icon>
-            <span class="header_user">User</span>
-        </div>
+        @if (logado) {
+            <div class="header_actions_user">
+                <mat-icon class="header_icon">account_circle</mat-icon>
+                <span class="header_user">{{ nomeUsuario }}</span>
+            </div>
 
-        <div class="header_actions_buttons">
-            <a mat-flat-button color="primary" class="header_button header_button_primary" href="" target="_blank">Cadastrar</a>
-            <a mat-flat-button color="primary" routerLink="/login" class="header_button header_button_login">Entrar</a>
-        </div>
+            <div class="header_actions_buttons">
+                <a mat-flat-button class="header_button header_button_login" (click)="efetuarLogout()">Sair</a>
+            </div>
+        } @else {
+            <div class="header_actions_buttons">
+                <a mat-flat-button color="primary" class="header_button header_button_primary" routerLink="/autocadastro">Cadastrar</a>
+                <a mat-flat-button color="primary" routerLink="/login" class="header_button header_button_login">Entrar</a>
+            </div>
+        }
     </div>
 </header>

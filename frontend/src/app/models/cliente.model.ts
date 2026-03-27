@@ -5,6 +5,7 @@ export interface Cliente {
   cpf: string;
   nome: string;
   email: string;
+  senha?: string;
   telefone: string;
   ativo?: boolean;
   dataCadastro?: string;

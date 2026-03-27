@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -76,6 +76,10 @@ export class AutocadastroComponent {
         }
       });
     }
+  }
+
+  gerarSenha(): string {
+    return Math.floor(1000 + Math.random() * 9000).toString();
   }
 
   onSubmit(form: NgForm) {

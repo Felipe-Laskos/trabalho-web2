@@ -3,6 +3,7 @@ export interface Funcionario {
   nome: string;
   cpf: string;
   email: string;
+  senha?: string;
   dataNascimento: string;
   cargo: string;
   ativo?: boolean;
