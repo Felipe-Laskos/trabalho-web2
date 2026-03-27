@@ -1,0 +1,114 @@
+.relatorio {
+  display: flex;
+  justify-content: center;
+  padding: 20px 20px;
+  background-color: var(--background-white);
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.relatorio__header {
+  padding: 0 30px;
+}
+
+.relatorio__titulo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.relatorio__subtitulo {
+  color: var(--gray);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.relatorio__divider {
+  border: 0;
+  border-top: 1px solid #e0eaf0;
+  margin-bottom: 25px;
+}
+
+.relatorio__filtros {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  padding: 0 30px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.relatorio__filtro_campo {
+  flex: 0 0 auto;
+}
+
+.relatorio__filtro_acoes {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 20px;
+}
+
+.relatorio__cards {
+  display: flex;
+  gap: 20px;
+  padding: 0 30px;
+  margin-bottom: 25px;
+}
+
+.relatorio__tabela {
+  padding: 0 30px 20px 30px;
+}
+
+.relatorio__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.relatorio__table_header {
+  background-color: var(--secondary);
+}
+
+.relatorio__table_th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.relatorio__table_row:hover {
+  background-color: var(--background-white-2);
+}
+
+.relatorio__table_td {
+  padding: 12px 16px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 14px;
+  color: #333;
+}
+
+.relatorio__table_td_valor {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.relatorio__table_footer {
+  background-color: var(--light-gray);
+}
+
+.relatorio__table_td_total {
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  color: #000 !important;
+}
+
+.relatorio__sem_dados {
+  text-align: center;
+  padding: 40px;
+  color: var(--gray);
+  font-size: 15px;
+}

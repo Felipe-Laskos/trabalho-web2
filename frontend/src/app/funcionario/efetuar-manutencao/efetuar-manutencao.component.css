@@ -89,4 +89,220 @@ form button:hover {
   .container-cards {
     flex-direction: column;
   }
+}.manutencao {
+  display: flex;
+  justify-content: center;
+  padding: 20px 20px;
+  background-color: var(--background-white);
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.manutencao__content {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  padding: 30px;
+  gap: 20px 40px;
+}
+
+.manutencao__coluna_esquerda,
+.manutencao__coluna_direita {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.manutencao__coluna_esquerda {
+  grid-column: 1;
+}
+
+.manutencao__coluna_direita {
+  grid-column: 3;
+}
+
+.manutencao__divisor {
+  grid-column: 2;
+  grid-row: 1 / span 10;
+  width: 1px;
+  background-color: #454545;
+}
+
+.manutencao__titulo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.manutencao__titulo_id {
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.manutencao__info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manutencao__info_label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #454545;
+}
+
+.manutencao__info_box {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 50px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: var(--background-white);
+}
+
+.manutencao__info_box p {
+  margin: 0 0 4px 0;
+  font-weight: 500;
+  color: #000;
+  font-size: 14px;
+}
+
+.manutencao__info_destaque {
+  font-weight: 700 !important;
+  font-size: 16px !important;
+}
+
+.manutencao__info_sub {
+  color: var(--gray) !important;
+  font-weight: 400 !important;
+}
+
+.manutencao__info_box_total {
+  background-color: var(--secondary);
+}
+
+.manutencao__valor {
+  font-size: 22px !important;
+  font-weight: bold !important;
+  color: var(--primary) !important;
+}
+
+.manutencao__status {
+  display: inline-block;
+  width: fit-content;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--white);
+}
+
+.manutencao__status_aberta { background-color: #808080; }
+.manutencao__status_orcada { background-color: #8B4513; }
+.manutencao__status_rejeitada { background-color: #DC3545; }
+.manutencao__status_aprovada { background-color: #FFC107; color: #333; }
+.manutencao__status_redirecionada { background-color: #6F42C1; }
+.manutencao__status_arrumada { background-color: var(--sky-blue); }
+.manutencao__status_paga { background-color: #FD7E14; }
+.manutencao__status_finalizada { background-color: #198754; }
+
+.manutencao__campo {
+  margin-top: 5px;
+}
+
+.manutencao__footer {
+  border-top: 1px solid #454545;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.manutencao__footer_acoes {
+  display: flex;
+  gap: 15px;
+}
+
+/* Modal */
+
+.manutencao__modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.manutencao__modal_box {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  animation: manutencao__surgindo 0.3s ease-out;
+}
+
+.manutencao__modal_titulo {
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #111827;
+}
+
+.manutencao__modal_texto {
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.manutencao__modal_texto_sucesso {
+  color: #6b7280;
+  margin-bottom: 15px;
+}
+
+.manutencao__modal_actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.manutencao__modal_btn_cancelar {
+  background-color: #e7e7e7;
+  color: #000;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.manutencao__modal_btn_confirmar {
+  background-color: var(--green);
+  color: var(--white);
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.manutencao__modal_btn_ok {
+  background-color: var(--sky-blue);
+  color: var(--white);
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+@keyframes manutencao__surgindo {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
