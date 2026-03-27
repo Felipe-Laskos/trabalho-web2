@@ -1,0 +1,107 @@
+<div class="redirecionar">
+
+  <app-card-visualizacao>
+    <div class="redirecionar__content">
+
+      <div class="redirecionar__coluna_esquerda">
+        <h1 class="redirecionar__titulo">Redirecionar Manutenção <br>
+          <span class="redirecionar__titulo_id">#{{ solicitacao?.id }}</span>
+        </h1>
+
+        <div class="redirecionar__info">
+          <h2 class="redirecionar__info_label">CLIENTE:</h2>
+          <div class="redirecionar__info_box">
+            <p class="redirecionar__info_destaque">{{ solicitacao?.cliente?.nome }}</p>
+            <p>{{ solicitacao?.cliente?.email }}</p>
+          </div>
+        </div>
+
+        <div class="redirecionar__info">
+          <h2 class="redirecionar__info_label">EQUIPAMENTO:</h2>
+          <div class="redirecionar__info_box">
+            <p class="redirecionar__info_destaque">{{ solicitacao?.descricaoEquipamento }}</p>
+            <p class="redirecionar__info_sub">{{ solicitacao?.categoria?.nome }}</p>
+          </div>
+        </div>
+
+        <div class="redirecionar__info">
+          <h2 class="redirecionar__info_label">DEFEITO:</h2>
+          <div class="redirecionar__info_box">
+            <p>{{ solicitacao?.descricaoDefeito }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="redirecionar__divisor"></div>
+
+      <div class="redirecionar__coluna_direita">
+
+        <div class="redirecionar__status"
+          [ngClass]="{
+            'redirecionar__status_aprovada': solicitacao?.estadoAtual === 'APROVADA',
+            'redirecionar__status_redirecionada': solicitacao?.estadoAtual === 'REDIRECIONADA'
+          }">
+          {{ solicitacao?.estadoAtual }}
+        </div>
+
+        <div class="redirecionar__info">
+          <app-card-info
+            tituloInfo="Funcionário Atual"
+            [descricao]="solicitacao?.funcionarioResponsavel?.nome || 'Não atribuído'"
+            nomeIcon="person">
+          </app-card-info>
+        </div>
+
+        <div class="redirecionar__combo">
+          <app-combo
+            titulo="Redirecionar para"
+            label="Selecione o funcionário destino"
+            [lista]="opcoesCombo"
+            [valorSelecionado]="funcionarioSelecionadoId"
+            (mudou)="onFuncionarioSelecionado($event)">
+          </app-combo>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="redirecionar__footer">
+      <app-botao
+        texto="Voltar"
+        icone="arrow_back"
+        cor="primary"
+        (clicou)="voltar()">
+      </app-botao>
+
+      <app-botao-aprovar
+        [desabilitado]="!funcionarioSelecionadoId"
+        (clicou)="redirecionarManutencao()">
+        Confirmar Redirecionamento
+      </app-botao-aprovar>
+    </div>
+  </app-card-visualizacao>
+</div>
+
+
+<div class="redirecionar__modal_overlay" *ngIf="exibirModal">
+  <div class="redirecionar__modal_box">
+    <div *ngIf="estadoModal === 'confirmacao'">
+      <h2 class="redirecionar__modal_titulo">Confirmar Redirecionamento?</h2>
+      <p class="redirecionar__modal_texto">
+        A solicitação será redirecionada para <strong>{{ getNomeFuncionarioDestino() }}</strong>.
+      </p>
+      <div class="redirecionar__modal_actions">
+        <button class="redirecionar__modal_btn_cancelar" (click)="fecharModal()">Cancelar</button>
+        <button class="redirecionar__modal_btn_confirmar" (click)="confirmarRedirecionamento()">Sim, Redirecionar</button>
+      </div>
+    </div>
+
+    <div *ngIf="estadoModal === 'sucesso'">
+      <h2 class="redirecionar__modal_titulo">Redirecionado!</h2>
+      <p class="redirecionar__modal_texto_sucesso">
+        A solicitação #{{ solicitacao?.id }} foi redirecionada para {{ getNomeFuncionarioDestino() }}.
+      </p>
+      <button class="redirecionar__modal_btn_ok" (click)="fecharModal()">Ok</button>
+    </div>
+  </div>
+</div>

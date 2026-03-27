@@ -1,0 +1,94 @@
+<div class="relatorio">
+
+  <app-card-visualizacao>
+    <div class="relatorio__header">
+      <h1 class="relatorio__titulo">Relatório de Receitas por Período</h1>
+      <p class="relatorio__subtitulo">Visualize a receita da empresa agrupada por dia.</p>
+      <hr class="relatorio__divider">
+    </div>
+
+    <div class="relatorio__filtros">
+      <div class="relatorio__filtro_campo">
+        <app-input
+          titulo="Data Início"
+          tipo="date"
+          [valor]="dataInicio"
+          (mudou)="onDataInicioMudou($event)">
+        </app-input>
+      </div>
+
+      <div class="relatorio__filtro_campo">
+        <app-input
+          titulo="Data Fim"
+          tipo="date"
+          [valor]="dataFim"
+          (mudou)="onDataFimMudou($event)">
+        </app-input>
+      </div>
+
+      <div class="relatorio__filtro_acoes">
+        <app-botao
+          texto="Filtrar"
+          icone="filter_list"
+          cor="primary"
+          (clicou)="filtrar()">
+        </app-botao>
+
+        <app-botao
+          texto="Gerar PDF"
+          icone="picture_as_pdf"
+          cor="accent"
+          (clicou)="gerarPdf()">
+        </app-botao>
+      </div>
+    </div>
+
+    <div class="relatorio__cards">
+      <app-card-info
+        tituloInfo="Total Receita"
+        [descricao]="formatarMoeda(totalGeral)"
+        nomeIcon="attach_money">
+      </app-card-info>
+
+      <app-card-info
+        tituloInfo="Serviços Pagos"
+        [descricao]="quantidadeTotal + ' serviços'"
+        nomeIcon="build">
+      </app-card-info>
+    </div>
+
+    <div class="relatorio__tabela">
+      @if (receitasPorDia.length > 0) {
+        <table class="relatorio__table">
+          <thead>
+            <tr class="relatorio__table_header">
+              <th class="relatorio__table_th">Data</th>
+              <th class="relatorio__table_th">Qtd. Serviços</th>
+              <th class="relatorio__table_th">Receita do Dia</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (receita of receitasPorDia; track receita.data) {
+              <tr class="relatorio__table_row">
+                <td class="relatorio__table_td">{{ receita.data }}</td>
+                <td class="relatorio__table_td">{{ receita.quantidade }}</td>
+                <td class="relatorio__table_td relatorio__table_td_valor">{{ formatarMoeda(receita.total) }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr class="relatorio__table_footer">
+              <td class="relatorio__table_td relatorio__table_td_total">TOTAL</td>
+              <td class="relatorio__table_td relatorio__table_td_total">{{ quantidadeTotal }}</td>
+              <td class="relatorio__table_td relatorio__table_td_total relatorio__table_td_valor">{{ formatarMoeda(totalGeral) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      } @else {
+        <div class="relatorio__sem_dados">
+          <p>Nenhuma receita encontrada para o período selecionado.</p>
+        </div>
+      }
+    </div>
+  </app-card-visualizacao>
+</div>
