@@ -1,66 +1,69 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { FormControl, FormsModule, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { ValidarCpf } from './validacao-cpf';
+import { InputCardComponent } from '../../shared/input-card/input-card.component';
+import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
+import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 
 @Component({
   selector: 'app-autocadastro',
   standalone: true,
+  providers: [provideNgxMask()],
   imports: [
     CommonModule, 
     FormsModule, 
-    RouterLink, 
-    HttpClientModule,
-    MatCardModule, 
-    MatInputModule, 
-    MatFormFieldModule, 
-    MatButtonModule, 
-    MatIconModule
+    HttpClientModule, 
+    NgxMaskDirective, 
+    NgxMaskPipe, 
+    InputCardComponent, 
+    BotaoAprovarComponent, 
+    BotaoCancelarComponent
   ],
   templateUrl: './autocadastro.component.html',
   styleUrls: ['./autocadastro.component.css']
 })
 export class AutocadastroComponent {
-  cliente = {
-    cpf: '', 
-    nome: '', 
-    email: '', 
-    telefone: '', 
+  usuario = {
+    nome: '',
+    cpf: '',
+    email: '',
+    telefone: '',
     cep: '',
-    logradouro: '', 
-    numero: '', 
-    bairro: '', 
-    cidade: '', 
-    estado: ''
+    logradouro: '',
+    bairro: '',
+    cidade: '',
+    senha: ''
   };
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(public router: Router, private http: HttpClient) {}
 
-  buscarEnderecoPorCep() {
-    const cep = this.cliente.cep.replace(/\D/g, '');
-    if (cep.length === 8) {
-      this.http.get(`https://viacep.com.br/ws/${cep}/json/`).subscribe((dados: any) => {
+  buscarCep() {
+    const cepLimpo = this.usuario.cep.replace(/\D/g, '');
+    if (cepLimpo.length === 8) {
+      this.http.get<any>(`https://viacep.com.br/ws/${cepLimpo}/json/`).subscribe(dados => {
         if (!dados.erro) {
-          this.cliente.logradouro = dados.logradouro;
-          this.cliente.bairro = dados.bairro;
-          this.cliente.cidade = dados.localidade;
-          this.cliente.estado = dados.uf;
+          this.usuario.logradouro = dados.logradouro;
+          this.usuario.bairro = dados.bairro;
+          this.usuario.cidade = dados.localidade;
         }
       });
     }
   }
 
-  salvarCadastro() {
-  if (this.cliente.nome) {
-    localStorage.setItem('nomeUsuarioCadastrado', this.cliente.nome);
-  }
-  alert('Cadastro realizado com sucesso! Use seu e-mail para logar.');
-    this.router.navigate(['/login']);
+    onSubmit(form: NgForm) {
+    const controleCpf = new FormControl(this.usuario.cpf);
+    const erroCpf = ValidarCpf()(controleCpf);
+
+    if (form.valid && erroCpf === null) {
+      console.log('Sucesso! Tudo validado:', this.usuario);
+      this.router.navigate(['/login']);
+    } else {
+      const mensagem = erroCpf ? 'CPF Inválido!' : 'Preencha todos os campos obrigatórios!';
+      alert(mensagem);
+    }
   }
 }

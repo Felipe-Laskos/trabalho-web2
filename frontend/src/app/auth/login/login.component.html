@@ -1,20 +1,52 @@
-<div class="login-wrapper">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Acesso TechSolution</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form #f="ngForm" (ngSubmit)="efetuarLogin()" class="flex-column">
-        <mat-form-field appearance="outline">
-          <mat-label>E-mail</mat-label>
-          <input matInput type="email" name="email" [(ngModel)]="usuario.email" required>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Senha</mat-label>
-          <input matInput type="password" name="senha" [(ngModel)]="usuario.senha" required>
-        </mat-form-field>
-        <button mat-raised-button color="primary" [disabled]="!f.valid">Entrar</button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+<div class="login-container">
+  <app-card-visualizacao>
+    <div class="header-text">
+      <h1>Login TechSolution</h1>
+      <p>Acesse sua conta para gerenciar solicitações.</p>
+      <hr class="divider">
+    </div>
+
+    <form (ngSubmit)="efetuarLogin()">
+      <div class="field-group">
+        <app-input 
+          titulo="E-mail" 
+          placeholder="exemplo@email.com"
+          altura="52px"
+          largura="100%"
+          [valor]="credenciais.email" 
+          (mudou)="credenciais.email = $event"
+          (focusout)="marcarComoTocado('email')">
+        </app-input>
+        <div class="container-erro">
+          <span class="msg-erro" *ngIf="!credenciais.email && (emailTocado || enviou)">
+            O e-mail é obrigatório.
+          </span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <app-input 
+          titulo="Senha" 
+          type="password" 
+          placeholder="Digite sua senha"
+          altura="52px"
+          largura="100%"
+          [valor]="credenciais.senha" 
+          (mudou)="credenciais.senha = $event"
+          (focusout)="marcarComoTocado('senha')">
+        </app-input>
+        <div class="container-erro">
+          <span class="msg-erro" *ngIf="!credenciais.senha && (senhaTocado || enviou)">
+            A senha é obrigatória.
+          </span>
+        </div>
+      </div>
+
+      <div class="acoes-login">
+        <app-botao-aprovar (clicou)="efetuarLogin()">
+          Entrar
+        </app-botao-aprovar>
+      </div>
+    </form>
+  </app-card-visualizacao>
 </div>

@@ -1,33 +1,69 @@
-<div class="container-center">
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>Novo Cadastro</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <form #f="ngForm" (ngSubmit)="salvarCadastro()" class="flex-column">
-        <div class="flex-row gap-16">
-          <mat-form-field appearance="outline" class="flex-3">
-            <mat-label>Nome Completo</mat-label>
-            <input matInput name="nome" [(ngModel)]="cliente.nome" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-1">
-            <mat-label>CPF</mat-label>
-            <input matInput name="cpf" [(ngModel)]="cliente.cpf" required>
-          </mat-form-field>
+<div class="cadastro-container">
+  <div class="cartao-cadastro">
+    <div class="header-text">
+      <h1>Crie sua conta</h1>
+      <p>Preencha as informações para criar sua conta no sistema</p>
+      <hr class="divider">
+    </div>
+    
+    <form #f="ngForm">
+      
+      <app-input-card label="Dados Pessoais">
+        <div class="field-group">
+          <label class="field-label">Nome Completo: <span class="obrigatorio">*</span></label>
+          <input type="text" name="nome" [(ngModel)]="usuario.nome" required #nome="ngModel" placeholder="Digite seu nome">
+          <span class="msg-erro" *ngIf="nome.invalid && nome.touched">O nome é obrigatório.</span>
         </div>
-        <div class="flex-row gap-16">
-          <mat-form-field appearance="outline" class="flex-1">
-            <mat-label>CEP</mat-label>
-            <input matInput name="cep" [(ngModel)]="cliente.cep" (blur)="buscarEnderecoPorCep()" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-2">
-            <mat-label>Logradouro</mat-label>
-            <input matInput name="logradouro" [(ngModel)]="cliente.logradouro" required>
-          </mat-form-field>
+
+        <div class="flex-row gap-24">
+          <div class="flex-1">
+            <label class="field-label">CPF: <span class="obrigatorio">*</span></label>
+            <input type="text" name="cpf" [(ngModel)]="usuario.cpf" required #cpf="ngModel" mask="000.000.000-00" placeholder="000.000.000-00">
+            <span class="msg-erro" *ngIf="cpf.invalid && cpf.touched">CPF obrigatório.</span>
+          </div>
+          <div class="flex-1">
+            <label class="field-label">Telefone: <span class="obrigatorio">*</span></label>
+            <input type="text" name="telefone" [(ngModel)]="usuario.telefone" required #telefone="ngModel" mask="(00) 0 0000-0000" placeholder="(41) 9 9999-9999">
+            <span class="msg-erro" *ngIf="telefone.invalid && cpf.touched">Telefone é obrigatório.</span>
+          </div>
         </div>
-        <div class="flex-row gap-16 mt-16">
-          <button mat-raised-button color="primary" [disabled]="!f.valid">Cadastrar</button>
-          <button mat-button type="button" routerLink="/login">Voltar</button>
+      </app-input-card>
+
+      <app-input-card label="Endereço (ViaCEP)">
+        <div class="flex-row gap-24">
+          <div style="flex: 0.5;">
+            <label class="field-label">CEP: <span class="obrigatorio">*</span></label>
+            <input type="text" name="cep" [(ngModel)]="usuario.cep" required #cep="ngModel" (blur)="buscarCep()"  mask="00000-000" placeholder="00000-000">
+            <span class="msg-erro" *ngIf="cep.invalid && cpf.touched">CEP é obrigatório.</span>
+          </div>
+          <div class="flex-1">
+            <label class="field-label">Cidade:</label>
+            <input type="text" name="cidade" [(ngModel)]="usuario.cidade" readonly class="input-readonly">
+          </div>
         </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
+        <label class="field-label">Logradouro:</label>
+        <input type="text" name="logradouro" [(ngModel)]="usuario.logradouro" readonly class="input-readonly">
+      </app-input-card>
+
+      <app-input-card label="Acesso">
+        <label class="field-label">E-mail: <span class="obrigatorio">*</span></label>
+        <input type="email" name="email" [(ngModel)]="usuario.email" required #email="ngModel" placeholder="email@exemplo.com">
+         <span class="msg-erro" *ngIf="email.invalid && cpf.touched">Email é obrigatório.</span>
+        
+        <label class="field-label">Senha: <span class="obrigatorio">*</span></label>
+        <input type="password" name="senha" [(ngModel)]="usuario.senha" required #senha="ngModel" minlength="6" placeholder="Mínimo 6 caracteres">
+        <span class="msg-erro" *ngIf="senha.invalid && cpf.touched">Senha é obrigatório.</span>
+      </app-input-card>
+
+      <div class="flex-row justify-between mt-24">
+        <app-botao-cancelar (clicou)="router.navigate(['/login'])">
+          Já sou cadastrado
+        </app-botao-cancelar>
+        
+        <app-botao-aprovar (clicou)="onSubmit(f)">
+          Finalizar Cadastro
+        </app-botao-aprovar>
+      </div>
+    </form>
+  </div>
 </div>

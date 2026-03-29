@@ -1,73 +1,107 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { LayoutHomeComponent } from '../../shared/layout-home/layout-home.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
+import { InputComponent } from '../../shared/input/input.component';
+import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { mockSolicitacao } from '../../mocks/solicitacao.mock';
+import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
+import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 
 @Component({
   selector: 'app-home-cliente',
   standalone: true,
   imports: [
-    LayoutHomeComponent,
-    CommonModule, 
-    RouterLink, 
-    MatTableModule, 
-    MatButtonModule, 
-    MatIconModule, 
-    MatFormFieldModule, 
-    MatInputModule,
-    MatTooltipModule
-  ],
+    CommonModule,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatSnackBarModule,
+    BotaoAprovarComponent,
+    InputComponent,
+    PaginacaoComponent,
+    CardVisualizacaoComponent
+],
   templateUrl: './home-cliente.component.html',
   styleUrls: ['./home-cliente.component.css']
 })
 export class HomeClienteComponent implements OnInit {
   nomeUsuario: string = 'Cliente';
-  solicitacoes = mockSolicitacao;
- idPedidoAnalise: string | number = '00000';
+  listaSolicitacoes: Solicitacao[] = mockSolicitacao;
+  dadosFiltrados: Solicitacao[] = [];
+  dadosExibidos: Solicitacao[] = [];
+  idPedidoPendente: string | number = '00000';
+  
+  colunas: string[] = [
+    'aparelho', 
+    'situacao', 
+    'valor', 
+    'acoes'
+  ];
+  paginaAtual: number = 1;
+  itensPorPagina: number = 5;
 
-  constructor(private router: Router) {}
+  constructor(public router: Router, private aviso: MatSnackBar) {}
 
-  ngOnInit() {
-  const nomeSessao = localStorage.getItem('usuarioSessao');
-  if (nomeSessao) {
-    this.nomeUsuario = nomeSessao;
+  ngOnInit(): void {
+    this.carregarDadosIniciais();
+    this.dadosFiltrados = this.listaSolicitacoes;
+    this.atualizarPaginacao();
   }
 
-  if (this.solicitacoes && this.solicitacoes.length > 0) {
-    const pendente = this.solicitacoes.find(s => 
+  private carregarDadosIniciais(): void {
+    this.nomeUsuario = localStorage.getItem('usuarioSessao') || 'Cliente';
+    this.identificarUltimoPedidoEmAnalise();
+  }
+
+  onBusca(valor: string) {
+    const termo = valor.toLowerCase();
+    this.dadosFiltrados = this.listaSolicitacoes.filter(s => 
+      s.descricaoEquipamento.toLowerCase().includes(termo) || 
+      s.estadoAtual.toLowerCase().includes(termo)
+    );
+    
+    this.paginaAtual = 1;
+    this.atualizarPaginacao();
+  }
+
+  atualizarPaginacao(): void {
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    this.dadosExibidos = this.dadosFiltrados.slice(inicio, fim);
+  }
+
+  aoMudarPagina(novaPagina: number) {
+    this.paginaAtual = novaPagina;
+    this.atualizarPaginacao();
+  }
+
+  private identificarUltimoPedidoEmAnalise(): void {
+    const pedido = this.listaSolicitacoes.find(s => 
       s.estadoAtual === SolicitacaoENUM.ABERTA || 
       s.estadoAtual === SolicitacaoENUM.ORCADA
     );
-
-    if (pendente && pendente.id !== undefined) {
-      this.idPedidoAnalise = pendente.id;
-    } else {
-      const primeiroId = this.solicitacoes[0]?.id;
-      if (primeiroId !== undefined) {
-        this.idPedidoAnalise = primeiroId;
-      }
-    }
-  }
-}
-
-  efetuarLogout() {
-    localStorage.removeItem('usuarioSessao');
-    this.router.navigate(['/login']);
+    this.idPedidoPendente = pedido?.id ?? '00000';
   }
 
-  abrirAcao(solicitacao: any) {
-    if (solicitacao.status === 'ORÇADA') {
-      this.router.navigate(['/cliente/mostrar-orcamento', solicitacao.id]);
+  tratarVisualizacao(item: Solicitacao): void {
+    if (item.estadoAtual === SolicitacaoENUM.ORCADA) {
+      this.router.navigate(['/cliente/mostrar-orcamento', item.id]);
     } else {
-        this.router.navigate(['/cliente/mostrar-orcamento', solicitacao.id]);
+      this.aviso.open('Esta solicitação ainda está em análise técnica.', 'OK', {
+        duration: 3000,
+        verticalPosition: 'top'
+      });
     }
+  }
+
+  irParaSolicitacao(): void {
+    this.router.navigate(['/cliente/solicitar-manutencao']);
   }
 }

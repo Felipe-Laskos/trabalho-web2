@@ -2,67 +2,61 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
+import { ComboComponent, OpcaoCombo } from '../../shared/combo/combo.component';
+import { InputComponent } from '../../shared/input/input.component';
+import { TextAreaComponent } from '../../shared/text-area/text-area.component';
+import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
+import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
+import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 
 @Component({
   selector: 'app-solicitar-manutencao',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink, MatCardModule, 
-    MatFormFieldModule, MatInputModule, MatSelectModule, 
-    MatButtonModule, MatIconModule, MatDialogModule
-  ],
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    MatSnackBarModule,
+    MatCardModule,
+    ComboComponent,
+    InputComponent,
+    TextAreaComponent,
+    BotaoAprovarComponent,
+    BotaoCancelarComponent,
+    CardVisualizacaoComponent
+],
   templateUrl: './solicitar-manutencao.component.html',
   styleUrls: ['./solicitar-manutencao.component.css']
 })
-export class SolicitarManutencaoComponent {
 
-  solicitacao = {
+export class SolicitarManutencaoComponent {
+  categoriasLista: OpcaoCombo[] = [
+    { value: 'notebook', viewValue: 'Notebook' },
+    { value: 'desktop', viewValue: 'Desktop' },
+    { value: 'monitor', viewValue: 'Monitor' },
+    { value: 'outros', viewValue: 'Outros' }
+  ];
+
+  solicitacao: any = {
     categoria: '',
     modelo: '',
     descricaoDefeito: ''
   };
 
-  categorias: string[] = [
-    'Notebook', 
-    'Desktop', 
-    'Impressora', 
-    'Monitor', 
-    'Outros'];
+  enviou: boolean = false;
+  constructor(public router: Router, private aviso: MatSnackBar) {}
 
-  constructor(private dialog: MatDialog, private router: Router) {}
+  solicitarManutencao() {
+    this.enviou = true;
 
-  salvarSolicitacao() {
-  const dialogRef = this.dialog.open(ModalGenericoComponent, {
-    width: '400px',
-    data: {
-      titulo: 'Confirmar Envio',
-      mensagem: 'Deseja enviar esta solicitação de manutenção?',
-      textoConfirmar: 'Enviar Solicitação',
-      textoCancelar: 'Cancelar'
+    if (!this.solicitacao.categoria || !this.solicitacao.modelo || !this.solicitacao.descricaoDefeito) {
+      this.aviso.open('Por favor, preencha todos os campos obrigatórios.', 'OK', { duration: 3000 });
+      return;
     }
-  });
-
-    dialogRef.afterClosed().subscribe(confirmado => {
-      if (confirmado) {
-        const pedidoFinal = {
-          ...this.solicitacao,
-          status: 'ABERTA',
-          dataCriacao: new Date().toISOString(),
-          clienteId: 1
-        };
-
-        console.log('Salvando solicitação:', pedidoFinal);
-        alert('Solicitação aberta com sucesso! Status: ABERTA');
-        this.router.navigate(['/cliente']);
-      }
-    });
+    console.log('Dados Enviados:', this.solicitacao);
+    this.aviso.open('Solicitação enviada com sucesso!', 'Sucesso', { duration: 4000 });
+    this.router.navigate(['/cliente']);
   }
 }

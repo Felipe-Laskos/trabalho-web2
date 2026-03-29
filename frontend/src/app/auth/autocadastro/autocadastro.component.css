@@ -2,26 +2,95 @@
   display: flex;
   justify-content: center;
   padding: 40px 20px;
+  background-color: #f4f7f9;
+  min-height: 100vh;
 }
 
-.cadastro-card {
+.cartao-cadastro {
   width: 100%;
   max-width: 800px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border-top: 5px solid #24808f;
 }
 
-.form-row {
+app-input-card {
+  display: block;
+  margin-bottom: 30px;
+}
+
+::ng-deep app-input-card input {
+  width: 100% !important;
+  padding: 10px;
+  margin-bottom: 5px; 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.acoes-form {
+  margin-top: 30px;
   display: flex;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
   width: 100%;
 }
 
-.form-row mat-form-field {
-  flex: 1;
+.flex-1 { 
+  flex: 1; 
 }
 
-h3 {
-  margin: 24px 0 16px;
-  color: #555;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 8px;
+.header-text h1 { 
+  font-size: 24px; 
+  font-weight: bold; 
+  margin-bottom: 5px; 
+
+}
+
+.divider { 
+  border: 0; 
+  border-top: 1px solid #eee; 
+  margin: 20px 0; 
+}
+
+.field-label { 
+  display: block; font-weight: bold; 
+  font-size: 13px; 
+  margin-bottom: 5px; 
+  color: #555; 
+  margin-top: 10px; 
+}
+
+.obrigatorio { 
+  color: red; 
+  margin-left: 2px; 
+}
+
+.msg-erro { 
+  color: #e53935; 
+  font-size: 11px; 
+  display: block; 
+  margin-bottom: 10px; 
+  font-weight: 500; 
+}
+
+.input-readonly { 
+  background-color: #f9f9f9; 
+  color: #888; 
+  cursor: not-allowed; 
+}
+
+@media (max-width: 600px) {
+  .flex-row { 
+    flex-direction: column; 
+    gap: 0; 
+  }
 }

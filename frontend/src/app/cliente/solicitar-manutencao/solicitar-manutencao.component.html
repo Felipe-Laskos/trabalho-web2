@@ -1,57 +1,74 @@
 <div class="solicitacao-container">
-  <mat-card class="solicitacao-card">
-    <mat-card-content>
-      <div class="header-text">
-        <h1>Solicitação de Manutenção</h1>
-        <p>Preencha os dados abaixo para que nossos técnicos possam avaliar seu equipamento.</p>
-        <hr class="divider">
+  <app-card-visualizacao>
+    <div class="header-text">
+      <h1>Solicitação de Manutenção</h1>
+      <p>Preencha os dados abaixo para que nossos técnicos possam avaliar seu equipamento.</p>
+      <hr class="divider">
+    </div>
+
+    <form (ngSubmit)="solicitarManutencao()">
+      
+      <div class="linha-form-superior">
+        <div class="campo-flex">
+          <app-combo 
+            titulo="Categoria do Equipamento"
+            largura="100%" 
+            altura="52px"
+            [lista]="categoriasLista"
+            (mudou)="solicitacao.categoria = $event.toString()">
+          </app-combo>
+          <div class="container-erro">
+            <span class="msg-erro" *ngIf="!solicitacao.categoria && enviou">Obrigatório.</span>
+          </div>
+        </div>
+
+        <div class="campo-flex">
+          <app-input 
+            titulo="Descrição do Equipamento"
+            placeholder="Ex: Dell Inspiron 15"
+            largura="100%" 
+            altura="52px"
+            [valor]="solicitacao.modelo"
+            (mudou)="solicitacao.modelo = $event">
+          </app-input>
+          <div class="container-erro">
+            <span class="msg-erro" *ngIf="!solicitacao.modelo && enviou">Obrigatório.</span>
+          </div>
+        </div>
       </div>
 
-      <form #f="ngForm" class="flex-column">
-        <div class="flex-row gap-24">
-          <div class="flex-1 field-group">
-            <label class="field-label">Categoria do Equipamento:</label>
-            <mat-form-field appearance="outline">
-              <mat-select name="categoria" [(ngModel)]="solicitacao.categoria" required>
-                <mat-option value="" disabled>Selecione uma opção</mat-option>
-                <mat-option *ngFor="let cat of categorias" [value]="cat">{{cat}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="flex-1 field-group">
-            <label class="field-label">Descrição do Equipamento:</label>
-            <mat-form-field appearance="outline">
-              <input matInput name="modelo" [(ngModel)]="solicitacao.modelo" required placeholder="Dell Inspiron 15">
-            </mat-form-field>
-          </div>
+      <div class="container-defeito-custom">
+        <app-text-area 
+          titulo="Defeito"
+          largura="100%" 
+          altura="180px"
+          placeholder="Descreva o problema detalhadamente..."
+          [valor]="solicitacao.descricaoDefeito"
+          (mudou)="solicitacao.descricaoDefeito = $event">
+        </app-text-area>     
+        
+        <div class="previsao-externa-wrapper">
+          <div class="previsao-tag">Previsão de análise 24h úteis</div>
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Defeito:</label>
-          <mat-form-field appearance="outline" class="w-100">
-            <textarea matInput name="defeito" [(ngModel)]="solicitacao.descricaoDefeito" 
-                      rows="8" required 
-                      placeholder="Ex: O notebook liga, mas a tela fica preta e faz um bipe contínuo..."></textarea>
-            <mat-hint align="end"> {{ solicitacao.descricaoDefeito?.length || 0 }} / 200 </mat-hint>
-          </mat-form-field>
+        
+        <div class="container-erro">
+          <span class="msg-erro" *ngIf="!solicitacao.descricaoDefeito && enviou">
+            A descrição do defeito é obrigatória.
+          </span>
         </div>
+      </div>
 
-        <div class="previsao-texto">
-          Previsão de análise 24h úteis
-        </div>
-
-        <div class="flex-row justify-between mt-24">
-          <button mat-stroked-button type="button" class="btn-cancelar" routerLink="/cliente">
-            Cancelar Solicitação
-          </button>
-          
-          <button mat-raised-button type="button" class="btn-enviar"
-                  [disabled]="!f.valid" (click)="salvarSolicitacao()">
-            Enviar Solicitação
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
+      <div class="acoes-form">
+        <app-botao-cancelar 
+          [confirmacao]="true"
+          (clicou)="router.navigate(['/cliente'])">
+          Cancelar Solicitação
+        </app-botao-cancelar>
+        
+        <app-botao-aprovar (clicou)="solicitarManutencao()">
+          Enviar Solicitação
+        </app-botao-aprovar>
+      </div>
+    </form>
+  </app-card-visualizacao>
 </div>
