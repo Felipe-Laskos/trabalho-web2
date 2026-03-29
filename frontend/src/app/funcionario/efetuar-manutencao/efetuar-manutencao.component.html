@@ -3,50 +3,82 @@
 
 <h2>Efetuar Manutenção</h2>
 
-<!-- DADOS DA SOLICITAÇÃO -->
-<div class="card">
-  <h3>Solicitação</h3>
-  <p><strong>ID:</strong> {{ solicitacao.id }}</p>
-  <p><strong>Status:</strong> {{ solicitacao.status }}</p>
-  <p><strong>Data:</strong> {{ solicitacao.dataAbertura }}</p>
-</div>
+<div class="container-cards">
+    <div class="card">
+      <h3>Solicitação</h3>
+      <p><strong>ID:</strong> {{ solicitacao.id }}</p>
+      <p><strong>Status:</strong> {{ solicitacao.status }}</p>
+      <p><strong>Data:</strong> {{ solicitacao.dataAbertura }}</p>
+    </div>
 
-<!-- DADOS DO CLIENTE -->
-<div class="card">
-  <h3>Cliente</h3>
-  <p><strong>Nome:</strong> {{ solicitacao.cliente.nome }}</p>
-  <p><strong>Email:</strong> {{ solicitacao.cliente.email }}</p>
-</div>
-
-<!-- BOTÕES -->
-@if (!mostrarFormulario) {
-  <div>
-    <button (click)="abrirFormulario()">Efetuar Manutenção</button>
-    <button (click)="redirecionar()">Redirecionar</button>
+    <div class="card">
+      <h3>Cliente</h3>
+      <p><strong>Nome:</strong> {{ solicitacao.cliente.nome }}</p>
+      <p><strong>Email:</strong> {{ solicitacao.cliente.email }}</p>
+    </div>
   </div>
-}
+  
+@if (!mostrarFormulario) {
+<div>
+  <app-botao 
+    texto="Efetuar Manutenção" 
+    (clicou)="abrirFormulario()"
+    cor="primary">
+  </app-botao>
 
-<!-- FORMULÁRIO -->
+  <app-botao 
+    texto="Redirecionar" 
+    (clicou)="redirecionar()"
+    cor="warn">
+  </app-botao>
+</div>
+}
 @if (mostrarFormulario) {
   <form [formGroup]="form" class="card">
-
     <h3>Dados da Manutenção</h3>
 
-    <label>Descrição:</label>
-    <textarea formControlName="descricao"></textarea>
+    <!-- Campo Descrição -->
+    <div class="campo-container largura-total">
+      <label><h4>Descrição:</h4></label>
+      <textarea
+        class="campo-textarea"
+        formControlName="descricao"
+        placeholder="Descreva o problema encontrado..."
+        maxlength="200"
+        #descRef>
+      </textarea>
+    </div>
+    <div class="contador-container largura-total">
+      <span class="contador-texto" [class.erro]="descRef.value.length >= 200">
+        {{ descRef.value.length }}/200
+      </span>
+    </div>
+
+    <br>
+
+    <div class="campo-container largura-total">
+      <label><h4>Orientações:</h4></label>
+      <textarea
+        class="campo-textarea"
+        formControlName="orientacoes"
+        placeholder="Instruções para o cliente..."
+        maxlength="200"
+        #orientRef>
+      </textarea>
+    </div>
+    <div class="contador-container largura-total">
+      <span class="contador-texto" [class.erro]="orientRef.value.length >= 200">
+        {{ orientRef.value.length }}/200
+      </span>
+    </div>
 
     <br><br>
 
-    <label>Orientações:</label>
-    <textarea formControlName="orientacoes"></textarea>
-
-    <br><br>
-
-    <button (click)="confirmarManutencao()">Confirmar</button>
-
+    <app-botao 
+        texto="Confirmar" 
+        (clicou)="confirmarManutencao()" 
+        cor="accent">
+    </app-botao>
   </form>
-
-}
-
+  }
 </app-card-visualizacao>
-

@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
+import { BotaoComponent } from '../../shared/botao/botao.component';
 
 @Component({
   selector: 'app-efetuar-manutencao',
   standalone: true,
-  imports: [ReactiveFormsModule, CardVisualizacaoComponent],
+  imports: [ReactiveFormsModule, CardVisualizacaoComponent, BotaoComponent],
   templateUrl: './efetuar-manutencao.component.html',
   styleUrls: ['./efetuar-manutencao.component.css']
 })

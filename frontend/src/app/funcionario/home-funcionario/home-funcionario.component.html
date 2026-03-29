@@ -28,9 +28,11 @@
           </td>
 
           <td>
-            <button (click)="efetuarOrcamento(solicitacao.id)">
-              Efetuar Orçamento
-            </button>
+              <app-botao
+              texto="Efetuar Orçamento" 
+              (clicou)="efetuarOrcamento(solicitacao.id)"
+              cor="primary">
+            </app-botao>
           </td>
         </tr>
       }

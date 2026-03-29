@@ -22,7 +22,7 @@ export const routes: Routes = [
   { path: 'funcionario/funcionarios', component: CrudFuncionariosComponent },
   { path: 'funcionario/efetuar-orcamento/:id', component: EfetuarOrcamentoComponent },
   { path: 'funcionario/visualizar-solicitacoes', component: VisualizarSolicitacoesComponent },
-  {path: 'funcionario/manutencao/:id', component: EfetuarManutencaoComponent},
+  {path: 'funcionario/efetuar-manutencao/:id', component: EfetuarManutencaoComponent},
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' },
 ];

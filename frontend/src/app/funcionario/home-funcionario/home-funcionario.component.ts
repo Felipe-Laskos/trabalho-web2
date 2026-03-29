@@ -3,10 +3,13 @@ import { CommonModule } from '@angular/common';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
 import { Router } from '@angular/router';
-import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';@Component({
+import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
+import { BotaoComponent } from '../../shared/botao/botao.component';
+
+@Component({
   selector: 'app-home-funcionario',
   standalone: true,
-  imports: [CommonModule, CardVisualizacaoComponent],
+  imports: [CommonModule, CardVisualizacaoComponent, BotaoComponent],
   templateUrl: './home-funcionario.component.html',
   styleUrl: './home-funcionario.component.css'
 })
