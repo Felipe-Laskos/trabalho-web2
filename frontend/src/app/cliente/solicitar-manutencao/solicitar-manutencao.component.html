@@ -1,6 +1,5 @@
 <div class="solicitacao-container">
-  <app-card-visualizacao>
-    <div class="header-text">
+  <app-card-visualizacao> <div class="header-text">
       <h1>Solicitação de Manutenção</h1>
       <p>Preencha os dados abaixo para que nossos técnicos possam avaliar seu equipamento.</p>
       <hr class="divider">
@@ -16,8 +15,7 @@
             altura="52px"
             [lista]="categoriasLista"
             (mudou)="solicitacao.categoria = $event.toString()">
-          </app-combo>
-          <div class="container-erro">
+          </app-combo> <div class="container-erro">
             <span class="msg-erro" *ngIf="!solicitacao.categoria && enviou">Obrigatório.</span>
           </div>
         </div>
@@ -30,8 +28,7 @@
             altura="52px"
             [valor]="solicitacao.modelo"
             (mudou)="solicitacao.modelo = $event">
-          </app-input>
-          <div class="container-erro">
+          </app-input> <div class="container-erro">
             <span class="msg-erro" *ngIf="!solicitacao.modelo && enviou">Obrigatório.</span>
           </div>
         </div>
@@ -45,9 +42,7 @@
           placeholder="Descreva o problema detalhadamente..."
           [valor]="solicitacao.descricaoDefeito"
           (mudou)="solicitacao.descricaoDefeito = $event">
-        </app-text-area>     
-        
-        <div class="previsao-externa-wrapper">
+        </app-text-area> <div class="previsao-externa-wrapper">
           <div class="previsao-tag">Previsão de análise 24h úteis</div>
         </div>
         
@@ -63,12 +58,10 @@
           [confirmacao]="true"
           (clicou)="router.navigate(['/cliente'])">
           Cancelar Solicitação
-        </app-botao-cancelar>
-        
-        <app-botao-aprovar (clicou)="solicitarManutencao()">
+        </app-botao-cancelar> <app-botao-aprovar (clicou)="solicitarManutencao()">
           Enviar Solicitação
-        </app-botao-aprovar>
-      </div>
+        </app-botao-aprovar> </div>
+
     </form>
   </app-card-visualizacao>
 </div>

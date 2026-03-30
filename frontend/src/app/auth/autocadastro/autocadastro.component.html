@@ -8,99 +8,48 @@
 
     <form #f="ngForm" (ngSubmit)="onSubmit(f)">
       
-      <app-input-card label="Dados Pessoais">
-        <app-input 
-          titulo="Nome Completo" 
-          name="nome"
-          [valor]="usuario.nome" 
-          (mudou)="usuario.nome = $event"
-          placeholder="Digite seu nome"
-          largura="100%">
-        </app-input>
+      <div class="secao-ajustada">
+        <h3 class="titulo-secao">Dados Pessoais</h3>
+        <app-input titulo="Nome Completo" [valor]="usuario.nome" (mudou)="usuario.nome = $event" altura="34px" largura="100%"></app-input>
 
-        <div class="flex-row">
-          <app-input 
-            titulo="CPF" 
-            name="cpf"
-            [valor]="usuario.cpf" 
-            (mudou)="aplicarMascaraCPF($event)"
-            placeholder="000.000.000-00"
-            largura="100%">
-          </app-input>
-          
-          <app-input 
-            titulo="Telefone" 
-            name="telefone"
-            [valor]="usuario.telefone" 
-            (mudou)="aplicarMascaraTelefone($event)"
-            placeholder="(41) 9 9999-9999"
-            largura="100%">
-          </app-input>
+        <div class="linha-flex-ajustada recuo-superior">
+          <div class="flex-1">
+            <app-input titulo="CPF" [valor]="usuario.cpf" (mudou)="aplicarMascaraCPF($event)" altura="34px" largura="100%"></app-input>
+          </div>
+          <div class="flex-1">
+            <app-input titulo="Telefone" [valor]="usuario.telefone" (mudou)="aplicarMascaraTelefone($event)" altura="34px" largura="100%"></app-input>
+          </div>
         </div>
-      </app-input-card>
+      </div>
 
-      <app-input-card label="Endereço (ViaCEP)">
-        <div class="flex-row">
-          <app-input 
-            titulo="CEP" 
-            name="cep"
-            [valor]="usuario.cep" 
-            (mudou)="aplicarMascaraCEP($event)"
-            placeholder="00000-000"
-            (focusout)="buscarCep()"
-            largura="100%">
-          </app-input>
-          
-          <div class="flex-1 input-bloqueado">
-            <app-input 
-              titulo="Cidade" 
-              name="cidade"
-              [valor]="usuario.cidade" 
-              largura="100%">
-            </app-input>
+      <div class="secao-ajustada recuo-superior">
+        <h3 class="titulo-secao">Endereço (ViaCEP)</h3>
+        <div class="linha-flex-ajustada">
+          <div class="flex-1">
+            <app-input titulo="CEP" [valor]="usuario.cep" (mudou)="aplicarMascaraCEP($event)" (focusout)="buscarCep()" altura="34px" largura="100%"></app-input>
+          </div>
+          <div class="flex-1">
+            <app-input titulo="Cidade" [valor]="usuario.cidade" altura="34px" largura="100%"></app-input>
           </div>
         </div>
         
-        <div class="input-bloqueado">
-          <app-input 
-            titulo="Logradouro" 
-            name="logradouro"
-            [valor]="usuario.logradouro" 
-            largura="100%">
-          </app-input>
+        <div class="wrapper-individual recuo-superior">
+          <app-input titulo="Logradouro" [valor]="usuario.logradouro" altura="34px" largura="100%"></app-input>
         </div>
-      </app-input-card>
+      </div>
 
-      <app-input-card label="Acesso">
-        <app-input 
-          titulo="E-mail" 
-          name="email"
-          type="email"
-          [valor]="usuario.email" 
-          (mudou)="usuario.email = $event"
-          placeholder="email@exemplo.com"
-          largura="100%">
-        </app-input>
+      <div class="secao-ajustada">
+        <h3 class="titulo-secao recuo-superior">Acesso</h3>
+        <app-input titulo="E-mail" [valor]="usuario.email" (mudou)="usuario.email = $event" altura="34px" largura="100%"></app-input>
         
-        <app-input 
-          titulo="Senha" 
-          name="senha"
-          type="password"
-          [valor]="usuario.senha" 
-          (mudou)="usuario.senha = $event"
-          placeholder="Mínimo 6 caracteres"
-          largura="100%">
-        </app-input>
-      </app-input-card>
+        <div class="wrapper-individual recuo-superior">
+          <app-input titulo="Senha" type="password" [valor]="usuario.senha" (mudou)="usuario.senha = $event" altura="34px" largura="100%"></app-input>
+        </div>
+      </div>
 
-      <div class="flex-row justify-between mt-24">
-        <app-botao-cancelar (clicou)="router.navigate(['/login'])">
-          Já sou cadastrado
-        </app-botao-cancelar>
-        
-        <app-botao-aprovar (clicou)="onSubmit(f)">
-          Finalizar Cadastro
-        </app-botao-aprovar>
+      <div class="acoes-finais">
+        <app-botao-cancelar (clicou)="router.navigate(['/login'])">Já sou cadastrado</app-botao-cancelar>
+        <app-botao-aprovar (clicou)="onSubmit(f)">Finalizar Cadastro</app-botao-aprovar>
       </div>
     </form>
   </app-card-visualizacao>

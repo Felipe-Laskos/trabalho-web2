@@ -6,6 +6,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { InputComponent } from '../../shared/input/input.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
+import { InputCardComponent } from "../../shared/input-card/input-card.component";
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,8 @@ import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-v
     MatSnackBarModule,
     InputComponent,
     BotaoAprovarComponent,
-    CardVisualizacaoComponent
+    CardVisualizacaoComponent,
+    InputCardComponent
 ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']

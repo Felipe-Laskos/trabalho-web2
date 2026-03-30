@@ -3,45 +3,48 @@
   justify-content: center;
   padding: 40px 20px;
   background-color: #f4f7f9;
-  min-height: 100vh;
 }
 
-app-card-visualizacao {
-  width: 100%;
-  max-width: 800px;
-}
-
-app-input-card {
+/* O AJUSTE PARA OS PONTOS AMARELOS */
+.recuo-superior {
+  margin-top: 30px !important;
   display: block;
-  margin-bottom: 20px;
 }
 
-.flex-row {
+.linha-flex-ajustada {
   display: flex;
-  flex-direction: row;
   gap: 20px;
   width: 100%;
 }
 
-.header-text h1 { 
-  font-size: 24px; 
-  font-weight: bold; 
-  margin-bottom: 5px; 
+.flex-1 { flex: 1; }
+
+.titulo-secao {
+  font-size: 15px;
+  font-weight: bold;
   color: #24808f;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
 }
 
-.divider { 
-  border: 0; 
-  border-top: 1px solid #eee; 
-  margin: 20px 0; 
+.wrapper-individual {
+  display: block;
+  width: 100%;
 }
 
-.mt-24 { margin-top: 24px; }
-.justify-between { justify-content: space-between; }
+.acoes-finais {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.header-text h1 { color: #24808f; font-weight: bold; font-size: 22px; }
+.divider { border-top: 1px solid #eee; margin: 15px 0; }
 
 @media (max-width: 600px) {
-  .flex-row { 
+  .linha-flex-ajustada { 
     flex-direction: column; 
-    gap: 0; 
+    gap: 30px; 
   }
 }
