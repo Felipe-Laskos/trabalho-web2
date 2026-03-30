@@ -1,73 +1,128 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { LayoutHomeComponent } from '../../shared/layout-home/layout-home.component';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
+import { InputComponent } from '../../shared/input/input.component';
+import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
+import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
+import { TabelaComponent, AcaoTabela, EventoAcao, ColunaTabela } from "../../shared/tabela/tabela.component";
 import { mockSolicitacao } from '../../mocks/solicitacao.mock';
+import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
 
 @Component({
   selector: 'app-home-cliente',
   standalone: true,
   imports: [
-    LayoutHomeComponent,
-    CommonModule, 
-    RouterLink, 
-    MatTableModule, 
-    MatButtonModule, 
-    MatIconModule, 
-    MatFormFieldModule, 
-    MatInputModule,
-    MatTooltipModule
+    CommonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    BotaoAprovarComponent,
+    InputComponent,
+    PaginacaoComponent,
+    CardVisualizacaoComponent,
+    TabelaComponent
   ],
   templateUrl: './home-cliente.component.html',
   styleUrls: ['./home-cliente.component.css']
 })
 export class HomeClienteComponent implements OnInit {
   nomeUsuario: string = 'Cliente';
-  solicitacoes = mockSolicitacao;
- idPedidoAnalise: string | number = '00000';
+  listaSolicitacoes: Solicitacao[] = mockSolicitacao;
+  dadosFiltrados: Solicitacao[] = [];
+  dadosExibidos: Solicitacao[] = [];
+  idPedidoPendente: string | number = '00000';
+  
+  colunasTabela: ColunaTabela[] = [
+  { campo: 'id', titulo: 'Ordem', tipo: 'texto' },
+  { campo: 'descricaoEquipamento', titulo: 'Aparelho', tipo: 'texto' },
+  { campo: 'estadoAtual', titulo: 'Situação Atual', tipo: 'estado' },
+  { campo: 'valorOrcado', titulo: 'Valor Previsto', tipo: 'texto' },
+  { campo: 'acoes', titulo: 'Ações', tipo: 'acao' }
+];
 
-  constructor(private router: Router) {}
+  acoesTabela: AcaoTabela[] = [
+    { nome: 'Aprovar', acao: 'aprovar', estados: ['ORCADA'], cor: 'primary' },
+    { nome: 'Resgatar', acao: 'resgatar', estados: ['REJEITADA'], cor: 'warn' },
+    { nome: 'Pagar', acao: 'pagar', estados: ['ARRUMADA'], cor: 'accent' },
+    { nome: 'Visualizar', acao: 'visualizar' }
+  ];
 
-  ngOnInit() {
-  const nomeSessao = localStorage.getItem('usuarioSessao');
-  if (nomeSessao) {
-    this.nomeUsuario = nomeSessao;
+  paginaAtual: number = 1;
+  itensPorPagina: number = 5;
+
+  constructor(public router: Router, private aviso: MatSnackBar) {}
+
+  ngOnInit(): void {
+    this.carregarDadosIniciais();
+    this.dadosFiltrados = this.listaSolicitacoes;
+    this.atualizarPaginacao();
   }
 
-  if (this.solicitacoes && this.solicitacoes.length > 0) {
-    const pendente = this.solicitacoes.find(s => 
+  private carregarDadosIniciais(): void {
+    this.nomeUsuario = localStorage.getItem('usuarioSessao') || 'Cliente';
+    this.identificarUltimoPedidoEmAnalise();
+  }
+
+  onBusca(valor: string) {
+    const termo = valor.toLowerCase();
+    this.dadosFiltrados = this.listaSolicitacoes.filter(s => 
+      s.descricaoEquipamento.toLowerCase().includes(termo) || 
+      s.estadoAtual.toLowerCase().includes(termo)
+    );
+    this.paginaAtual = 1;
+    this.atualizarPaginacao();
+  }
+
+  atualizarPaginacao(): void {
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    this.dadosExibidos = this.dadosFiltrados.slice(inicio, fim);
+  }
+
+  aoMudarPagina(novaPagina: number) {
+    this.paginaAtual = novaPagina;
+    this.atualizarPaginacao();
+  }
+
+  private identificarUltimoPedidoEmAnalise(): void {
+    const pedido = this.listaSolicitacoes.find(s => 
       s.estadoAtual === SolicitacaoENUM.ABERTA || 
       s.estadoAtual === SolicitacaoENUM.ORCADA
     );
+    this.idPedidoPendente = pedido?.id ?? '00000';
+  }
 
-    if (pendente && pendente.id !== undefined) {
-      this.idPedidoAnalise = pendente.id;
+  tratarVisualizacao(item: Solicitacao): void {
+    if (item.estadoAtual === SolicitacaoENUM.ORCADA) {
+      this.router.navigate(['/cliente/mostrar-orcamento', item.id]);
     } else {
-      const primeiroId = this.solicitacoes[0]?.id;
-      if (primeiroId !== undefined) {
-        this.idPedidoAnalise = primeiroId;
-      }
+      this.aviso.open('Esta solicitação ainda está em análise técnica.', 'OK', {
+        duration: 3000,
+        verticalPosition: 'top'
+      });
     }
   }
-}
 
-  efetuarLogout() {
-    localStorage.removeItem('usuarioSessao');
-    this.router.navigate(['/login']);
+  aprovar(item: Solicitacao) { this.router.navigate(['/cliente/mostrar-orcamento', item.id]); }
+  resgatar(item: Solicitacao) { console.log('Resgatar pedido:', item.id); } // RF009 Laura
+  pagar(item: Solicitacao) { this.router.navigate(['/cliente/pagar', item.id]); } // RF010 Laura
+
+  irParaSolicitacao(): void {
+    this.router.navigate(['/cliente/solicitar-manutencao']);
   }
 
-  abrirAcao(solicitacao: any) {
-    if (solicitacao.status === 'ORÇADA') {
-      this.router.navigate(['/cliente/mostrar-orcamento', solicitacao.id]);
-    } else {
-        this.router.navigate(['/cliente/mostrar-orcamento', solicitacao.id]);
+  aoClicarAcaoTabela(evento: EventoAcao) {
+    if (evento.acao === 'aprovar') {
+      this.aprovar(evento.item);
+    } else if (evento.acao === 'resgatar') {
+      this.resgatar(evento.item);
+    } else if (evento.acao === 'pagar') {
+      this.pagar(evento.item);
+    } else if (evento.acao === 'visualizar') {
+      this.tratarVisualizacao(evento.item);
     }
   }
 }

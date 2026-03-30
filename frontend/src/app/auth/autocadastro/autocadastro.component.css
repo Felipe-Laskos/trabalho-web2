@@ -2,26 +2,49 @@
   display: flex;
   justify-content: center;
   padding: 40px 20px;
+  background-color: #f4f7f9;
 }
 
-.cadastro-card {
-  width: 100%;
-  max-width: 800px;
+/* O AJUSTE PARA OS PONTOS AMARELOS */
+.recuo-superior {
+  margin-top: 30px !important;
+  display: block;
 }
 
-.form-row {
+.linha-flex-ajustada {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
 }
 
-.form-row mat-form-field {
-  flex: 1;
+.flex-1 { flex: 1; }
+
+.titulo-secao {
+  font-size: 15px;
+  font-weight: bold;
+  color: #24808f;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
 }
 
-h3 {
-  margin: 24px 0 16px;
-  color: #555;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 8px;
+.wrapper-individual {
+  display: block;
+  width: 100%;
+}
+
+.acoes-finais {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.header-text h1 { color: #24808f; font-weight: bold; font-size: 22px; }
+.divider { border-top: 1px solid #eee; margin: 15px 0; }
+
+@media (max-width: 600px) {
+  .linha-flex-ajustada { 
+    flex-direction: column; 
+    gap: 30px; 
+  }
 }

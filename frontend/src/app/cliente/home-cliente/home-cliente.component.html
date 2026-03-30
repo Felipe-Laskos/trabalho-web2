@@ -1,27 +1,55 @@
 <div class="page-padding">
-  <h1>Olá, {{ nomeUsuario }}!</h1>
-  <p>Seu pedido #{{ idPedidoAnalise }} está em análise.</p>
-
-  <app-layout-home 
-    [dados]="solicitacoes"
-    [colunas]="[
-      'descricaoEquipamento', 
-      'estadoAtual', 
-      'valorOrcado', 
-        'solicitacao']"
-    [titulosColunas]="{
-      'descricaoEquipamento': 
-      'Descrição do Equipamento',
-      'estadoAtual': 'Status',
-      'valorOrcado': 'Valor',
-      'solicitacao': 'Solicitação'
-  }"
-    placeholderBusca="Buscar equipamento ou protocolo..."
-    (aoVisualizar)="abrirAcao($event)">
+  
+  <section class="boas-vindas">
+    <h1>Olá, {{ nomeUsuario }}!</h1>
     
-    <button botaoAcao class="btn-tech-primary" routerLink="/cliente/solicitar-manutencao">
-      Novo orçamento
-    </button>
+    <div class="alerta-status" *ngIf="idPedidoPendente !== '00000'">
+      <mat-icon>hourglass_empty</mat-icon>
+      <span>
+        Atualmente, seu pedido <strong>#{{ idPedidoPendente }}</strong> está em fase de análise técnica.
+      </span>
+    </div>
+  </section>
 
-  </app-layout-home>
+  <app-card-visualizacao>
+    
+    <div class="toolbar-home-custom">
+      <div class="wrapper-busca-custom">
+        <app-input 
+          titulo="Busca"
+          placeholder="O que você está procurando?" 
+          largura="100%"
+          (mudou)="onBusca($event)">
+        </app-input>
+      </div>
+
+      <app-botao-aprovar (clicou)="irParaSolicitacao()">
+        <div class="conteudo-botao">
+          <mat-icon>add</mat-icon> 
+          <span>Solicitar Manutenção</span>
+        </div>
+      </app-botao-aprovar>
+    </div>
+
+    <app-tabela 
+      [dados]="dadosExibidos" 
+      [colunas]="colunasTabela"
+      [acoes]="acoesTabela"
+      (acaoClicada)="aoClicarAcaoTabela($event)">
+    </app-tabela>
+
+    <div class="sem-dados" *ngIf="dadosFiltrados.length === 0">
+      <mat-icon>info</mat-icon>
+      <p>Nenhuma solicitação encontrada.</p>
+    </div>
+
+    <div class="footer-custom-paginacao" *ngIf="dadosFiltrados.length > 0">
+      <app-paginacao 
+        [totalItens]="dadosFiltrados.length" 
+        [itensPorPagina]="itensPorPagina" 
+        [paginaAtual]="paginaAtual"
+        (paginaChange)="aoMudarPagina($event)">
+      </app-paginacao>
+    </div>
+  </app-card-visualizacao>
 </div>
