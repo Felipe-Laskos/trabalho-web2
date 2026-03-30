@@ -1,0 +1,107 @@
+<div class="orcamento-container" *ngIf="solicitacao">
+
+  <ng-container *ngIf="solicitacao.estadoAtual === 'ARRUMADA'; else statusIncorreto">
+    
+    <app-card-visualizacao>
+      <div class="card-header-custom">
+        <h1 class="titulo-solicitacao">
+          Finalizar Pagamento 
+          <span class="id-tag">#{{ solicitacao.id }}</span>
+        </h1>
+        <div class="timestamp-acesso">
+          Acessado em: {{ dataHoraAcesso | date: 'dd/MM/yyyy HH:mm' }}
+        </div>
+        <div class="status-badge" [ngClass]="obterCorDoBadge(solicitacao.estadoAtual)">
+          {{ solicitacao.estadoAtual }}
+        </div>
+      </div>
+
+      <div class="card-body-custom">
+        <div class="resumo-servico">
+          <div class="info-section">
+            <label>Equipamento</label>
+            <div class="box-laudo">
+              <p class="valor-info">{{ solicitacao.descricaoEquipamento }}</p>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <label>Laudo Técnico</label>
+            <div class="box-laudo">
+              <p class="valor-info">{{ solicitacao.descricaoManutencao || 'Nenhum laudo registrado.' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkout-section">
+          <div class="checkout-card">
+            <span class="checkout-label">Total a ser pago:</span>
+            <div class="valor-container">
+              <span class="moeda">R$</span>
+              <span class="valor">{{ solicitacao.valorOrcado | number:'1.2-2' }}</span>
+            </div>
+            
+            <div class="detalhes-pagamento">
+              <div class="linha-detalhe">
+                <span>Peças e Mão de Obra</span>
+                <span>R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}</span>
+              </div>
+              <div class="linha-detalhe total">
+                <span>Total</span>
+                <span>R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}</span>
+              </div>
+            </div>
+            <app-botao class="btn-pagar"
+             texto="Confirmar Pagamento" 
+             icone="check" cor="primary" 
+             (clicou)="confirmarPagamento()"> 
+            </app-botao>
+          </div>
+        </div>
+      </div>
+    </app-card-visualizacao>
+
+    <div class="modal-overlay" *ngIf="exibirModalConfirmacao">
+      <div class="modal-box">
+        <h2>Confirmar Pagamento?</h2>
+        <p>O serviço ficou no valor de:</p>
+        <div class="valor-confirmacao">
+          R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}
+        </div>
+        <div class="modal-actions">
+
+          <app-botao-cancelar (click)="cancelar()">Não, Voltar</app-botao-cancelar> 
+          <app-botao-aprovar (click)="finalizarPagamento()">Sim, Confirmar</app-botao-aprovar> 
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+  <ng-template #statusIncorreto>
+  <div class="container-erro">
+    <app-card-visualizacao>
+      <div class="card-erro-content">
+        <h2>ACESSO NÃO PERMITIDO</h2>
+         <p class="msg-principal">
+          Esta solicitação (<strong>#{{ solicitacao.id }}</strong>) ainda não está pronta para pagamento.
+        </p>
+        <div class="status-info">
+          Status atual: <span class="badge-status-atual" [ngClass]="obterCorDoBadge(solicitacao.estadoAtual)">
+            {{ solicitacao.estadoAtual }}
+          </span>
+        </div>
+        <p class="msg-ajuda">
+          O pagamento só é liberado quando o <br> técnico marca o serviço como <strong>ARRUMADA</strong>.
+        </p>
+        <div class="acoes-erro">
+            <app-botao class="btn-voltar-erro"
+             texto="Voltar para Listagem" 
+             icone="arrow_back" cor="primary" 
+             (clicou)="voltar()"> 
+            </app-botao>
+        </div>
+      </div>
+    </app-card-visualizacao>
+  </div>
+</ng-template>
+</div>

@@ -14,13 +14,6 @@ export class BotaoCancelarComponent {
    @Output() clicou = new EventEmitter<void>();
 
   click() {
-    if (this.confirmacao) {
-      const seConfirmou = confirm("Tem certeza que deseja cancelar?");
-      if(seConfirmou) {
-        this.clicou.emit();
-      }
-    } else {
-      this.clicou.emit();
-    }
+    this.clicou.emit();
   }
 }

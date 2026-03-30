@@ -1,15 +1,15 @@
-<div class="orcamento-container" >
- 
-<app-card-visualizacao> 
+<div class="orcamento-container">
+  <app-card-visualizacao>
     <div class="card-content">
-      
       <div class="coluna-esquerda">
-        <h1 class="titulo-solicitacao">Detalhes da Solicitação <br> 
-            <span>#{{ solicitacao?.id }}</span></h1>
+        <h1 class="titulo-solicitacao">
+          Detalhes da Solicitação <br />
+          <span>#{{ solicitacao?.id }}</span>
+        </h1>
 
         <div class="info-group">
           <div class="info-header">
-            <span class="icon-user"></span> 
+            <span class="icon-user"></span>
             <h2>CLIENTE:</h2>
           </div>
           <div class="info-box">
@@ -24,7 +24,9 @@
             <h2>EQUIPAMENTO:</h2>
           </div>
           <div class="info-box">
-            <p class="nome-equipamento">{{ solicitacao?.descricaoEquipamento }}</p>
+            <p class="nome-equipamento">
+              {{ solicitacao?.descricaoEquipamento }}
+            </p>
           </div>
         </div>
 
@@ -34,57 +36,82 @@
             <h2>DEFEITO:</h2>
           </div>
           <div class="info-box">
-            <p class="texto-defeito">{{ solicitacao?.descricaoDefeito }}</p>
-            <a class="link-leia-mais">Leia mais</a> <!-- AJUSTAR PARA QUE SEJA FUNCIONAL -->
+            <p class="texto-defeito">
+              {{
+                exibirDefeitoCompleto
+                  ? solicitacao?.descricaoDefeito
+                  : (solicitacao?.descricaoDefeito | slice: 0 : 100)
+              }}
+              <span
+                *ngIf="
+                  !exibirDefeitoCompleto &&
+                  (solicitacao?.descricaoDefeito?.length || 0) > 100
+                "
+                >...</span
+              >
+            </p>
+
+            <a
+              class="link-leia-mais"
+              style="
+                cursor: pointer;
+                color: #0d6efd;
+                text-decoration: underline;
+              "
+              *ngIf="(solicitacao?.descricaoDefeito?.length || 0) > 100"
+              (click)="alternarLeiaMais()"
+            >
+              {{ exibirDefeitoCompleto ? "Ler menos" : "Leia mais" }}
+            </a>
           </div>
         </div>
       </div>
-
       <div class="divisor-vertical"></div>
 
       <div class="coluna-direita">
-        
-        <div class="status-badge arrumada"
-         [ngClass]="solicitacao?.estadoAtual?.toLowerCase()">
-         {{ solicitacao?.estadoAtual }}
-        </div>  <!-- AJUSTAR AS CORES DE CADA STATUS -->
- 
-         <div class="info-group">
+        <div
+          class="status-badge"
+          [ngClass]="obterCorDoBadge(solicitacao?.estadoAtual)"
+        >
+          {{ solicitacao?.estadoAtual }}
+        </div>
+
+        <div class="info-group">
           <h2>LAUDO TÉCNICO:</h2>
           <div class="info-box box-cinza">
-            <p>{{ solicitacao?.descricaoManutencao }}</p> <!-- AJUSTAR NO MOCK SOLICIT e ADICIONAR AQUI-->
+            <p>{{ solicitacao?.descricaoManutencao }}</p>
           </div>
         </div>
-      
+
         <div class="info-group">
           <h2>TÉCNICO RESPONSÁVEL:</h2>
           <div class="info-box box-cinza listagem-precos">
-                 <p>{{ funcionario?.nome }}</p>
+            <p>{{ funcionario?.nome }}</p>
           </div>
-        </div> 
+        </div>
 
         <div class="info-group valor-total-group">
           <h2>VALOR TOTAL:</h2>
           <div class="info-box box-total">
-            <p class="texto-total">R$ {{ solicitacao?.valorOrcado | number:'1.2-2' }}</p>
+            <p class="texto-total">
+              R$ {{ solicitacao?.valorOrcado | number: "1.2-2" }}
+            </p>
           </div>
         </div>
       </div>
     </div>
 
     <div class="card-footer">
-      <app-botao-cancelar [confirmacao]="true" 
-      (clicou)="clickCancelar()"> 
-      Rejeitar Serviço
-    </app-botao-cancelar>
+      <app-botao-cancelar [confirmacao]="true" (clicou)="clickCancelar()">
+        Rejeitar Serviço
+      </app-botao-cancelar>
 
-    <app-botao-aprovar (clicou)="aprovarServico()">
-      Aprovar Serviço
-    </app-botao-aprovar>
+      <app-botao-aprovar (clicou)="aprovarServico()">
+        Aprovar Serviço
+      </app-botao-aprovar>
     </div>
-    </app-card-visualizacao>
+  </app-card-visualizacao>
 </div>
-
 
 <div class="modal-overlay" *ngIf="exibirModal">
   <div class="modal-box">
@@ -92,17 +119,68 @@
       <h2>Confirmar Aprovação?</h2>
       <p id="paragrafo1">Ao confirmar, o serviço será agendado.</p>
       <div class="modal-actions">
-        <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
-        <button class="btn-confirmar" (click)="confirmarAprovacao()">Sim, Confirmar</button>
+        <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button> 
+        <app-botao-aprovar class="btn-confirmar" (click)="confirmarAprovacao()"> Sim, Confirmar </app-botao-aprovar> 
       </div>
     </div>
 
     <div *ngIf="estadoModal === 'sucesso'">
       <h2>Tudo pronto!</h2>
-      <p id="paragrafo2"> Serviço Aprovado no Valor: </p>
-         <h3> R$ {{ solicitacao?.valorOrcado | number:'1.2-2' }} </h3>
-      <button class="btn-ok" (click)="fecharModal()">Ok</button>
+      <p id="paragrafo2">Serviço Aprovado no Valor:</p>
+      <h3>R$ {{ solicitacao?.valorOrcado | number: "1.2-2" }}</h3>
+      <app-botao class="btn-ok"
+      texto="Ok" 
+      icone="done" cor="accent" 
+      (click)="fecharERedirecionar()"> 
+    </app-botao>
     </div>
 
+    <div *ngIf="estadoModal === 'confirmarRejeicao'">
+      <h2>Cancelar Serviço?</h2>
+      <p id="paragrafo3">Tem certeza de que deseja cancelar este orçamento?</p>
+      <div class="modal-actions">
+        <button class="btn-nao" (click)="fecharModal()"> 
+          Não, vou pensar melhor!
+        </button>
+        <app-botao-cancelar class="btn-sim-cancelar"
+          (click)="irParaMotivoRejeicao()">Sim, Cancelar</app-botao-cancelar>
+      </div>
+    </div>
+
+    <div *ngIf="estadoModal === 'motivoRejeicao'">
+      <h2>Motivo do Cancelamento</h2>
+
+      <app-text-area
+        altura="100px"
+        largura="100%"
+        class="text-area text-area-modal-rejeicao"
+        titulo="Por favor, escreva abaixo o motivo de estar cancelando o serviço:"
+        placeholder="Digite algo..."
+        [valor]="motivoRejeicaoTexto"
+        (mudou)="motivoRejeicaoTexto = $event">
+      </app-text-area>
+
+      <div class="modal-actions">
+        <button class="btn-cancelar2" (click)="fecharModal()">Cancelar</button> 
+        <button
+          class="btn-confirmar-motivo"
+          (click)="finalizarRejeicao()"
+          [disabled]="!motivoRejeicaoTexto || motivoRejeicaoTexto.trim() === ''">
+          Confirmar Motivo
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="estadoModal === 'sucessoRejeicao'">
+      <h2>Serviço Rejeitado</h2>
+      <p id="paragrafo4">
+        A solicitação passou para o estado REJEITADA e o motivo foi registrado.
+      </p>
+      <app-botao class="btn-ok"
+      texto="Ok" 
+      icone="done" cor="accent" 
+      (click)="fecharERedirecionar()"> 
+      </app-botao>
+    </div>
   </div>
 </div>

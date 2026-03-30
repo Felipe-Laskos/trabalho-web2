@@ -1,0 +1,224 @@
+
+.card-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #eee;
+}
+
+.titulo-solicitacao {
+  font-size: 30px;
+  color: #000000;
+  margin: 0;
+}
+
+.id-tag {
+  color: #95a5a6;
+  font-weight: 300;
+  font-size: 30px;
+}
+
+.card-body-custom {
+  display: grid;
+  grid-template-columns: 1fr 350px; 
+  gap: 40px;
+  padding: 30px;
+}
+
+.info-section {
+  margin-bottom: 25px;
+}
+
+.info-section label {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.valor-info {
+  font-size: 18px;
+  color: #000000;
+  margin: 0;
+}
+
+.box-laudo {
+  background: #fdfdfd;
+  border: 1px solid #f0f0f0;
+  padding: 15px;
+  border-radius: 8px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.checkout-card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.checkout-label {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.valor-container {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  color: #27ae60;
+}
+
+.moeda {
+  font-size: 20px;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.valor {
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.detalhes-pagamento {
+  border-top: 1px dashed #ddd;
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.linha-detalhe {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 20px;
+}
+
+.linha-detalhe.total {
+  font-weight: 800;
+  color: #2c3e50;
+  font-size: 16px;
+  margin-top: 15px;
+}
+
+.btn-pagar {
+  width: 100%;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.status-badge {
+  justify-self: start;
+  display: inline-block;
+  width: fit-content;
+  padding: 15px 35px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 18px;
+  color: white;
+}
+
+.badge-azul {
+  background-color: #0d6efd;
+  color: #ffffff;
+}
+
+.timestamp-acesso {
+  font-size: 15px;
+  color: #7f8c8d;
+}
+
+.container-erro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.card-erro-content {
+  padding: 40px;
+  text-align: center;
+}
+
+.icone-alerta {
+  font-size: 50px;
+  margin-bottom: 20px;
+}
+
+.card-erro-content h2 {
+  color: #c0392b; 
+  margin-bottom: 15px;
+}
+
+.msg-principal {
+  font-size: 16px;
+  color: #34495e;
+}
+
+.status-info {
+  display: inline-block;
+  margin: 20px 0;
+  padding: 10px 20px;   
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.msg-ajuda {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+}
+
+
+.valor-confirmacao {
+  font-size: 28px;
+  font-weight: 800;
+  color: #27ae60;
+  margin: 15px 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.modal-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 400px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-box p {
+    margin-top: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
