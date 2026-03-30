@@ -31,18 +31,11 @@
       </app-botao-aprovar>
     </div>
 
-    <app-tabela [dados]="dadosExibidos" [colunas]="colunasTabela">
-      <ng-template #coluna_estadoAtual let-item><span class="status-badge">{{ item.estadoAtual }}</span></ng-template>
-      <ng-template #coluna_valorOrcado let-item>{{ item.valorOrcado | currency:'BRL' }}</ng-template>
-      <ng-template #coluna_acoes let-item>
-        <div class="col-acoes">
-          <span class="id-text">#{{ item.id }}</span>
-          <button class="btn-acao-tabela" *ngIf="item.estadoAtual === 'ORCADA'" (click)="aprovar(item)">Aprovar</button>
-          <button class="btn-acao-tabela" *ngIf="item.estadoAtual === 'REJEITADA'" (click)="resgatar(item)">Resgatar</button>
-          <button class="btn-acao-tabela" *ngIf="item.estadoAtual === 'ARRUMADA'" (click)="pagar(item)">Pagar</button>
-          <a (click)="tratarVisualizacao(item)" class="link-acao">Visualizar</a>
-        </div>
-      </ng-template>
+    <app-tabela 
+      [dados]="dadosExibidos" 
+      [colunas]="colunasTabela"
+      [acoes]="acoesTabela"
+      (acaoClicada)="aoClicarAcaoTabela($event)">
     </app-tabela>
 
     <div class="sem-dados" *ngIf="dadosFiltrados.length === 0">

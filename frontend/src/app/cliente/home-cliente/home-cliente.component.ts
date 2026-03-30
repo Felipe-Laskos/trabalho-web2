@@ -7,7 +7,7 @@ import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.
 import { InputComponent } from '../../shared/input/input.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
-import { TabelaComponent } from "../../shared/tabela/tabela.component";
+import { TabelaComponent, AcaoTabela, EventoAcao, ColunaTabela } from "../../shared/tabela/tabela.component";
 import { mockSolicitacao } from '../../mocks/solicitacao.mock';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
@@ -35,12 +35,20 @@ export class HomeClienteComponent implements OnInit {
   dadosExibidos: Solicitacao[] = [];
   idPedidoPendente: string | number = '00000';
   
-  colunasTabela = [
-  { campo: 'descricaoEquipamento', titulo: 'Aparelho' },
-  { campo: 'estadoAtual', titulo: 'Situação Atual' },
-  { campo: 'valorOrcado', titulo: 'Valor Previsto' },
-  { campo: 'acoes', titulo: 'Ações' }
+  colunasTabela: ColunaTabela[] = [
+  { campo: 'id', titulo: 'Ordem', tipo: 'texto' },
+  { campo: 'descricaoEquipamento', titulo: 'Aparelho', tipo: 'texto' },
+  { campo: 'estadoAtual', titulo: 'Situação Atual', tipo: 'estado' },
+  { campo: 'valorOrcado', titulo: 'Valor Previsto', tipo: 'texto' },
+  { campo: 'acoes', titulo: 'Ações', tipo: 'acao' }
 ];
+
+  acoesTabela: AcaoTabela[] = [
+    { nome: 'Aprovar', acao: 'aprovar', estados: ['ORCADA'], cor: 'primary' },
+    { nome: 'Resgatar', acao: 'resgatar', estados: ['REJEITADA'], cor: 'warn' },
+    { nome: 'Pagar', acao: 'pagar', estados: ['ARRUMADA'], cor: 'accent' },
+    { nome: 'Visualizar', acao: 'visualizar' }
+  ];
 
   paginaAtual: number = 1;
   itensPorPagina: number = 5;
@@ -104,5 +112,17 @@ export class HomeClienteComponent implements OnInit {
 
   irParaSolicitacao(): void {
     this.router.navigate(['/cliente/solicitar-manutencao']);
+  }
+
+  aoClicarAcaoTabela(evento: EventoAcao) {
+    if (evento.acao === 'aprovar') {
+      this.aprovar(evento.item);
+    } else if (evento.acao === 'resgatar') {
+      this.resgatar(evento.item);
+    } else if (evento.acao === 'pagar') {
+      this.pagar(evento.item);
+    } else if (evento.acao === 'visualizar') {
+      this.tratarVisualizacao(evento.item);
+    }
   }
 }
