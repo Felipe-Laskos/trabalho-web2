@@ -98,7 +98,7 @@
   justify-content: space-between;
   font-size: 14px;
   color: #7f8c8d;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .linha-detalhe.total {
@@ -110,25 +110,12 @@
 
 .btn-pagar {
   width: 100%;
-  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
   color: white;
   border: none;
-  padding: 16px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-pagar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
-}
-
-.btn-pagar:active {
-  transform: translateY(0);
 }
 
 .status-badge {
@@ -194,20 +181,7 @@
   margin-bottom: 30px;
 }
 
-.btn-voltar-erro {
-  background-color: #36cfd4;
-  color: rgb(255, 255, 255);
-  border: none;
-  padding: 12px 30px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
 
-.btn-voltar-erro:hover {
-  background-color: #0f8680;
-}
 .valor-confirmacao {
   font-size: 28px;
   font-weight: 800;
@@ -248,22 +222,3 @@
   margin-top: 20px;
 }
 
-.btn-confirmar {
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-cancelar {
-  background-color: #e0e0e0;
-  color: #333;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}

@@ -10,6 +10,7 @@ import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancel
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { FormsModule } from '@angular/forms';
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
+import { BotaoComponent } from "../../shared/botao/botao.component";
 
 @Component({
   selector: 'app-mostrar-orcamento',
@@ -21,7 +22,8 @@ import { TextAreaComponent } from '../../shared/text-area/text-area.component';
     BotaoAprovarComponent,
     FormsModule,
     TextAreaComponent,
-  ],
+    BotaoComponent
+],
   templateUrl: './mostrar-orcamento.component.html',
   styleUrl: './mostrar-orcamento.component.css',
 })
@@ -122,7 +124,7 @@ export class MostrarOrcamentoComponent implements OnInit {
     switch (estado.toUpperCase()) {
       case 'ABERTA':
         return 'badge-cinza';
-      case 'ORÇADA':
+      case 'ORCADA':
         return 'badge-marrom';
       case 'REJEITADA':
         return 'badge-vermelho';

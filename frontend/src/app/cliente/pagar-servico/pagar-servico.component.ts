@@ -1,14 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router';
 import { mockSolicitacao } from '../../mocks/solicitacao.mock';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
+import { BotaoComponent } from '../../shared/botao/botao.component';
+import { BotaoCancelarComponent } from "../../shared/botao-cancelar/botao-cancelar.component";
+import { BotaoAprovarComponent } from "../../shared/botao-aprovar/botao-aprovar.component";
 
 @Component({
   selector: 'app-pagar-servico',
   standalone: true,
-  imports: [CommonModule, CardVisualizacaoComponent],
+  imports: [CommonModule, MatIconModule, CardVisualizacaoComponent, BotaoComponent, BotaoCancelarComponent, BotaoAprovarComponent],
   templateUrl: './pagar-servico.component.html',
   styleUrl: './pagar-servico.component.css',
 })

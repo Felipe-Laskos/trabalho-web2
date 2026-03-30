@@ -119,33 +119,31 @@
       <h2>Confirmar Aprovação?</h2>
       <p id="paragrafo1">Ao confirmar, o serviço será agendado.</p>
       <div class="modal-actions">
-        <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
-        <button class="btn-confirmar" (click)="confirmarAprovacao()">
-          Sim, Confirmar
-        </button>
+        <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button> 
+        <app-botao-aprovar class="btn-confirmar" (click)="confirmarAprovacao()"> Sim, Confirmar </app-botao-aprovar> 
       </div>
     </div>
 
-    <div *ngIf="estadoModal === 'sucesso'"> 
+    <div *ngIf="estadoModal === 'sucesso'">
       <h2>Tudo pronto!</h2>
       <p id="paragrafo2">Serviço Aprovado no Valor:</p>
       <h3>R$ {{ solicitacao?.valorOrcado | number: "1.2-2" }}</h3>
-      <button class="btn-ok" (click)="fecharERedirecionar()">Ok</button>
+      <app-botao class="btn-ok"
+      texto="Ok" 
+      icone="done" cor="accent" 
+      (click)="fecharERedirecionar()"> 
+    </app-botao>
     </div>
 
     <div *ngIf="estadoModal === 'confirmarRejeicao'">
       <h2>Cancelar Serviço?</h2>
       <p id="paragrafo3">Tem certeza de que deseja cancelar este orçamento?</p>
       <div class="modal-actions">
-        <button class="btn-cancelar" (click)="fecharModal()">
+        <button class="btn-nao" (click)="fecharModal()"> 
           Não, vou pensar melhor!
         </button>
-        <button
-          class="btn-confirmar btn-perigo"
-          (click)="irParaMotivoRejeicao()"
-        >
-          Sim, Cancelar
-        </button>
+        <app-botao-cancelar class="btn-sim-cancelar"
+          (click)="irParaMotivoRejeicao()">Sim, Cancelar</app-botao-cancelar>
       </div>
     </div>
 
@@ -159,16 +157,15 @@
         titulo="Por favor, escreva abaixo o motivo de estar cancelando o serviço:"
         placeholder="Digite algo..."
         [valor]="motivoRejeicaoTexto"
-        (mudou)="motivoRejeicaoTexto = $event"
-      >
+        (mudou)="motivoRejeicaoTexto = $event">
       </app-text-area>
+
       <div class="modal-actions">
-        <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
+        <button class="btn-cancelar2" (click)="fecharModal()">Cancelar</button> 
         <button
-          class="btn-confirmar btn-perigo"
+          class="btn-confirmar-motivo"
           (click)="finalizarRejeicao()"
-          [disabled]="!motivoRejeicaoTexto || motivoRejeicaoTexto.trim() === ''"
-        >
+          [disabled]="!motivoRejeicaoTexto || motivoRejeicaoTexto.trim() === ''">
           Confirmar Motivo
         </button>
       </div>
@@ -176,10 +173,14 @@
 
     <div *ngIf="estadoModal === 'sucessoRejeicao'">
       <h2>Serviço Rejeitado</h2>
-      <p>
+      <p id="paragrafo4">
         A solicitação passou para o estado REJEITADA e o motivo foi registrado.
       </p>
-      <button class="btn-ok" (click)="fecharERedirecionar()">Ok</button>
+      <app-botao class="btn-ok"
+      texto="Ok" 
+      icone="done" cor="accent" 
+      (click)="fecharERedirecionar()"> 
+      </app-botao>
     </div>
   </div>
 </div>

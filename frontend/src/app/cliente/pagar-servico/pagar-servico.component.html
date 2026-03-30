@@ -51,10 +51,11 @@
                 <span>R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}</span>
               </div>
             </div>
-
-            <button class="btn-pagar" (click)="confirmarPagamento()">
-              Confirmar Pagamento
-            </button>
+            <app-botao class="btn-pagar"
+             texto="Confirmar Pagamento" 
+             icone="check" cor="primary" 
+             (clicou)="confirmarPagamento()"> 
+            </app-botao>
           </div>
         </div>
       </div>
@@ -68,8 +69,9 @@
           R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}
         </div>
         <div class="modal-actions">
-          <button class="btn-cancelar" (click)="cancelar()">Não, Voltar</button>
-          <button class="btn-confirmar" (click)="finalizarPagamento()">Sim, Confirmar</button>
+
+          <app-botao-cancelar (click)="cancelar()">Não, Voltar</app-botao-cancelar> 
+          <app-botao-aprovar (click)="finalizarPagamento()">Sim, Confirmar</app-botao-aprovar> 
         </div>
       </div>
     </div>
@@ -92,9 +94,11 @@
           O pagamento só é liberado quando o <br> técnico marca o serviço como <strong>ARRUMADA</strong>.
         </p>
         <div class="acoes-erro">
-          <button class="btn-voltar-erro" (click)="voltar()">
-            Voltar para Listagem
-          </button>
+            <app-botao class="btn-voltar-erro"
+             texto="Voltar para Listagem" 
+             icone="arrow_back" cor="primary" 
+             (clicou)="voltar()"> 
+            </app-botao>
         </div>
       </div>
     </app-card-visualizacao>
