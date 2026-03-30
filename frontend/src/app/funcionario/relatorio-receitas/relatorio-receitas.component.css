@@ -39,13 +39,12 @@
 }
 
 .relatorio__filtro_campo {
-  flex: 0 0 auto;
+  flex: 0 0 200px;
 }
 
 .relatorio__filtro_acoes {
   display: flex;
   gap: 12px;
-  padding-bottom: 20px;
 }
 
 .relatorio__cards {
