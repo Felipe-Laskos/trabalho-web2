@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,6 +9,7 @@ import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 import { InputComponent } from "../../shared/input/input.component";
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
+import { ClienteService } from '../../services/cliente.service';
 
 @Component({
   selector: 'app-autocadastro',
@@ -38,6 +39,8 @@ export class AutocadastroComponent {
     cidade: '',
     senha: ''
   };
+
+  private clienteService = inject(ClienteService);
 
   constructor(public router: Router, private http: HttpClient) {}
   
@@ -83,7 +86,21 @@ export class AutocadastroComponent {
     const erroCpf = ValidarCpf()(controleCpf);
 
     if (form.valid && erroCpf === null) {
-      console.log('Sucesso! Tudo validado:', this.usuario);
+      this.clienteService.inserir({
+        nome: this.usuario.nome,
+        cpf: this.usuario.cpf,
+        email: this.usuario.email,
+        telefone: this.usuario.telefone,
+        senha: this.usuario.senha,
+        endereco: {
+          cep: this.usuario.cep,
+          logradouro: this.usuario.logradouro,
+          bairro: this.usuario.bairro,
+          cidade: this.usuario.cidade,
+          uf: '',
+          numero: ''
+        }
+      });
       this.router.navigate(['/login']);
     } else {
       const mensagem = erroCpf ? 'CPF Inválido!' : 'Preencha todos os campos obrigatórios!';

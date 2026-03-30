@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,9 +8,10 @@ import { InputComponent } from '../../shared/input/input.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 import { TabelaComponent, AcaoTabela, EventoAcao, ColunaTabela } from "../../shared/tabela/tabela.component";
-import { mockSolicitacao } from '../../mocks/solicitacao.mock';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
+import { SolicitacaoService } from '../../services/solicitacao.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home-cliente',
@@ -29,8 +30,11 @@ import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
   styleUrls: ['./home-cliente.component.css']
 })
 export class HomeClienteComponent implements OnInit {
+  private solicitacaoService = inject(SolicitacaoService);
+  private authService = inject(AuthService);
+
   nomeUsuario: string = 'Cliente';
-  listaSolicitacoes: Solicitacao[] = mockSolicitacao;
+  listaSolicitacoes: Solicitacao[] = [];
   dadosFiltrados: Solicitacao[] = [];
   dadosExibidos: Solicitacao[] = [];
   idPedidoPendente: string | number = '00000';
@@ -62,7 +66,8 @@ export class HomeClienteComponent implements OnInit {
   }
 
   private carregarDadosIniciais(): void {
-    this.nomeUsuario = localStorage.getItem('usuarioSessao') || 'Cliente';
+    this.nomeUsuario = this.authService.getNome() || 'Cliente';
+    this.listaSolicitacoes = this.solicitacaoService.listarTodos();
     this.identificarUltimoPedidoEmAnalise();
   }
 
