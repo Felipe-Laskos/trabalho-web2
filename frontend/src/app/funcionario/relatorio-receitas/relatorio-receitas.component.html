@@ -58,32 +58,24 @@
     </div>
 
     <div class="relatorio__tabela">
-      @if (receitasPorDia.length > 0) {
-        <table class="relatorio__table">
-          <thead>
-            <tr class="relatorio__table_header">
-              <th class="relatorio__table_th">Data</th>
-              <th class="relatorio__table_th">Qtd. Serviços</th>
-              <th class="relatorio__table_th">Receita do Dia</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (receita of receitasPorDia; track receita.data) {
-              <tr class="relatorio__table_row">
-                <td class="relatorio__table_td">{{ receita.data }}</td>
-                <td class="relatorio__table_td">{{ receita.quantidade }}</td>
-                <td class="relatorio__table_td relatorio__table_td_valor">{{ formatarMoeda(receita.total) }}</td>
-              </tr>
-            }
-          </tbody>
-          <tfoot>
-            <tr class="relatorio__table_footer">
-              <td class="relatorio__table_td relatorio__table_td_total">TOTAL</td>
-              <td class="relatorio__table_td relatorio__table_td_total">{{ quantidadeTotal }}</td>
-              <td class="relatorio__table_td relatorio__table_td_total relatorio__table_td_valor">{{ formatarMoeda(totalGeral) }}</td>
-            </tr>
-          </tfoot>
-        </table>
+      @if (dadosPaginados.length > 0) {
+        <app-tabela
+          [colunas]="colunasTabela"
+          [dados]="dadosPaginados">
+        </app-tabela>
+
+        <div class="relatorio__total_row">
+          <span class="relatorio__total_label">TOTAL</span>
+          <span class="relatorio__total_qtd">{{ quantidadeTotal }}</span>
+          <span class="relatorio__total_valor">{{ formatarMoeda(totalGeral) }}</span>
+        </div>
+
+        <app-paginacao
+          [totalItens]="receitasPorDia.length"
+          [itensPorPagina]="itensPorPagina"
+          [paginaAtual]="paginaAtual"
+          (paginaChange)="onPaginaMudou($event)">
+        </app-paginacao>
       } @else {
         <div class="relatorio__sem_dados">
           <p>Nenhuma receita encontrada para o período selecionado.</p>

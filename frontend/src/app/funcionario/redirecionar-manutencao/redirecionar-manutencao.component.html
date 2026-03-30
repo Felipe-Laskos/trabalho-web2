@@ -83,25 +83,3 @@
 </div>
 
 
-<div class="redirecionar__modal_overlay" *ngIf="exibirModal">
-  <div class="redirecionar__modal_box">
-    <div *ngIf="estadoModal === 'confirmacao'">
-      <h2 class="redirecionar__modal_titulo">Confirmar Redirecionamento?</h2>
-      <p class="redirecionar__modal_texto">
-        A solicitação será redirecionada para <strong>{{ getNomeFuncionarioDestino() }}</strong>.
-      </p>
-      <div class="redirecionar__modal_actions">
-        <button class="redirecionar__modal_btn_cancelar" (click)="fecharModal()">Cancelar</button>
-        <button class="redirecionar__modal_btn_confirmar" (click)="confirmarRedirecionamento()">Sim, Redirecionar</button>
-      </div>
-    </div>
-
-    <div *ngIf="estadoModal === 'sucesso'">
-      <h2 class="redirecionar__modal_titulo">Redirecionado!</h2>
-      <p class="redirecionar__modal_texto_sucesso">
-        A solicitação #{{ solicitacao?.id }} foi redirecionada para {{ getNomeFuncionarioDestino() }}.
-      </p>
-      <button class="redirecionar__modal_btn_ok" (click)="fecharModal()">Ok</button>
-    </div>
-  </div>
-</div>

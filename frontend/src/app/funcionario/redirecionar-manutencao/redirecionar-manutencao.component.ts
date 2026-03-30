@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { SolicitacaoService } from '../../services/solicitacao.service';
@@ -12,6 +13,7 @@ import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { ComboComponent, OpcaoCombo } from '../../shared/combo/combo.component';
 import { CardInfoComponent } from '../../shared/card-info/card-info.component';
+import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/modal-generico.component';
 
 @Component({
   selector: 'app-redirecionar-manutencao',
@@ -34,14 +36,12 @@ export class RedirecionarManutencaoComponent implements OnInit {
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   solicitacao?: Solicitacao;
   funcionarios: Funcionario[] = [];
   opcoesCombo: OpcaoCombo[] = [];
   funcionarioSelecionadoId: number | null = null;
-
-  exibirModal: boolean = false;
-  estadoModal: 'confirmacao' | 'sucesso' = 'confirmacao';
 
   ngOnInit(): void {
     const id = +this.route.snapshot.params['id'];
@@ -70,27 +70,41 @@ export class RedirecionarManutencaoComponent implements OnInit {
       alert('Selecione um funcionário para redirecionar.');
       return;
     }
-    this.estadoModal = 'confirmacao';
-    this.exibirModal = true;
-  }
 
-  confirmarRedirecionamento(): void {
-    if (!this.solicitacao || !this.funcionarioSelecionadoId) return;
+    const nomeFuncionario = this.getNomeFuncionarioDestino();
 
-    const funcionarioDestino = this.funcionarioService.buscarPorId(this.funcionarioSelecionadoId);
+    const dialogRef = this.dialog.open(ModalGenericoComponent, {
+      data: {
+        tipo: 'confirmacao',
+        titulo: 'Confirmar Redirecionamento?',
+        mensagem: `A solicitação será redirecionada para ${nomeFuncionario}.`,
+        textoConfirmar: 'Sim, Redirecionar',
+        textoCancelar: 'Cancelar'
+      } as ModalDados
+    });
 
-    this.solicitacao.estadoAtual = SolicitacaoENUM.REDIRECIONADA;
-    this.solicitacao.funcionarioResponsavel = funcionarioDestino;
+    dialogRef.afterClosed().subscribe(confirmou => {
+      if (!confirmou) return;
 
-    this.solicitacaoService.atualizar(this.solicitacao);
-    this.estadoModal = 'sucesso';
-  }
+      const funcionarioDestino = this.funcionarioService.buscarPorId(this.funcionarioSelecionadoId!);
+      this.solicitacao!.estadoAtual = SolicitacaoENUM.REDIRECIONADA;
+      this.solicitacao!.funcionarioResponsavel = funcionarioDestino;
+      this.solicitacaoService.atualizar(this.solicitacao!);
 
-  fecharModal(): void {
-    this.exibirModal = false;
-    if (this.estadoModal === 'sucesso') {
-      this.router.navigate(['/funcionario']);
-    }
+      const sucessoRef = this.dialog.open(ModalGenericoComponent, {
+        data: {
+          tipo: 'confirmacao',
+          titulo: 'Redirecionado!',
+          mensagem: `A solicitação #${this.solicitacao!.id} foi redirecionada para ${nomeFuncionario}.`,
+          textoConfirmar: 'Ok',
+          textoCancelar: ''
+        } as ModalDados
+      });
+
+      sucessoRef.afterClosed().subscribe(() => {
+        this.router.navigate(['/funcionario']);
+      });
+    });
   }
 
   voltar(): void {

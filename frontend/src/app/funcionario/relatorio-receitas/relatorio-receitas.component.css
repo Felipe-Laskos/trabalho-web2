@@ -59,51 +59,22 @@
   padding: 0 30px 20px 30px;
 }
 
-.relatorio__table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--white);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.relatorio__table_header {
-  background-color: var(--secondary);
-}
-
-.relatorio__table_th {
-  text-align: left;
+.relatorio__total_row {
+  display: flex;
+  justify-content: space-between;
   padding: 14px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-}
-
-.relatorio__table_row:hover {
-  background-color: var(--background-white-2);
-}
-
-.relatorio__table_td {
-  padding: 12px 16px;
-  border-top: 1px solid #e0e0e0;
-  font-size: 14px;
-  color: #333;
-}
-
-.relatorio__table_td_valor {
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.relatorio__table_footer {
   background-color: var(--light-gray);
+  border-radius: 0 0 8px 8px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;
+  max-width: 80%;
+  margin: 0 auto;
 }
 
-.relatorio__table_td_total {
-  font-weight: 700 !important;
-  font-size: 15px !important;
-  color: #000 !important;
+.relatorio__total_valor {
+  font-weight: 700;
+  color: var(--primary);
 }
 
 .relatorio__sem_dados {
