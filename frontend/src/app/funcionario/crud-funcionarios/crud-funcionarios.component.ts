@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Funcionario } from '../../models/funcionario.model';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { PesquisaComponent } from '../../shared/pesquisa/pesquisa.component';
 import { TabelaComponent } from '../../shared/tabela/tabela.component'; 
 import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { FuncionarioService } from '../../services/funcionario.service';
 
 @Component({
   selector: 'app-crud-funcionarios',
@@ -25,6 +26,8 @@ import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
   styleUrl: './crud-funcionarios.component.css'
 })
 export class CrudFuncionariosComponent {
+  private funcionarioService = inject(FuncionarioService);
+
   colunas = [
     { campo: 'id', titulo: 'ID' },
     { campo: 'nome', titulo: 'Nome', truncar: 20, tipo: 'nome' as const },
@@ -126,7 +129,20 @@ export class CrudFuncionariosComponent {
       });
   
       dialogRef.afterClosed().subscribe(result => {
+        const senhaGerada = Math.random().toString(36).slice(-8);
+        result.senha = senhaGerada;
+
         if (result) {
+          this.funcionarioService.inserir({
+            nome: result.nome,
+            cpf: result.cpf,
+            email: result.email,
+            senha: result.senha,
+            dataNascimento: result.dataNascimento,
+            cargo: result.cargo
+          });
+
+
           this.dados.push({
             ...result,
             id: this.gerarNovoId(),
