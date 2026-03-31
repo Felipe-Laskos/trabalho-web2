@@ -60,7 +60,7 @@ export class HomeClienteComponent implements OnInit {
   paginaAtual: number = 1;
   itensPorPagina: number = 5;
 
-  constructor(public router: Router, private aviso: MatSnackBar) {}
+  constructor(public router: Router) {}
 
   ngOnInit(): void {
     this.carregarDadosIniciais();
@@ -109,14 +109,7 @@ export class HomeClienteComponent implements OnInit {
   }
 
   tratarVisualizacao(item: Solicitacao): void {
-    if (item.estadoAtual === SolicitacaoENUM.ORCADA) {
-      this.router.navigate(['/cliente/mostrar-orcamento', item.id]);
-    } else {
-      this.aviso.open('Esta solicitação ainda está em análise técnica.', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top'
-      });
-    }
+    this.router.navigate(['/cliente/visualizar-servico', item.id]);
   }
 
   aprovar(item: Solicitacao) { this.router.navigate(['/cliente/mostrar-orcamento', item.id]); }

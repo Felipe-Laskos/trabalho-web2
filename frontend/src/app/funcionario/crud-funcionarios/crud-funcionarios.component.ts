@@ -12,6 +12,7 @@ import { PesquisaComponent } from '../../shared/pesquisa/pesquisa.component';
 import { TabelaComponent } from '../../shared/tabela/tabela.component';
 import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { FuncionarioService } from '../../services/funcionario.service';
 
 @Component({
   selector: 'app-crud-funcionarios',
