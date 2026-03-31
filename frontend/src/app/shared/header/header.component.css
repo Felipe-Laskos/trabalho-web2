@@ -126,6 +126,56 @@ mat-icon {
   gap: 1rem;
 }
 
+.menu-relatorio {
+  position: relative;
+  cursor: pointer;
+}
+
+.menu-relatorio__titulo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu-relatorio__dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--secondary); 
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  min-width: 220px;
+  padding: 8px 0;
+  z-index: 10;
+}
+
+.menu-relatorio__dropdown a {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: var(--dark); 
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.menu-relatorio__dropdown a:hover {
+  opacity: 1;
+  text-decoration: underline;
+  background: rgba(255, 255, 255, 0.1); /* leve highlight */
+}
+
+.menu-relatorio:hover .menu-relatorio__dropdown {
+  display: block;
+}
+
+.seta {
+  font-size: 18px !important;
+  width: 18px;
+  height: 18px;
+}
+
 @media screen and (max-width: 1400px) {
   .header_icon {
     font-size: 30px;

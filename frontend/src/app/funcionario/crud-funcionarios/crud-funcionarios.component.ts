@@ -27,11 +27,11 @@ import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 export class CrudFuncionariosComponent {
   colunas = [
     { campo: 'id', titulo: 'ID' },
-    { campo: 'nome', titulo: 'Nome', truncar: 20, tipo: 'nome' as const },
-    { campo: 'cpf', titulo: 'CPF', tipo: 'cpf' as const},
-    { campo: 'email', titulo: 'Email', truncar: 20 },
+    { campo: 'nome', titulo: 'Nome', truncar: 20, tipo: 'nome' as const},
+    { campo: 'cpf', titulo: 'CPF', tipo: 'cpf' as const },
+    { campo: 'email', titulo: 'Email', truncar: 20},
     { campo: 'dataNascimento', titulo: 'Data de Nascimento'},
-    { campo: 'cargo', titulo: 'Cargo', truncar: 20, tipo: 'nome' as const},
+    { campo: 'cargo', titulo: 'Cargo', truncar: 20, tipo: 'nome' as const },
   ];
 
   dados = [
@@ -109,11 +109,11 @@ export class CrudFuncionariosComponent {
           tipo: 'formulario',
           titulo: 'Adicionar Funcionário',
           campos: [
-            { label: 'Nome', campo: 'nome', tipo: 'text' },
-            { label: 'CPF', campo: 'cpf', tipo: 'text' },
-            { label: 'Email', campo: 'email', tipo: 'text' },
-            { label: 'Data de Nascimento', campo: 'dataNascimento', tipo: 'date' },
-            { label: 'Cargo', campo: 'cargo', tipo: 'text' }
+            { label: 'Nome', campo: 'nome', tipo: 'text', obrigatorio: true },
+            { label: 'CPF', campo: 'cpf', tipo: 'text', obrigatorio: true },
+            { label: 'Email', campo: 'email', tipo: 'text', obrigatorio: true },
+            { label: 'Data de Nascimento', campo: 'dataNascimento', tipo: 'date', obrigatorio: true },
+            { label: 'Cargo', campo: 'cargo', tipo: 'text', obrigatorio: true }
           ],
           formData: {
             nome: '',

@@ -2,13 +2,13 @@
 
   <app-card-visualizacao>
     <div class="relatorio__header">
-      <h1 class="relatorio__titulo">Relatório de Receita por Período</h1>
-      <p class="relatorio__subtitulo">Visualize a receita da empresa agrupada por dia.</p>
+      <h1 class="relatorio__titulo">Relatório de Receita por Categoria</h1>
+      <p class="relatorio__subtitulo">Visualize a receita da empresa agrupada por categoria.</p>
       <hr class="relatorio__divider">
     </div>
 
     <div class="container">
-      <div class="relatorio__cards">
+        <div class="relatorio__cards">
             <mat-icon class="icone">attach_money</mat-icon>
             <div class="card-info-texto">
                 <p><strong>Total Receita:</strong></p>
@@ -22,39 +22,30 @@
             </div>
         </div>
 
-      <div class="relatorio__filtro_acoes">
-        <div class="filtroData">
-          <app-input
-            titulo="Data Início"
-            tipo="date"
-            [valor]="dataInicio"
-            (mudou)="onDataInicioMudou($event)">
-          </app-input>
+        <div class="relatorio__filtro_acoes">
+            <div class="filtroCategoria">
+                <app-input
+                    titulo="Categoria"
+                    tipo="text"
+                    [valor]="categoria"
+                    (mudou)="onCategoriaMudou($event)">
+                </app-input>
+            </div>
+
+            <app-botao
+                texto="Filtrar"
+                icone="filter_list"
+                cor="primary"
+                (clicou)="filtrar()">
+            </app-botao>
+
+            <app-botao
+                texto="Gerar PDF"
+                icone="picture_as_pdf"
+                cor="accent"
+                (clicou)="gerarPdf()">
+            </app-botao>
         </div>
-
-        <div class="filtroData">
-          <app-input
-            titulo="Data Fim"
-            tipo="date"
-            [valor]="dataFim"
-            (mudou)="onDataFimMudou($event)">
-          </app-input>
-        </div>
-
-        <app-botao
-          texto="Filtrar"
-          icone="filter_list"
-          cor="primary"
-          (clicou)="filtrar()">
-        </app-botao>
-
-        <app-botao
-          texto="Gerar PDF"
-          icone="picture_as_pdf"
-          cor="accent"
-          (clicou)="gerarPdf()">
-        </app-botao>
-      </div>
     </div>
 
     <div class="relatorio__tabela">
@@ -67,18 +58,18 @@
         <div class="relatorio__total_row">
           <span class="relatorio__total_label">TOTAL</span>
           <span class="relatorio__total_qtd">{{ quantidadeTotal }}</span>
-          <span class="relatorio__total_valor">{{ formatarMoeda(totalGeral) }}</span>
+          <span class="relatorio__total_qtd">{{ totalGeral | currency:'BRL' }}</span>
         </div>
 
         <app-paginacao
-          [totalItens]="receitasPorDia.length"
+          [totalItens]="receitasPorCategoria.length"
           [itensPorPagina]="itensPorPagina"
           [paginaAtual]="paginaAtual"
           (paginaChange)="onPaginaMudou($event)">
         </app-paginacao>
       } @else {
         <div class="relatorio__sem_dados">
-          <p>Nenhuma receita encontrada para o período selecionado.</p>
+          <p>Nenhuma categoria encontrada.</p>
         </div>
       }
     </div>
