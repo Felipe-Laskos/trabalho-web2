@@ -5,7 +5,7 @@
 
 .campo-input {
   box-sizing: border-box;
-  height: 42px;
+  height: 100%;
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.42); 
   border-radius: 8px;
