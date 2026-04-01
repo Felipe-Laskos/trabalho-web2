@@ -14,7 +14,17 @@
             <a routerLink="/funcionario/visualizar-solicitacoes">Visualizar</a>
             <a routerLink="/funcionario/categorias">Categorias</a>
             <a routerLink="/funcionario/funcionarios">Funcionários</a>
-            <a routerLink="/funcionario/relatorio-receitas">Relatórios</a>
+            <div class="menu-relatorio">
+                <a class="menu-relatorio__titulo">
+                    Relatórios
+                    <mat-icon class="seta">expand_more</mat-icon>
+                </a>
+
+                <div class="menu-relatorio__dropdown">
+                    <a routerLink="/funcionario/relatorio-receitas">Receita por Período</a>
+                    <a routerLink="/funcionario/relatorio-categoria">Receita por Categoria</a>
+                </div>
+                </div>
         }
     </nav>
 

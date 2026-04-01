@@ -9,6 +9,9 @@ import { InputComponent } from '../../shared/input/input.component';
 import { TabelaComponent, ColunaTabela } from '../../shared/tabela/tabela.component';
 import { CardInfoComponent } from '../../shared/card-info/card-info.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
+import { MatIcon } from '@angular/material/icon';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export interface ReceitaDia {
   data: string;
@@ -26,7 +29,8 @@ export interface ReceitaDia {
     InputComponent,
     TabelaComponent,
     CardInfoComponent,
-    PaginacaoComponent
+    PaginacaoComponent,
+    MatIcon
   ],
   templateUrl: './relatorio-receitas.component.html',
   styleUrl: './relatorio-receitas.component.css'
@@ -128,7 +132,35 @@ export class RelatorioReceitasComponent implements OnInit {
   }
 
   gerarPdf(): void {
-    alert('Funcionalidade de gerar PDF será implementada na integração com o backend.');
+      const doc = new jsPDF();
+  
+      doc.setFontSize(16);
+      doc.text('Relatório de Receita por Período', 14, 15);
+  
+      doc.setFontSize(10);
+      const dataAtual = new Date().toLocaleDateString('pt-BR');
+      doc.text(`Gerado em: ${dataAtual}`, 14, 22);
+  
+      const colunas = ['Data', 'Qtd. Serviços', 'Receita'];
+      const linhas = this.receitasPorDia.map(r => [
+        r.data,
+        r.quantidade.toString(),
+        r.totalFormatado
+      ]);
+  
+      autoTable(doc, {
+        startY: 30,
+        head: [colunas],
+        body: linhas,
+      });
+  
+      const finalY = (doc as any).lastAutoTable.finalY + 10;
+  
+      doc.setFontSize(12);
+      doc.text(`Total de Serviços: ${this.quantidadeTotal}`, 14, finalY);
+      doc.text(`Total Geral: ${this.formatarMoeda(this.totalGeral)}`, 14, finalY + 7);
+  
+      doc.save('relatorio-receitas.pdf');
   }
 
   formatarMoeda(valor: number): string {

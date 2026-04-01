@@ -2,8 +2,6 @@
 
 <div mat-dialog-content>
 
-  <!-- atencao p o any no input, cuidar dele dps -->  
-
   @switch (data.tipo) {
 
     @case ('formulario') {
@@ -12,7 +10,7 @@
             <input 
               type="{{campo.tipo || 'text'}}"
               [value]="formData[campo.campo]"
-              (input)="formData[campo.campo] = $any($event.target).value"
+              [(ngModel)]="formData[campo.campo]"
               style="width: 100%; border: none; background: transparent; padding: 4px;"
             />
         </app-input-card>

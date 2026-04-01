@@ -49,6 +49,13 @@ export class TabelaComponent {
     this.linhaSelecionada.emit(item);
   }
 
+  deselecionarLinha(item: any) {
+  if (this.linhaAtiva === item) {
+    this.linhaAtiva = null;
+    this.linhaSelecionada.emit(null); 
+  }
+}
+
   coresEstado: Record<string, string> = {
     'ABERTA': '#808080',
     'ORCADA': '#8B4513',

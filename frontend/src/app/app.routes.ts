@@ -14,6 +14,7 @@ import { RedirecionarManutencaoComponent } from './funcionario/redirecionar-manu
 import { RelatorioReceitasComponent } from './funcionario/relatorio-receitas/relatorio-receitas.component';
 import { PagarServicoComponent } from './cliente/pagar-servico/pagar-servico.component';
 import { clienteGuard, funcionarioGuard } from './guards/auth.guard';
+import { RelatorioCategoriasComponent } from './funcionario/relatorio-categoria/relatorio-categoria.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -30,6 +31,7 @@ export const routes: Routes = [
   { path: 'funcionario/efetuar-manutencao/:id', component: EfetuarManutencaoComponent, canActivate: [funcionarioGuard] },
   { path: 'funcionario/redirecionar-manutencao/:id', component: RedirecionarManutencaoComponent, canActivate: [funcionarioGuard] },
   { path: 'funcionario/relatorio-receitas', component: RelatorioReceitasComponent, canActivate: [funcionarioGuard] },
+    { path: 'funcionario/relatorio-categoria', component: RelatorioCategoriasComponent, canActivate: [funcionarioGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' },
+  { path: '**', redirectTo: 'login' }
 ];

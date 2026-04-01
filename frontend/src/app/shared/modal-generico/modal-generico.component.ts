@@ -12,6 +12,7 @@ export interface CampoFormulario {
   label: string;
   campo: string;
   tipo?: 'text' | 'number' | 'select';
+  obrigatorio?: boolean;
 }
 
 export interface ModalDados{
@@ -69,6 +70,23 @@ export class ModalGenericoComponent {
         alert('Email inválido!');
         return;
       }
+    }
+    
+    const camposInvalidos = (this.data.campos || []).filter(campo => {
+      const valor = this.formData?.[campo.campo];
+
+      return (
+        campo.obrigatorio === true && (
+          valor === null ||
+          valor === undefined ||
+          valor.toString().trim() === ''
+        )
+      );
+    });
+
+    if (camposInvalidos && camposInvalidos.length > 0) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
     }
 
       this.dialogRef.close(this.formData);

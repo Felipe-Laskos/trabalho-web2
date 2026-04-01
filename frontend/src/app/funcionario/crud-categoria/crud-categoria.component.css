@@ -5,17 +5,21 @@
   margin-top: 10px; 
 }
 
+.titulo {
+  margin-top: 20px; 
+}
+
 .header-actions {
   width: 100%;          
   display: flex;
   justify-content: space-between; 
+  align-items: center;
   padding: 0 130px;       
 }
 
 .header-actions app-pesquisa {
   flex: 1; 
 }
-
 
 .container-botoes{
   width: 100%;

@@ -108,8 +108,8 @@ export class CrudCategoriaComponent {
         tipo: 'formulario',
         titulo: 'Adicionar Categoria',
         campos: [
-          { label: 'Nome', campo: 'nome', tipo: 'text' },
-          { label: 'Quantidade', campo: 'quantidade', tipo: 'number' }
+          { label: 'Nome', campo: 'nome', tipo: 'text', obrigatorio: true },
+          { label: 'Quantidade', campo: 'quantidade', tipo: 'number', obrigatorio: true }
         ],
         formData: {
           nome: '',

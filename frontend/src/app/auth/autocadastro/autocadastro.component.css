@@ -5,19 +5,24 @@
   background-color: #f4f7f9;
 }
 
-/* O AJUSTE PARA OS PONTOS AMARELOS */
 .recuo-superior {
   margin-top: 30px !important;
   display: block;
+  padding: 10px;
 }
 
 .linha-flex-ajustada {
   display: flex;
   gap: 20px;
   width: 100%;
+  padding: 10px;
 }
 
 .flex-1 { flex: 1; }
+
+.secao-ajustada {
+  padding: 20px;
+}
 
 .titulo-secao {
   font-size: 15px;
@@ -31,12 +36,13 @@
 .wrapper-individual {
   display: block;
   width: 100%;
+  padding: 10px;
 }
 
 .acoes-finais {
   display: flex;
   justify-content: space-between;
-  margin-top: 40px;
+  margin-top: 80px;
 }
 
 .header-text h1 { color: #24808f; font-weight: bold; font-size: 22px; }

@@ -43,6 +43,7 @@
     <tr mat-header-row *matHeaderRowDef="camposExibidos" class="tabela__header"></tr>
     <tr mat-row *matRowDef="let row; columns: camposExibidos;"
         (click)="selecionarLinha(row)"
+        (dblclick)="deselecionarLinha(row)"
         [class.linha-selecionada]="row === linhaAtiva">
     </tr>
 </table>

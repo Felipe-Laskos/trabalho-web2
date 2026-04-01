@@ -10,7 +10,9 @@
       
       <div class="secao-ajustada">
         <h3 class="titulo-secao">Dados Pessoais</h3>
+        <div class="wrapper-individual">
         <app-input titulo="Nome Completo" [valor]="usuario.nome" (mudou)="usuario.nome = $event" altura="34px" largura="100%"></app-input>
+        </div>
 
         <div class="linha-flex-ajustada recuo-superior">
           <div class="flex-1">
@@ -39,11 +41,15 @@
       </div>
 
       <div class="secao-ajustada">
-        <h3 class="titulo-secao recuo-superior">Acesso</h3>
-        <app-input titulo="E-mail" [valor]="usuario.email" (mudou)="usuario.email = $event" altura="34px" largura="100%"></app-input>
+        <h3 class="titulo-secao">Acesso</h3>
+        <div class="linha-flex-ajustada">
+          <div class="flex-1">
+          <app-input titulo="E-mail" [valor]="usuario.email" (mudou)="usuario.email = $event" altura="34px" largura="100%"></app-input>
+        </div>
         
-        <div class="wrapper-individual recuo-superior">
+        <div class="flex-1">
           <app-input titulo="Senha" type="password" [valor]="usuario.senha" (mudou)="usuario.senha = $event" altura="34px" largura="100%"></app-input>
+        </div>
         </div>
       </div>
 
