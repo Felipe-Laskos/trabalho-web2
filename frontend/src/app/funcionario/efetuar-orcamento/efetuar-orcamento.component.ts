@@ -63,10 +63,21 @@ registrarOrcamento() {
 
   this.valorOrcamento = parseFloat(this.valorDigitado);
 
-  if (isNaN(this.valorOrcamento) || this.valorOrcamento <= 0) {
-    alert('Digite um valor válido para o orçamento.');
-    return;
-  }
+if (isNaN(this.valorOrcamento) || this.valorOrcamento <= 0) {
+
+  const dadosModal: ModalDados = {
+    tipo: 'confirmacao',
+    titulo: 'Valor Inválido',
+    mensagem: 'Digite um valor válido para o orçamento.',
+    textoConfirmar: 'OK'
+  };
+
+  this.dialog.open(ModalGenericoComponent, {
+    data: dadosModal
+  });
+
+  return;
+}
 
   this.solicitacao.valorOrcado = this.valorOrcamento;
   this.solicitacao.estadoAtual = SolicitacaoENUM.ORCADA;

@@ -1,19 +1,33 @@
 .container {
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: white;
+  
+  max-width: 1300px;  
+  margin: 0 auto;     
+  width: 90%;        
 }
 
 h2 {
+  color: #002b36;    
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+  text-align: left;   
 }
 
 .filtros-container {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 30px;
+  padding-left: 5px;
 }
+app-tabela,
+app-tabela .mat-table,
+.tabela {
+  background-color: transparent;
+}
+
 
 .filtros-label {
   font-size: 14px;

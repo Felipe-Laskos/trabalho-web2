@@ -10,11 +10,17 @@
 h2, h3 {
   color: #34495e;
   margin-bottom: 15px;
+}
+
+h2{
   text-align: center;
+
 }
 
 h3 {
   margin-top: 10px;
+  text-align: left;
+  color: #34495e;
 }
 
 p {

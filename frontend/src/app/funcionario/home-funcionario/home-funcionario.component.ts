@@ -7,6 +7,7 @@ import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-v
 import { TabelaComponent, ColunaTabela, AcaoTabela } from '../../shared/tabela/tabela.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { mockSolicitacao } from '../../mocks/solicitacao.mock';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -18,8 +19,9 @@ import { mockSolicitacao } from '../../mocks/solicitacao.mock';
 })
 export class HomeFuncionarioComponent {
 
-  constructor(private router: Router) {}
-
+  constructor(private router: Router, private authService: AuthService) {}
+  nomeFuncionario: string = this.authService.getNome();
+  
   solicitacoes: Solicitacao[] = mockSolicitacao;
     
   get solicitacoesAbertas() {

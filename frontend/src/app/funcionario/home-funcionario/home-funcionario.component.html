@@ -2,6 +2,14 @@
 
   <h2>Portal do Funcionário</h2>
 
+  <div class="saudacao-funcionario">
+    Olá, {{ nomeFuncionario }}!
+  </div>
+
+  <div class="aviso-solicitacoes">
+  Essas são as solicitações abertas que precisam da sua atenção imediata.
+</div>
+
   <app-tabela
     [colunas]="colunas"
     [dados]="dadosPaginados"
