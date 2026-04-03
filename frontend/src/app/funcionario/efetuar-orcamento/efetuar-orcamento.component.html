@@ -9,46 +9,52 @@
 
       <div class="grid">
 
-        <div class="col-esquerda">
+  <div class="col">
+    <h3>Dados da Solicitação</h3>
 
-          <h3>Dados da Solicitação</h3>
+    <p><b>Equipamento:</b> {{ solicitacao.descricaoEquipamento }}</p>
+    <p><b>Defeito:</b> {{ solicitacao.descricaoDefeito }}</p>
+    <p><b>Data:</b> {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
+    <p><b>Estado Atual:</b> {{ solicitacao.estadoAtual }}</p>
+  </div>
 
-          <p><b>Equipamento:</b> {{ solicitacao.descricaoEquipamento }}</p>
-          <p><b>Defeito:</b> {{ solicitacao.descricaoDefeito }}</p>
-          <p><b>Data:</b> {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
+  <div class="col">
+    <h3>Dados do Cliente</h3>
 
-          <h3>Dados do Cliente</h3>
+    <p><b>Nome:</b> {{ solicitacao.cliente?.nome }}</p>
+    <p><b>CPF:</b> {{ solicitacao.cliente?.cpf }}</p>
+    <p><b>Email:</b> {{ solicitacao.cliente?.email }}</p>
 
-          <p><b>Nome:</b> {{ solicitacao.cliente?.nome }}</p>
-          <p><b>Email:</b> {{ solicitacao.cliente?.email }}</p>
+    <p>
+      <b>Telefone:</b>
+      ({{ solicitacao.cliente?.telefone | slice:0:2 }})
+      {{ solicitacao.cliente?.telefone | slice:2:7 }}-
+      {{ solicitacao.cliente?.telefone | slice:7 }}
+    </p>
+  </div>
 
-          <p>
-            <b>Telefone:</b>
-            ({{ solicitacao.cliente?.telefone | slice:0:2 }})
-            {{ solicitacao.cliente?.telefone | slice:2:7 }}-
-            {{ solicitacao.cliente?.telefone | slice:7 }}
-          </p>
+  <div class="col col-acao">
 
-        </div>
+    <app-input
+      altura="52px"
+      largura="100%"
+      titulo="Valor do Orçamento"
+      placeholder="Digite o valor"
+      [valor]="valorDigitado"
+      (mudou)="valorDigitado = $event">
+    </app-input>
 
-        <div class="col-direita">
+<app-botao
+  texto="Salvar Orçamento"
+  cor="primary"
+  icone="save"
+  [desabilitado]="!valorValido()"
+  (click)="registrarOrcamento()">
+</app-botao>
+  </div>
 
-          <app-input
-            altura="52px"
-            largura="100%"
-            titulo="Valor do Orçamento"
-            placeholder="Digite o valor"
-            [valor]="valorDigitado"
-            (mudou)="valorDigitado = $event">
-          </app-input>
+</div>
 
-          <button (click)="registrarOrcamento()">
-            Salvar Orçamento
-          </button>
-
-        </div>
-
-      </div>
 
     </app-card-visualizacao>
 

@@ -2,41 +2,18 @@
 
   <h2>Portal do Funcionário</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Data/Hora da Solicitação</th>
-        <th>Cliente</th>
-        <th>Descrição do Produto</th>
-        <th>-</th>
-      </tr>
-    </thead>
+  <app-tabela
+    [colunas]="colunas"
+    [dados]="dadosPaginados"
+    [acoes]="acoes"
+    (acaoClicada)="onAcaoTabela($event)">
+  </app-tabela>
 
-    <tbody>
-      @for (solicitacao of solicitacoesAbertas; track solicitacao.id) {
-        <tr>
-          <td>
-            {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}
-          </td>
-
-          <td>
-            {{ solicitacao.cliente?.nome }}
-          </td>
-
-          <td>
-            {{ solicitacao.descricaoEquipamento | slice:0:30 }}
-          </td>
-
-          <td>
-              <app-botao
-              texto="Efetuar Orçamento" 
-              (clicou)="efetuarOrcamento(solicitacao.id)"
-              cor="primary">
-            </app-botao>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+  <app-paginacao
+    [paginaAtual]="paginaAtual"
+    [totalItens]="solicitacoesAbertas.length"
+    [itensPorPagina]="itensPorPagina"
+    (paginaMudou)="onPaginaMudou($event)">
+  </app-paginacao>
 
 </app-card-visualizacao>

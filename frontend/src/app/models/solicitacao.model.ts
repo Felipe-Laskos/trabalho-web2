@@ -12,6 +12,8 @@ export interface Solicitacao {
   estadoAtual: string;
 
   valorOrcado?: number;
+  funcionarioOrcamento?: string; 
+  dataHoraOrcamento?: string;   
 
   motivoRejeicao?: string;
   descricaoManutencao?: string;

@@ -31,7 +31,7 @@ export const routes: Routes = [
   { path: 'funcionario/efetuar-manutencao/:id', component: EfetuarManutencaoComponent, canActivate: [funcionarioGuard] },
   { path: 'funcionario/redirecionar-manutencao/:id', component: RedirecionarManutencaoComponent, canActivate: [funcionarioGuard] },
   { path: 'funcionario/relatorio-receitas', component: RelatorioReceitasComponent, canActivate: [funcionarioGuard] },
-    { path: 'funcionario/relatorio-categoria', component: RelatorioCategoriasComponent, canActivate: [funcionarioGuard] },
+  { path: 'funcionario/relatorio-categoria', component: RelatorioCategoriasComponent, canActivate: [funcionarioGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];
