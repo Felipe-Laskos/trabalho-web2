@@ -28,6 +28,7 @@ export class EfetuarOrcamentoComponent {
   solicitacoes: Solicitacao[] = mockSolicitacao;
 
   valorOrcamento: number = 0;
+  nomeFuncionario: string = '';
 
   constructor(
     private dialog: MatDialog,
@@ -36,10 +37,12 @@ export class EfetuarOrcamentoComponent {
     private router: Router
   ) {}
 
-  ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacoes.find(s => s.id === id);
-  }
+ngOnInit() {
+  const id = Number(this.route.snapshot.paramMap.get('id'));
+  this.solicitacao = this.solicitacoes.find(s => s.id === id);
+
+  this.nomeFuncionario = this.authService.getNome();
+}
 
 valorOrcado: number = 0;   
 valorDigitado: string = '';   

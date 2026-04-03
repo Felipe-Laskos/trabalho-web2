@@ -7,6 +7,21 @@
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
+.responsavel-tecnico {
+  background-color: rgba(153, 184, 217, 0.15); 
+  color: #7491b0; 
+  padding: 12px 20px; 
+  border-radius: 10px; 
+  font-size: 1rem; 
+  font-weight: 500;
+  width: 100%; 
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+  margin-bottom: 30px; 
+}
+.responsavel-tecnico b {
+  font-weight: 600; 
+}
+
 h2, h3 {
   color: #34495e;
   margin-bottom: 15px;
@@ -46,9 +61,10 @@ input:focus {
 .grid {
   display: grid;
   grid-template-columns: 1.2fr 1.2fr 1fr;
-  gap: 30px;
+  gap: 50px;
   max-width: 900px;
   margin: 0 auto;
+  margin-top: 40px;
 }
 
 .col {
@@ -57,15 +73,34 @@ input:focus {
 
 .col:not(:last-child) {
   border-right: 1px solid rgba(0,0,0,0.1);
-  padding-right: 20px;
+  padding-right: 25px;
 }
 
 .col-acao {
   display: flex;
   flex-direction: column;
+  margin-bottom: 20px;
   gap: 30px;
 }
 
+.col p {
+  margin: 12px 0; 
+  font-size: 15px;
+  line-height: 1.6; 
+  display: flex;
+  justify-content: flex-start;
+  gap: 5px; 
+}
+
+.col p b {
+  color: #2c3e50; 
+  min-width: 20px; 
+  display: inline-block;
+}
+
+.col-acao h3 {
+  margin-bottom: 20px;
+}
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr; 
