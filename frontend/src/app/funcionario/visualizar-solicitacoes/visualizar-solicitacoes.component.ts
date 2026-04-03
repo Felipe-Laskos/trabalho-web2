@@ -136,16 +136,18 @@ constructor(
       });
     }
 
-    if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
-      const inicio = new Date(this.dataInicio);
-      const fim = new Date(this.dataFim);
-      fim.setHours(23, 59, 59, 999);
+  if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
+    const [anoI, mesI, diaI] = this.dataInicio.split('-').map(Number);
+    const [anoF, mesF, diaF] = this.dataFim.split('-').map(Number);
 
-      lista = lista.filter(s => {
-        const data = new Date(s.dataHoraCriacao);
-        return data >= inicio && data <= fim;
-      });
-    }
+    const inicio = new Date(anoI, mesI - 1, diaI, 0, 0, 0, 0);
+    const fim = new Date(anoF, mesF - 1, diaF, 23, 59, 59, 999);
+
+    lista = lista.filter(s => {
+      const data = new Date(s.dataHoraCriacao);
+      return data >= inicio && data <= fim;
+    });
+  }
 
     lista.sort((a, b) => {
       return new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime();
