@@ -4,6 +4,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Funcionario } from '../../models/funcionario.model';
 import { FuncionarioService } from '../../services/funcionario.service';
+import { ClienteService } from '../../services/cliente.service';
 import { AuthService } from '../../services/auth.service';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
@@ -31,6 +32,7 @@ import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 export class CrudFuncionariosComponent implements OnInit {
 
   private funcionarioService = inject(FuncionarioService);
+  private clienteService = inject(ClienteService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private aviso = inject(MatSnackBar);
@@ -49,7 +51,7 @@ export class CrudFuncionariosComponent implements OnInit {
 
   paginaAtual: number = 1;
   itensPorPagina: number = 5;
-  mostrarInativas: boolean = false;
+  mostrarInativas: boolean = true;
   termoPesquisa: string = '';
 
   ngOnInit(): void {
@@ -123,9 +125,10 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const emailExiste = this.funcionarioService.buscarPorEmail(result.email);
-        if (emailExiste) {
-          this.aviso.open('E-mail já cadastrado!', 'OK', { duration: 3000, verticalPosition: 'top' });
+        const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
+        const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
+        if (emailEmFuncionario || emailEmCliente) {
+          this.aviso.open('E-mail já cadastrado no sistema!', 'OK', { duration: 3000, verticalPosition: 'top' });
           return;
         }
 
@@ -159,6 +162,15 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && this.funcionarioSelecionado) {
+        if (result.email !== this.funcionarioSelecionado.email) {
+          const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
+          const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
+          if (emailEmFuncionario || emailEmCliente) {
+            this.aviso.open('E-mail já cadastrado no sistema!', 'OK', { duration: 3000, verticalPosition: 'top' });
+            return;
+          }
+        }
+
         const atualizado: Funcionario = {
           ...this.funcionarioSelecionado,
           ...result,

@@ -10,6 +10,7 @@ import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancel
 import { InputComponent } from "../../shared/input/input.component";
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 import { ClienteService } from '../../services/cliente.service';
+import { FuncionarioService } from '../../services/funcionario.service';
 
 @Component({
   selector: 'app-autocadastro',
@@ -41,6 +42,7 @@ export class AutocadastroComponent {
   };
 
   private clienteService = inject(ClienteService);
+  private funcionarioService = inject(FuncionarioService);
 
   constructor(public router: Router, private http: HttpClient) {}
   
@@ -86,6 +88,20 @@ export class AutocadastroComponent {
     const erroCpf = ValidarCpf()(controleCpf);
 
     if (form.valid && erroCpf === null) {
+      const emailEmCliente = this.clienteService.buscarPorEmail(this.usuario.email);
+      const emailEmFuncionario = this.funcionarioService.buscarPorEmail(this.usuario.email);
+      if (emailEmCliente || emailEmFuncionario) {
+        alert('E-mail já cadastrado no sistema!');
+        return;
+      }
+
+      const cpfLimpo = this.usuario.cpf.replace(/\D/g, '');
+      const cpfExiste = this.clienteService.listarTodos().find(c => c.cpf.replace(/\D/g, '') === cpfLimpo);
+      if (cpfExiste) {
+        alert('CPF já cadastrado!');
+        return;
+      }
+
       this.clienteService.inserir({
         nome: this.usuario.nome,
         cpf: this.usuario.cpf,

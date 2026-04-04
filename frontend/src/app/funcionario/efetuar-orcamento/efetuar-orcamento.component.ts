@@ -90,6 +90,7 @@ export class EfetuarOrcamentoComponent implements OnInit {
     this.solicitacao.dataHoraOrcamento = new Date().toISOString();
     this.solicitacao.valorOrcado = this.valorOrcamento;
     this.solicitacao.estadoAtual = SolicitacaoENUM.ORCADA;
+    this.solicitacao.funcionarioResponsavel = funcionarioLogado;
 
     this.solicitacaoService.atualizar(this.solicitacao);
 

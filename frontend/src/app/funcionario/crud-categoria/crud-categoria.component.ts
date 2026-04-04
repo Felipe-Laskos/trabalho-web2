@@ -39,7 +39,7 @@ export class CrudCategoriaComponent implements OnInit {
 
   paginaAtual: number = 1;
   itensPorPagina: number = 5;
-  mostrarInativas: boolean = false;
+  mostrarInativas: boolean = true;
   termoPesquisa: string = '';
 
   ngOnInit(): void {
