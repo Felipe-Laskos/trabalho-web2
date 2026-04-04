@@ -171,7 +171,7 @@ export const mockSolicitacao: Solicitacao[] = [
   dataHoraPagamento: "2024-01-10 16:30",
   dataHoraFinalizacao: "2024-03-10 17:00",
   ativo: true,
-  cliente: mockCliente[4],
+  cliente: mockCliente[2],
   categoria:  mockCategoria[3],
   funcionarioResponsavel:  mockFuncionario[0],
   historico: [mockHistoricoSolicitacao[0]],

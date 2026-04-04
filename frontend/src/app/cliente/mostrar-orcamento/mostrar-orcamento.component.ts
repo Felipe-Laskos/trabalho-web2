@@ -2,9 +2,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { mockSolicitacao } from '../../mocks/solicitacao.mock';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { Cliente } from '../../models/cliente.model';
+import { HistoricoSolicitacao } from '../../models/historico.model'; 
 import { SolicitacaoService } from '../../services/solicitacao.service';
 import { HistoricoService } from '../../services/historico.service';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
@@ -39,6 +41,7 @@ export class MostrarOrcamentoComponent implements OnInit {
   solicitacao: Solicitacao | undefined;
   cliente: Cliente | undefined;
   funcionario: Funcionario | undefined;
+  dataHoraAcesso: Date = new Date();
 
   exibirModal: boolean = false;
   estadoModal:
@@ -47,7 +50,7 @@ export class MostrarOrcamentoComponent implements OnInit {
     | 'confirmarRejeicao'
     | 'motivoRejeicao'
     | 'sucessoRejeicao' = 'confirmacao';
-  motivoRejeicaoTexto: string = '';
+  motivoRejeicao: string = '';
   exibirDefeitoCompleto: boolean = false;
 
   ngOnInit(): void {
@@ -105,7 +108,7 @@ export class MostrarOrcamentoComponent implements OnInit {
   }
 
   abrirModalRejeicao(): void {
-    this.motivoRejeicaoTexto = '';
+    this.motivoRejeicao = '';
     this.estadoModal = 'confirmarRejeicao';
     this.exibirModal = true;
   }
@@ -121,13 +124,32 @@ export class MostrarOrcamentoComponent implements OnInit {
         estadoAnterior: this.solicitacao.estadoAtual,
         estadoNovo: SolicitacaoENUM.REJEITADA,
         solicitacaoId: this.solicitacao.id!,
-        observacao: `Serviço rejeitado. Motivo: ${this.motivoRejeicaoTexto}`
+        observacao: `Serviço rejeitado. Motivo: ${this.motivoRejeicao}`
       });
       this.solicitacao.estadoAtual = SolicitacaoENUM.REJEITADA;
-      this.solicitacao.motivoRejeicao = this.motivoRejeicaoTexto;
+      this.solicitacao.motivoRejeicao = this.motivoRejeicao;
       this.solicitacaoService.atualizar(this.solicitacao);
     }
     this.estadoModal = 'sucessoRejeicao';
+  }
+
+  adicionarAoHistorico(novoRegistro: HistoricoSolicitacao) {
+    if (this.solicitacao) {
+      if (!(this.solicitacao).historico) {
+        (this.solicitacao).historico = [];
+      }
+      (this.solicitacao).historico.push(novoRegistro);
+    }
+  }
+
+  formatarData(data: Date): string {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    const horas = String(data.getHours()).padStart(2, '0');
+    const minutos = String(data.getMinutes()).padStart(2, '0');
+    
+    return `${ano}-${mes}-${dia} ${horas}:${minutos}`;
   }
 
   fecharERedirecionar(): void {
@@ -139,7 +161,7 @@ export class MostrarOrcamentoComponent implements OnInit {
   fecharModal(): void {
     this.exibirModal = false;
     this.estadoModal = 'confirmacao';
-    this.motivoRejeicaoTexto = '';
+    this.motivoRejeicao = '';
   }
 
   obterCorDoBadge(estado: string | undefined): string {

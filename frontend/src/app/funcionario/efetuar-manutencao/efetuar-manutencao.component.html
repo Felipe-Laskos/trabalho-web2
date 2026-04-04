@@ -1,98 +1,112 @@
 <app-card-visualizacao>
+<h2>Efetuar Manutenção</h2>
 
-  <h2>Efetuar Manutenção</h2>
-
-  @if (solicitacao) {
-    <div class="container-cards">
-      <div class="card">
-        <h3>Solicitação</h3>
-        <p><strong>ID:</strong> #{{ solicitacao.id }}</p>
-        <p><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
-        <p><strong>Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
-        <p><strong>Estado:</strong> {{ solicitacao.estadoAtual }}</p>
-        <p><strong>Data:</strong> {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
-      </div>
-
-      <div class="card">
-        <h3>Cliente</h3>
-        <p><strong>Nome:</strong> {{ solicitacao.cliente?.nome }}</p>
-        <p><strong>CPF:</strong> {{ solicitacao.cliente?.cpf }}</p>
-        <p><strong>Email:</strong> {{ solicitacao.cliente?.email }}</p>
-        <p><strong>Telefone:</strong> {{ solicitacao.cliente?.telefone }}</p>
-        @if (solicitacao.cliente?.endereco) {
-          <p><strong>Endereço:</strong>
-            {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }}
-            @if (solicitacao.cliente?.endereco?.complemento) { - {{ solicitacao.cliente?.endereco?.complemento }} }
-            - {{ solicitacao.cliente?.endereco?.bairro }},
-            {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}
-          </p>
-        }
-      </div>
+@if (solicitacao) {
+<div class="container-cards">
+    <div class="card">
+      <h3>Solicitação</h3>
+    <div class="timestamp-acesso"> Manutenção realizada em: {{ dataHoraAcesso | date: 'dd/MM/yyyy HH:mm' }} </div>
+    <p class="status-badge" id="p1" [ngClass]="obterCorDoBadge (solicitacao.estadoAtual) "> <strong>Status:</strong> {{ solicitacao.estadoAtual }}</p>
+    <p><strong>ID:</strong> # {{ solicitacao.id }}</p>
+    <p><strong>Categoria:</strong> {{ solicitacao.categoria?.nome }}</p>
+    <p><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
+    <p><strong>Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
+    <p><strong>Data de entrada:</strong> {{ solicitacao.dataHoraCriacao | date: 'dd/MM/yyyy HH:mm' }}</p>
     </div>
 
-    @if (!mostrarFormulario) {
-      <div class="botoes-acao">
-        <app-botao
-          texto="Efetuar Manutenção"
-          (clicou)="abrirFormulario()"
-          cor="primary">
-        </app-botao>
-
-        <app-botao
-          texto="Redirecionar"
-          (clicou)="redirecionar()"
-          cor="warn">
-        </app-botao>
-      </div>
-    }
-
-    @if (mostrarFormulario) {
-      <form [formGroup]="form" class="card">
-        <h3>Dados da Manutenção</h3>
-
-        <div class="campo-container largura-total">
-          <label><h4>Descrição:</h4></label>
-          <textarea
-            class="campo-textarea"
-            formControlName="descricao"
-            placeholder="Descreva o problema encontrado..."
-            maxlength="200"
-            #descRef>
-          </textarea>
-        </div>
-        <div class="contador-container largura-total">
-          <span class="contador-texto" [class.erro]="descRef.value.length >= 200">
-            {{ descRef.value.length }}/200
-          </span>
-        </div>
-
-        <br>
-
-        <div class="campo-container largura-total">
-          <label><h4>Orientações:</h4></label>
-          <textarea
-            class="campo-textarea"
-            formControlName="orientacoes"
-            placeholder="Instruções para o cliente..."
-            maxlength="200"
-            #orientRef>
-          </textarea>
-        </div>
-        <div class="contador-container largura-total">
-          <span class="contador-texto" [class.erro]="orientRef.value.length >= 200">
-            {{ orientRef.value.length }}/200
-          </span>
-        </div>
-
-        <br><br>
-
-        <app-botao
-          texto="Confirmar Manutenção"
-          (clicou)="confirmarManutencao()"
-          cor="accent">
-        </app-botao>
-      </form>
-    }
+    <div class="card">
+      <h3>Cliente</h3>
+      <p><strong>Nome:</strong> {{ solicitacao.cliente?.nome }}</p>
+      <p><strong>Email:</strong> {{ solicitacao.cliente?.email }}</p>
+      <p><strong>Telefone:</strong> {{ solicitacao.cliente?.telefone }}</p>
+      <p><strong>CPF:</strong> {{ solicitacao.cliente?.cpf }}</p>
+      <p><strong>Endereço:</strong> {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }} 
+      @if (solicitacao.cliente?.endereco?.complemento) { - {{ solicitacao.cliente?.endereco?.complemento }}}</p>
+      <p><strong>Bairro/Cidade:</strong> {{ solicitacao.cliente?.endereco?.bairro }} - {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}</p>
+      <p> <strong>CEP:</strong> {{ solicitacao.cliente?.endereco?.cep }}</p>
+    </div>
+  </div>
   }
 
+@if (!mostrarFormulario) {
+<div class="botoes">
+  <app-botao id="botao1"
+    *ngIf="!botaoDesativado"
+    texto="Efetuar Manutenção" 
+    (clicou)="abrirFormulario()"
+    cor="primary">
+  </app-botao>
+
+  
+  <app-botao id="botao2"
+    *ngIf="!botaoDesativado"
+    texto="Redirecionar" 
+    (clicou)="redirecionar()"
+    cor="warn">
+  </app-botao>
+</div>
+}
+
+@if (mostrarFormulario) {
+  <form [formGroup]="form" class="card">
+    <h3>Dados da Manutenção:</h3>
+
+    <div class="campo-container1">
+      <app-text-area altura="200px" largura="100%"
+        titulo="Descrição do Problema:"
+        placeholder="Digite algo..."
+        [valor]="form.controls.descricao.value || '' "
+        (mudou)="form.controls.descricao.setValue($event)">
+        </app-text-area>
+    </div>
+
+     <div class="campo-container2">
+     <app-text-area altura="200px" largura="100%"
+        titulo="Orientações para o Cliente:"
+        placeholder="Digite algo..."
+        [valor]="form.controls.orientacoes.value || '' "
+        (mudou)="form.controls.orientacoes.setValue($event)">
+        </app-text-area>
+    </div>
+
+    <div class="botao-acoes">
+       <app-botao class="botao-voltar"
+       *ngIf="!botaoDesativado"
+        texto="Voltar" 
+        (clicou)="cancelarFormulario()" 
+        cor="warn"> 
+      </app-botao>
+
+    <app-botao class="botao-confirmar"
+        texto="Confirmar" 
+        (clicou)="aprovarServico()" 
+        cor="accent">
+    </app-botao>
+      </div>
+
+    <div class="modal-overlay" *ngIf="exibirModal">
+    <div class="modal-box">
+    <div *ngIf="estadoModal === 'confirmacao'">
+      <h2>Confirmar Manutenção?</h2>
+      <p id="paragrafo1">Ao confirmar, a manutenção será registrada.</p>
+      <div class="modal-actions">
+        <app-botao-cancelar 
+        class="btn-cancelar" 
+        (click)="fecharModal()">Cancelar</app-botao-cancelar>
+
+        <app-botao-aprovar 
+        class="btn-confirmar" 
+        (click)="confirmarManutencao()">Confirmar</app-botao-aprovar> 
+       </div>
+      </div>
+    </div>
+   </div>
+
+ </form>
+  }
 </app-card-visualizacao>
+
+<div class="toast-sucesso" *ngIf="exibirToastSucesso">
+  <span class="icon-check">✓</span> Manutenção registrada com sucesso! <br>
+  Redirecionando...
+</div>

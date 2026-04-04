@@ -19,6 +19,7 @@ import { BotaoAprovarComponent } from "../../shared/botao-aprovar/botao-aprovar.
   templateUrl: './pagar-servico.component.html',
   styleUrl: './pagar-servico.component.css',
 })
+
 export class PagarServicoComponent implements OnInit {
 
   private solicitacaoService = inject(SolicitacaoService);
@@ -29,6 +30,7 @@ export class PagarServicoComponent implements OnInit {
 
   solicitacao: Solicitacao | undefined;
   dataHoraAcesso: Date = new Date();
+
   exibirModalConfirmacao: boolean = false;
 
   ngOnInit(): void {
@@ -65,6 +67,17 @@ export class PagarServicoComponent implements OnInit {
     }
   }
 
+  formatarData(data: Date): string {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    const horas = String(data.getHours()).padStart(2, '0');
+    const minutos = String(data.getMinutes()).padStart(2, '0');
+    
+    return `${ano}-${mes}-${dia} ${horas}:${minutos}`;
+  }
+
+
   cancelar(): void {
     this.exibirModalConfirmacao = false;
   }
@@ -85,6 +98,6 @@ export class PagarServicoComponent implements OnInit {
       case 'PAGA': return 'badge-alaranjado';
       case 'FINALIZADA': return 'badge-verde';
       default: return 'badge-cinza';
-    }
-  }
-}
+     }
+   }
+ }

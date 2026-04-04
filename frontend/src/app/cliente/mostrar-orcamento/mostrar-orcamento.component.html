@@ -2,10 +2,15 @@
   <app-card-visualizacao>
     <div class="card-content">
       <div class="coluna-esquerda">
+        <div class="ajuste">
         <h1 class="titulo-solicitacao">
           Detalhes da Solicitação <br />
           <span>#{{ solicitacao?.id }}</span>
         </h1>
+       <div class="timestamp-acesso">
+          Acessado em: {{ dataHoraAcesso | date: 'dd/MM/yyyy HH:mm' }}
+        </div>
+        </div>
 
         <div class="info-group">
           <div class="info-header">
@@ -15,6 +20,18 @@
           <div class="info-box">
             <p class="nome-cliente">{{ cliente?.nome }}</p>
             <p class="telefone-cliente">{{ cliente?.telefone }}</p>
+          </div>
+        </div>
+
+        <div class="info-group">
+          <div class="info-header">
+            <span class="icon-desktop"></span>
+            <h2>CATEGORIA:</h2>
+          </div>
+          <div class="info-box">
+            <p class="nome-equipamento">
+              {{ solicitacao?.categoria?.nome }}
+            </p>
           </div>
         </div>
 
@@ -156,8 +173,8 @@
         class="text-area text-area-modal-rejeicao"
         titulo="Por favor, escreva abaixo o motivo de estar cancelando o serviço:"
         placeholder="Digite algo..."
-        [valor]="motivoRejeicaoTexto"
-        (mudou)="motivoRejeicaoTexto = $event">
+        [valor]="motivoRejeicao"
+        (mudou)="motivoRejeicao = $event">
       </app-text-area>
 
       <div class="modal-actions">
@@ -165,7 +182,7 @@
         <button
           class="btn-confirmar-motivo"
           (click)="finalizarRejeicao()"
-          [disabled]="!motivoRejeicaoTexto || motivoRejeicaoTexto.trim() === ''">
+          [disabled]="!motivoRejeicao || motivoRejeicao.trim() === ''">
           Confirmar Motivo
         </button>
       </div>
