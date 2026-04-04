@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CategoriaEquipamento } from '../../models/categoria.model';
-import { TabelaComponent } from '../../shared/tabela/tabela.component'; 
+import { CategoriaService } from '../../services/categoria.service';
+import { TabelaComponent } from '../../shared/tabela/tabela.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
@@ -22,49 +23,44 @@ import { PesquisaComponent } from '../../shared/pesquisa/pesquisa.component';
   templateUrl: './crud-categoria.component.html',
   styleUrls: ['./crud-categoria.component.css']
 })
-export class CrudCategoriaComponent {
+export class CrudCategoriaComponent implements OnInit {
+
+  private categoriaService = inject(CategoriaService);
+  private dialog = inject(MatDialog);
 
   colunas = [
     { campo: 'id', titulo: 'ID' },
-    { campo: 'nome', titulo: 'Nome'},
-    { campo: 'quantidade', titulo: 'Quantidade'},
+    { campo: 'nome', titulo: 'Nome' },
+    { campo: 'quantidade', titulo: 'Quantidade' },
   ];
 
-  dados = [
-    { id: 1, nome: 'Laptop', quantidade: 10, estadoAtual: 'ATIVA' },
-    { id: 2, nome: 'Ultrabook', quantidade: 5, estadoAtual: 'ATIVA' },
-    { id: 3, nome: 'Desktop torre', quantidade: 12, estadoAtual: 'ATIVA' },
-    { id: 4, nome: 'All-in-One', quantidade: 2, estadoAtual: 'ATIVA' },
-    { id: 5, nome: 'Impressora jato de tinta', quantidade: 5, estadoAtual: 'ATIVA' },
-    { id: 6, nome: 'Impressora laser', quantidade: 8, estadoAtual: 'ATIVA' },
-    { id: 7, nome: 'Monitor LED', quantidade: 2, estadoAtual: 'ATIVA' },
-    { id: 8, nome: 'Mouse sem fio', quantidade: 0, estadoAtual: 'INATIVA' },
-    { id: 9, nome: 'Teclado mecânico', quantidade: 0, estadoAtual: 'INATIVA' },
-  ];
-
+  dados: CategoriaEquipamento[] = [];
   categoriaSelecionada?: CategoriaEquipamento;
 
-  constructor(private dialog: MatDialog) {}
-
-  // paginação
   paginaAtual: number = 1;
   itensPorPagina: number = 5;
+  mostrarInativas: boolean = false;
+  termoPesquisa: string = '';
 
-  selecionarPagina(pagina: number) {
+  ngOnInit(): void {
+    this.carregarDados();
+  }
+
+  private carregarDados(): void {
+    this.dados = this.categoriaService.listarTodos();
+  }
+
+  selecionarPagina(pagina: number): void {
     this.paginaAtual = pagina;
   }
 
-  get dadosPaginados() {
+  get dadosPaginados(): CategoriaEquipamento[] {
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
     const fim = inicio + this.itensPorPagina;
-
     return this.categoriasFiltradas.slice(inicio, fim);
   }
 
-  // filtro inativas e pesquisa
-  mostrarInativas: boolean = false;
-
-  get categoriasFiltradas() {
+  get categoriasFiltradas(): CategoriaEquipamento[] {
     let filtradas = this.dados.filter(c =>
       c.nome.toLowerCase().includes(this.termoPesquisa.toLowerCase())
     );
@@ -76,33 +72,20 @@ export class CrudCategoriaComponent {
     return filtradas;
   }
 
-  // pesquisa
-  termoPesquisa: string = '';
-
-  pesquisar(termo: string) {
+  pesquisar(termo: string): void {
     this.termoPesquisa = termo;
     this.paginaAtual = 1;
   }
 
-  // categoria desativadas
-  toggleInativas() {
+  toggleInativas(): void {
     this.mostrarInativas = !this.mostrarInativas;
   }
 
-  // seleção de linha
-  selecionarLinha(item: any) {
+  selecionarLinha(item: any): void {
     this.categoriaSelecionada = item;
   }
 
-  gerarNovoId(): number {
-    if (this.dados.length === 0) return 1;
-
-    const maiorId = Math.max(...this.dados.map(c => c.id));
-    return maiorId + 1;
-  }
-
-  // funções CRUD
-  adicionar() {
+  adicionar(): void {
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
       data: {
         tipo: 'formulario',
@@ -113,23 +96,24 @@ export class CrudCategoriaComponent {
         ],
         formData: {
           nome: '',
-          quantidade: 0        
+          quantidade: 0
         }
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.dados.push({
+        const nova: CategoriaEquipamento = {
           ...result,
-          id: this.gerarNovoId(),
           estadoAtual: 'ATIVA'
-        });
+        };
+        this.categoriaService.inserir(nova);
+        this.carregarDados();
       }
     });
   }
 
-  atualizar() {
+  atualizar(): void {
     if (!this.categoriaSelecionada) return;
 
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
@@ -146,17 +130,23 @@ export class CrudCategoriaComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && this.categoriaSelecionada) {
-        Object.assign(this.categoriaSelecionada, result),
-        this.categoriaSelecionada.estadoAtual = 'ATIVA';
+        const atualizada: CategoriaEquipamento = {
+          ...this.categoriaSelecionada,
+          ...result,
+          estadoAtual: 'ATIVA'
+        };
+        this.categoriaService.atualizar(atualizada);
+        this.carregarDados();
+        this.categoriaSelecionada = undefined;
       }
     });
   }
 
-  excluir() {
+  excluir(): void {
     if (!this.categoriaSelecionada) return;
 
-    const categoria = this.categoriaSelecionada; 
-    
+    const categoria = this.categoriaSelecionada;
+
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
       data: {
         tipo: 'confirmacao',
@@ -169,14 +159,10 @@ export class CrudCategoriaComponent {
 
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        categoria.estadoAtual = 'INATIVA';
-
-        console.log('Categoria inativada:', categoria);
-
+        this.categoriaService.remover(categoria.id!);
+        this.carregarDados();
         this.categoriaSelecionada = undefined;
       }
     });
   }
 }
-
-

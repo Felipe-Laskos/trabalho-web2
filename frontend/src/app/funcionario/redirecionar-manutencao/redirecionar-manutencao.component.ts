@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Solicitacao } from '../../models/solicitacao.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { SolicitacaoService } from '../../services/solicitacao.service';
+import { HistoricoService } from '../../services/historico.service';
 import { FuncionarioService } from '../../services/funcionario.service';
 import { AuthService } from '../../services/auth.service';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
@@ -32,6 +33,7 @@ import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/
 export class RedirecionarManutencaoComponent implements OnInit {
 
   private solicitacaoService = inject(SolicitacaoService);
+  private historicoService = inject(HistoricoService);
   private funcionarioService = inject(FuncionarioService);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
@@ -87,6 +89,19 @@ export class RedirecionarManutencaoComponent implements OnInit {
       if (!confirmou) return;
 
       const funcionarioDestino = this.funcionarioService.buscarPorId(this.funcionarioSelecionadoId!);
+      const emailLogado = this.authService.getEmail();
+      const funcionarioOrigem = this.funcionarioService.buscarPorEmail(emailLogado);
+
+      this.historicoService.inserir({
+        dataHora: new Date().toISOString(),
+        estadoAnterior: this.solicitacao!.estadoAtual,
+        estadoNovo: SolicitacaoENUM.REDIRECIONADA,
+        solicitacaoId: this.solicitacao!.id!,
+        funcionario: funcionarioOrigem,
+        funcionarioDestino: funcionarioDestino,
+        observacao: `Redirecionada de ${funcionarioOrigem?.nome} para ${funcionarioDestino?.nome}.`
+      });
+
       this.solicitacao!.estadoAtual = SolicitacaoENUM.REDIRECIONADA;
       this.solicitacao!.funcionarioResponsavel = funcionarioDestino;
       this.solicitacaoService.atualizar(this.solicitacao!);

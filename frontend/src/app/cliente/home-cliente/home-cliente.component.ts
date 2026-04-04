@@ -11,6 +11,7 @@ import { TabelaComponent, AcaoTabela, EventoAcao, ColunaTabela } from "../../sha
 import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../services/solicitacao.service';
+import { HistoricoService } from '../../services/historico.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -31,6 +32,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class HomeClienteComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
+  private historicoService = inject(HistoricoService);
   private authService = inject(AuthService);
 
   nomeUsuario: string = 'Cliente';
@@ -41,14 +43,15 @@ export class HomeClienteComponent implements OnInit {
   
   colunasTabela: ColunaTabela[] = [
   { campo: 'id', titulo: 'Ordem', tipo: 'texto' },
-  { campo: 'descricaoEquipamento', titulo: 'Aparelho', tipo: 'texto' },
+  { campo: 'dataHoraCriacao', titulo: 'Data/Hora', tipo: 'data' },
+  { campo: 'descricaoEquipamento', titulo: 'Aparelho', tipo: 'texto', truncar: 30 },
   { campo: 'estadoAtual', titulo: 'Situação Atual', tipo: 'estado' },
   { campo: 'valorOrcado', titulo: 'Valor Previsto', tipo: 'texto' },
   { campo: 'acoes', titulo: 'Ações', tipo: 'acao' }
 ];
 
   acoesTabela: AcaoTabela[] = [
-    { nome: 'Aprovar', acao: 'aprovar', estados: ['ORCADA'], cor: 'primary' },
+    { nome: 'Aprovar/Rejeitar', acao: 'aprovar', estados: ['ORCADA'], cor: 'primary' },
     { nome: 'Resgatar', acao: 'resgatar', estados: ['REJEITADA'], cor: 'warn' },
     { nome: 'Pagar', acao: 'pagar', estados: ['ARRUMADA'], cor: 'accent' },
     { nome: 'Visualizar', acao: 'visualizar' }
@@ -67,7 +70,12 @@ export class HomeClienteComponent implements OnInit {
 
   private carregarDadosIniciais(): void {
     this.nomeUsuario = this.authService.getNome() || 'Cliente';
-    this.listaSolicitacoes = this.solicitacaoService.listarTodos();
+    const emailLogado = this.authService.getEmail();
+
+    this.listaSolicitacoes = this.solicitacaoService.listarTodos()
+      .filter(s => s.cliente?.email === emailLogado)
+      .sort((a, b) => new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime());
+
     this.identificarUltimoPedidoEmAnalise();
   }
 
@@ -112,7 +120,23 @@ export class HomeClienteComponent implements OnInit {
   }
 
   aprovar(item: Solicitacao) { this.router.navigate(['/cliente/mostrar-orcamento', item.id]); }
-  resgatar(item: Solicitacao) { console.log('Resgatar pedido:', item.id); } // RF009 Laura
+  resgatar(item: Solicitacao) {
+    if (confirm(`Deseja resgatar a solicitação do equipamento: ${item.descricaoEquipamento}?`)) {
+      this.historicoService.inserir({
+        dataHora: new Date().toISOString(),
+        estadoAnterior: item.estadoAtual,
+        estadoNovo: SolicitacaoENUM.APROVADA,
+        solicitacaoId: item.id!,
+        observacao: 'Solicitação resgatada pelo cliente.'
+      });
+      item.estadoAtual = SolicitacaoENUM.APROVADA;
+      this.solicitacaoService.atualizar(item);
+      this.carregarDadosIniciais();
+      this.dadosFiltrados = this.listaSolicitacoes;
+      this.atualizarPaginacao();
+      this.aviso.open('Solicitação resgatada! Estado alterado para APROVADA.', 'OK', { duration: 3000, verticalPosition: 'top' });
+    }
+  }
   pagar(item: Solicitacao) { this.router.navigate(['/cliente/pagar', item.id]); } // RF010 Laura
 
   irParaSolicitacao(): void {

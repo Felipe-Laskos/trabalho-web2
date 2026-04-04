@@ -1,5 +1,3 @@
-
-
   @if (solicitacao) {
 
     <app-card-visualizacao>
@@ -11,16 +9,14 @@
         <p><b>Funcionário: </b> {{ nomeFuncionario }}</p>
       </div>
 
-
-
       <div class="grid">
 
   <div class="col">
     <h3>Dados da Solicitação</h3>
 
     <p><b>Equipamento:</b> {{ solicitacao.descricaoEquipamento }}</p>
-    <p><b>Defeito:</b> {{ solicitacao.descricaoDefeito }}</p>
     <p><b>Categoria:</b> {{ solicitacao.categoria?.nome }}</p>
+    <p><b>Defeito:</b> {{ solicitacao.descricaoDefeito }}</p>
     <p><b>Data:</b> {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
     <p><b>Estado Atual:</b> {{ solicitacao.estadoAtual }}</p>
   </div>
@@ -39,17 +35,14 @@
       {{ solicitacao.cliente?.telefone | slice:7 }}
     </p>
 
-  <p class="endereco">
-    <b>Endereço:</b> 
-    {{ solicitacao.cliente?.endereco?.logradouro }},
-    {{ solicitacao.cliente?.endereco?.numero }}
-    <br>
-    {{ solicitacao.cliente?.endereco?.bairro }},
-    {{ solicitacao.cliente?.endereco?.cidade }} - 
-    {{ solicitacao.cliente?.endereco?.uf }}
-    <br>
-    CEP: {{ solicitacao.cliente?.endereco?.cep }}
-  </p>
+    @if (solicitacao.cliente?.endereco) {
+      <p><b>Endereço:</b>
+        {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }}
+        @if (solicitacao.cliente?.endereco?.complemento) { - {{ solicitacao.cliente?.endereco?.complemento }} }
+        - {{ solicitacao.cliente?.endereco?.bairro }},
+        {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}
+      </p>
+    }
   </div>
 
   <div class="col col-acao">
@@ -78,4 +71,3 @@
     </app-card-visualizacao>
 
   }
-

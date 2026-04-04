@@ -3,12 +3,7 @@
   <section class="boas-vindas">
     <h1>Olá, {{ nomeUsuario }}!</h1>
     
-    <div class="alerta-status" *ngIf="idPedidoPendente !== '00000'">
-      <mat-icon>hourglass_empty</mat-icon>
-      <span>
-        Atualmente, seu pedido <strong>#{{ idPedidoPendente }}</strong> está em fase de análise técnica.
-      </span>
-    </div>
+
   </section>
 
   <app-card-visualizacao>

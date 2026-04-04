@@ -14,7 +14,7 @@
             largura="100%" 
             altura="52px"
             [lista]="categoriasLista"
-            (mudou)="solicitacao.categoria = $event.toString()">
+            (mudou)="solicitacao.categoriaId = $event">
           </app-combo> <div class="container-erro">
             <span class="msg-erro" *ngIf="!solicitacao.categoria && enviou">Obrigatório.</span>
           </div>
