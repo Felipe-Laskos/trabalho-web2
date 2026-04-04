@@ -1,0 +1,203 @@
+<div class="visualizar__container" *ngIf="solicitacao">
+  <app-card-visualizacao>
+    <div class="visualizar__header">
+      <h1 class="visualizar__titulo">
+        Detalhes da Solicitação
+        <span class="visualizar__titulo_id">#{{ solicitacao.id }}</span>
+      </h1>
+      <div class="visualizar__status" [ngClass]="obterCorDoBadge(solicitacao.estadoAtual)">
+        {{ solicitacao.estadoAtual }}
+      </div>
+    </div>
+
+    <div class="visualizar__content">
+      <div class="visualizar__coluna_esquerda">
+        <div class="visualizar__info">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">person</mat-icon>
+            <h2>CLIENTE</h2>
+          </div>
+          <div class="visualizar__info_box">
+            <p class="visualizar__info_destaque">{{ solicitacao.cliente?.nome }}</p>
+            <p class="visualizar__info_sub">CPF: {{ solicitacao.cliente?.cpf }}</p>
+            <p class="visualizar__info_sub">{{ solicitacao.cliente?.telefone }}</p>
+            <p class="visualizar__info_sub">{{ solicitacao.cliente?.email }}</p>
+            <p class="visualizar__info_sub" *ngIf="solicitacao.cliente?.endereco">
+              {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }}
+              <span *ngIf="solicitacao.cliente?.endereco?.complemento"> - {{ solicitacao.cliente?.endereco?.complemento }}</span>
+              - {{ solicitacao.cliente?.endereco?.bairro }},
+              {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}
+            </p>
+          </div>
+        </div>
+
+        <div class="visualizar__info">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">devices</mat-icon>
+            <h2>EQUIPAMENTO</h2>
+          </div>
+          <div class="visualizar__info_box">
+            <p class="visualizar__info_destaque">{{ solicitacao.descricaoEquipamento }}</p>
+            <p class="visualizar__info_sub" *ngIf="solicitacao.categoria">
+              Categoria: {{ solicitacao.categoria.nome }}
+            </p>
+          </div>
+        </div>
+
+        <div class="visualizar__info">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">report_problem</mat-icon>
+            <h2>DEFEITO</h2>
+          </div>
+          <div class="visualizar__info_box">
+            <p class="visualizar__info_destaque">{{ solicitacao.descricaoDefeito }}</p>
+          </div>
+        </div>
+
+        <div class="visualizar__info">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">event</mat-icon>
+            <h2>DATA DE ABERTURA</h2>
+          </div>
+          <div class="visualizar__info_box">
+            <p class="visualizar__info_destaque">{{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualizar__divisor"></div>
+
+      <div class="visualizar__coluna_direita">
+        <div class="visualizar__info" *ngIf="solicitacao.funcionarioResponsavel">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">engineering</mat-icon>
+            <h2>TÉCNICO RESPONSÁVEL</h2>
+          </div>
+          <div class="visualizar__info_box">
+            <p class="visualizar__info_destaque">{{ solicitacao.funcionarioResponsavel.nome }}</p>
+            <p class="visualizar__info_sub">{{ solicitacao.funcionarioResponsavel.cargo }}</p>
+          </div>
+        </div>
+
+        <div class="visualizar__info" *ngIf="solicitacao.descricaoManutencao">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">description</mat-icon>
+            <h2>LAUDO TÉCNICO</h2>
+          </div>
+          <div class="visualizar__info_box">
+            <p class="visualizar__info_destaque">{{ solicitacao.descricaoManutencao }}</p>
+          </div>
+        </div>
+
+        <div class="visualizar__info" *ngIf="solicitacao.orientacoesCliente">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">info</mat-icon>
+            <h2>ORIENTAÇÕES</h2>
+          </div>
+          <div class="visualizar__info_box">
+            <p class="visualizar__info_destaque">{{ solicitacao.orientacoesCliente }}</p>
+          </div>
+        </div>
+
+        <div class="visualizar__info" *ngIf="solicitacao.valorOrcado">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone">attach_money</mat-icon>
+            <h2>VALOR ORÇADO</h2>
+          </div>
+          <div class="visualizar__info_box visualizar__info_box_valor">
+            <p class="visualizar__valor_total">R$ {{ solicitacao.valorOrcado | number: '1.2-2' }}</p>
+          </div>
+        </div>
+
+        <div class="visualizar__info" *ngIf="solicitacao.motivoRejeicao && solicitacao.estadoAtual === 'REJEITADA'">
+          <div class="visualizar__info_label">
+            <mat-icon class="visualizar__info_icone visualizar__icone_vermelho">block</mat-icon>
+            <h2 class="visualizar__titulo_vermelho">MOTIVO DA REJEIÇÃO</h2>
+          </div>
+          <div class="visualizar__info_box visualizar__info_box_rejeicao">
+            <p class="visualizar__info_destaque">{{ solicitacao.motivoRejeicao }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="visualizar__footer" *ngIf="temAcao()">
+      <app-botao
+        [texto]="obterTextoBotaoAcao()"
+        icone="arrow_forward"
+        cor="primary"
+        (clicou)="navegarParaAcao()">
+      </app-botao>
+    </div>
+  </app-card-visualizacao>
+
+  <app-card-visualizacao *ngIf="historicoOrdenado.length > 0">
+    <div class="visualizar__historico_header">
+      <mat-icon class="visualizar__historico_icone">history</mat-icon>
+      <h2>Histórico de Atualizações</h2>
+    </div>
+
+    <div class="visualizar__timeline">
+      <div class="visualizar__timeline_item" *ngFor="let item of historicoOrdenado; let ultimo = last">
+        <div class="visualizar__timeline_marcador">
+          <div class="visualizar__timeline_ponto" [ngClass]="obterCorDoBadge(item.estadoNovo)">
+            <mat-icon class="visualizar__timeline_ponto_icone">{{ obterIconeEstado(item.estadoNovo) }}</mat-icon>
+          </div>
+          <div class="visualizar__timeline_linha" *ngIf="!ultimo"></div>
+        </div>
+
+        <div class="visualizar__timeline_conteudo">
+          <div class="visualizar__timeline_card">
+            <div class="visualizar__timeline_card_header">
+              <span class="visualizar__timeline_estado" [ngClass]="obterCorDoBadge(item.estadoNovo)">
+                {{ item.estadoNovo }}
+              </span>
+              <span class="visualizar__timeline_data">
+                <mat-icon class="visualizar__timeline_icone_pequeno">schedule</mat-icon>
+                {{ item.dataHora | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+
+            <div class="visualizar__timeline_card_body">
+              <div class="visualizar__timeline_info" *ngIf="item.estadoAnterior">
+                <span class="visualizar__timeline_info_label">De:</span>
+                <span class="visualizar__timeline_estado_mini" [ngClass]="obterCorDoBadge(item.estadoAnterior)">
+                  {{ item.estadoAnterior }}
+                </span>
+                <mat-icon class="visualizar__timeline_seta">arrow_forward</mat-icon>
+                <span class="visualizar__timeline_estado_mini" [ngClass]="obterCorDoBadge(item.estadoNovo)">
+                  {{ item.estadoNovo }}
+                </span>
+              </div>
+
+              <div class="visualizar__timeline_info" *ngIf="item.funcionario">
+                <mat-icon class="visualizar__timeline_icone_pequeno">person</mat-icon>
+                <span class="visualizar__timeline_info_label">Funcionário:</span>
+                <span class="visualizar__timeline_info_valor">{{ item.funcionario.nome }}</span>
+              </div>
+
+              <div class="visualizar__timeline_info" *ngIf="item.funcionarioDestino">
+                <mat-icon class="visualizar__timeline_icone_pequeno">swap_horiz</mat-icon>
+                <span class="visualizar__timeline_info_label">Redirecionado para:</span>
+                <span class="visualizar__timeline_info_valor">{{ item.funcionarioDestino.nome }}</span>
+              </div>
+
+              <div class="visualizar__timeline_observacao" *ngIf="item.observacao">
+                <p>{{ item.observacao }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-card-visualizacao>
+
+  <div class="visualizar__voltar">
+    <app-botao
+      texto="Voltar para Listagem"
+      icone="arrow_back"
+      cor="primary"
+      (clicou)="voltar()">
+    </app-botao>
+  </div>
+</div>

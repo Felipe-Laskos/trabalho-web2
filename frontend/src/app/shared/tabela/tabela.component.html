@@ -22,14 +22,16 @@
                         </span>
                     }
                     @case ('acao') {
-                        @for (acao of getAcoesDoItem(item); track acao.acao) {
-                            <button mat-raised-button
-                                class="tabela__botao_acao"
-                                [color]="acao.cor || 'primary'"
-                                (click)="onAcao(acao.acao, item)">
-                                {{ acao.nome }}
-                            </button>
-                        }
+                        <div class="tabela__celula_acoes">
+                            @for (acao of getAcoesDoItem(item); track acao.acao) {
+                                <button mat-raised-button
+                                    class="tabela__botao_acao"
+                                    [color]="acao.cor || 'primary'"
+                                    (click)="onAcao(acao.acao, item)">
+                                    {{ acao.nome }}
+                                </button>
+                            }
+                        </div>
                     }
                      @default {
                         {{ coluna.truncar ? (getValor(item, coluna.campo) | truncate:coluna.truncar) : getValor(item, coluna.campo) }}

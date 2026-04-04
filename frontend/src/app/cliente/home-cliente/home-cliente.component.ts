@@ -109,14 +109,7 @@ export class HomeClienteComponent implements OnInit {
   }
 
   tratarVisualizacao(item: Solicitacao): void {
-    if (item.estadoAtual === SolicitacaoENUM.ORCADA) {
-      this.router.navigate(['/cliente/mostrar-orcamento', item.id]);
-    } else {
-      this.aviso.open('Esta solicitação ainda está em análise técnica.', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top'
-      });
-    }
+    this.router.navigate(['/cliente/visualizar-servico', item.id]);
   }
 
   aprovar(item: Solicitacao) { this.router.navigate(['/cliente/mostrar-orcamento', item.id]); }

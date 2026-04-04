@@ -13,6 +13,7 @@ import { EfetuarManutencaoComponent } from './funcionario/efetuar-manutencao/efe
 import { RedirecionarManutencaoComponent } from './funcionario/redirecionar-manutencao/redirecionar-manutencao.component';
 import { RelatorioReceitasComponent } from './funcionario/relatorio-receitas/relatorio-receitas.component';
 import { PagarServicoComponent } from './cliente/pagar-servico/pagar-servico.component';
+import { VisualizarServicoComponent } from './cliente/visualizar-servico/visualizar-servico.component';
 import { clienteGuard, funcionarioGuard } from './guards/auth.guard';
 import { RelatorioCategoriasComponent } from './funcionario/relatorio-categoria/relatorio-categoria.component';
 
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'cliente/mostrar-orcamento/:id', component: MostrarOrcamentoComponent, canActivate: [clienteGuard] },
   { path: 'cliente/solicitar-manutencao', component: SolicitarManutencaoComponent, canActivate: [clienteGuard] },
   { path: 'cliente/pagar/:id', component: PagarServicoComponent, canActivate: [clienteGuard] },
+  { path: 'cliente/visualizar-servico/:id', component: VisualizarServicoComponent, canActivate: [clienteGuard] },
   { path: 'funcionario', component: HomeFuncionarioComponent, canActivate: [funcionarioGuard] },
   { path: 'funcionario/categorias', component: CrudCategoriaComponent, canActivate: [funcionarioGuard] },
   { path: 'funcionario/funcionarios', component: CrudFuncionariosComponent, canActivate: [funcionarioGuard] },

@@ -53,6 +53,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   solicitacoesFiltradas: Solicitacao[] = [];
 
   colunas: ColunaTabela[] = [
+    { campo: 'id', titulo: 'ID', tipo: 'texto' },
     { campo: 'descricaoEquipamento', titulo: 'Equipamento', tipo: 'texto' },
     { campo: 'dataHoraCriacao', titulo: 'Data', tipo: 'data' },
     { campo: 'estadoAtual', titulo: 'Status', tipo: 'estado' },

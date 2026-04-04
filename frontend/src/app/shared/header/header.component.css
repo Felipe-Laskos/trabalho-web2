@@ -142,7 +142,8 @@ mat-icon {
   position: absolute;
   top: 100%;
   left: 0;
-  background: var(--secondary); 
+  background: #ffffff;
+  border: none;
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   min-width: 220px;
@@ -162,8 +163,8 @@ mat-icon {
 
 .menu-relatorio__dropdown a:hover {
   opacity: 1;
-  text-decoration: underline;
-  background: rgba(255, 255, 255, 0.1); /* leve highlight */
+  text-decoration: none;
+  background: #f0f7ff;
 }
 
 .menu-relatorio:hover .menu-relatorio__dropdown {

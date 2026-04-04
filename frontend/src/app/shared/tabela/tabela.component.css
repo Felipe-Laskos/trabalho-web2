@@ -45,7 +45,16 @@
     font-size: 0.75rem;
     padding: 4px 12px;
     margin-right: 6px;
+    margin-bottom: 0;
     border-radius: 8px;
+    white-space: nowrap;
+}
+
+.tabela__celula_acoes {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    align-items: center;
 }
 
 .linha-selecionada {
