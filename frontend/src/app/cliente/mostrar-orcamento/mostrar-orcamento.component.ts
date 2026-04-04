@@ -133,25 +133,6 @@ export class MostrarOrcamentoComponent implements OnInit {
     this.estadoModal = 'sucessoRejeicao';
   }
 
-  adicionarAoHistorico(novoRegistro: HistoricoSolicitacao) {
-    if (this.solicitacao) {
-      if (!(this.solicitacao).historico) {
-        (this.solicitacao).historico = [];
-      }
-      (this.solicitacao).historico.push(novoRegistro);
-    }
-  }
-
-  formatarData(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    const horas = String(data.getHours()).padStart(2, '0');
-    const minutos = String(data.getMinutes()).padStart(2, '0');
-    
-    return `${ano}-${mes}-${dia} ${horas}:${minutos}`;
-  }
-
   fecharERedirecionar(): void {
     this.exibirModal = false;
     this.estadoModal = 'confirmacao';
