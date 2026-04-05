@@ -8,7 +8,6 @@ import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generi
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { PesquisaComponent } from '../../shared/pesquisa/pesquisa.component';
-import { mockSolicitacao } from '../../mocks/solicitacao.mock';
 
 @Component({
   selector: 'app-crud-categoria',
@@ -32,7 +31,6 @@ export class CrudCategoriaComponent implements OnInit {
   colunas = [
     { campo: 'id', titulo: 'ID' },
     { campo: 'nome', titulo: 'Nome' },
-    { campo: 'quantidade', titulo: 'Quantidade' },
   ];
 
   dados: CategoriaEquipamento[] = [];
@@ -47,22 +45,8 @@ export class CrudCategoriaComponent implements OnInit {
     this.carregarDados();
   }
 
-  private calcularQuantidadePorCategoria(): void {
-  this.dados = this.dados.map(categoria => {
-    const quantidade = mockSolicitacao.filter(
-      s => s.categoria.id === categoria.id
-    ).length;
-
-    return {
-      ...categoria,
-      quantidade
-    };
-  });
-}
-
   private carregarDados(): void {
     this.dados = this.categoriaService.listarTodos();
-    this.calcularQuantidadePorCategoria();
   }
 
   selecionarPagina(pagina: number): void {
@@ -79,8 +63,7 @@ export class CrudCategoriaComponent implements OnInit {
     const termo = this.termoPesquisa.toLowerCase();
     let filtradas = this.dados.filter(c =>
       c.nome.toLowerCase().includes(termo) ||
-      c.id?.toString().includes(termo) ||
-      (c as any).quantidade?.toString().includes(termo)
+      c.id?.toString().includes(termo)
     );
 
     if (!this.mostrarInativas) {
