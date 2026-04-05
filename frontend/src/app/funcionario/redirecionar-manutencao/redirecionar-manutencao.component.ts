@@ -50,7 +50,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
     const res = this.solicitacaoService.buscarPorId(id);
     if (res !== undefined) this.solicitacao = res;
 
-    this.funcionarios = this.funcionarioService.listarTodos();
+    this.funcionarios = this.funcionarioService.listarAtivos();
 
     const emailLogado = this.authService.getEmail();
     const funcionarioLogado = this.funcionarioService.buscarPorEmail(emailLogado);

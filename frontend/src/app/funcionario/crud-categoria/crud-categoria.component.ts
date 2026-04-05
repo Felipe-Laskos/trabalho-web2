@@ -66,7 +66,7 @@ export class CrudCategoriaComponent implements OnInit {
       c.id?.toString().includes(termo)
     );
 
-    if (!this.mostrarInativas) {
+    if (this.mostrarInativas) {
       filtradas = filtradas.filter(c => c.ativo === true);
     }
 

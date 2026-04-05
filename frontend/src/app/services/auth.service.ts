@@ -22,6 +22,9 @@ export class AuthService {
     const funcionario = this.funcionarioService.buscarPorEmail(email);
 
     if (cliente) {
+      if (cliente.ativo === false) {
+        return { sucesso: false, mensagem: 'Usuário desativado.' };
+      }
       if (cliente.senha === senha) {
         this.salvarSessao(cliente.nome, email, 'cliente');
         return { sucesso: true, mensagem: '' };
@@ -30,6 +33,9 @@ export class AuthService {
     }
 
     if (funcionario) {
+      if (funcionario.ativo === false) {
+        return { sucesso: false, mensagem: 'Usuário desativado.' };
+      }
       if (funcionario.senha === senha) {
         this.salvarSessao(funcionario.nome, email, 'funcionario');
         return { sucesso: true, mensagem: '' };
