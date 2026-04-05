@@ -16,11 +16,13 @@
 
 .campo-flex {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .container-erro {
   min-height: 20px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .msg-erro {
@@ -68,7 +70,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 35px;
+  margin-top: 60px;
 }
 
 .header-text h1 {

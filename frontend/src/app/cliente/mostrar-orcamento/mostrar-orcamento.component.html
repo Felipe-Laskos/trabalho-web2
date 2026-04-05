@@ -93,7 +93,7 @@
           {{ solicitacao?.estadoAtual }}
         </div>
 
-        <div class="info-group">
+        <div class="info-group" *ngIf="solicitacao?.descricaoManutencao">
           <h2>LAUDO TÉCNICO:</h2>
           <div class="info-box box-cinza">
             <p>{{ solicitacao?.descricaoManutencao }}</p>

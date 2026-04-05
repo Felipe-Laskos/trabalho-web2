@@ -9,15 +9,15 @@
     [value]="valor"
     [style.height]="altura"
     (input)="aoDigitar($event)"
-    maxlength="200"
+    [attr.maxlength]="maxLength"
     #inputRef>
   </textarea>
 </div>
 
 <div class="contador-container largura-total">
     <span class="contador-texto"
-       [class.erro]="(inputRef.value.length ||  0) >= 200">
-      {{ inputRef.value.length || 0 }}/200
+       [class.erro]="(inputRef.value.length ||  0) >= maxLength">
+      {{ inputRef.value.length || 0 }}/{{ maxLength }}
     </span>
 </div>
 

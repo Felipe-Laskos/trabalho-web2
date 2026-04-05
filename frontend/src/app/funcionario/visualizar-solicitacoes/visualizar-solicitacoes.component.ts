@@ -54,7 +54,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   colunas: ColunaTabela[] = [
     { campo: 'id', titulo: 'ID', tipo: 'texto' },
-    { campo: 'descricaoEquipamento', titulo: 'Equipamento', tipo: 'texto' },
+    { campo: 'descricaoEquipamento', titulo: 'Equipamento', tipo: 'texto', truncar: 30 },
     { campo: 'dataHoraCriacao', titulo: 'Data', tipo: 'data' },
     { campo: 'estadoAtual', titulo: 'Status', tipo: 'estado' },
     { campo: 'valorOrcado', titulo: 'Valor', tipo: 'texto' },

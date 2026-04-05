@@ -44,9 +44,8 @@ export class HomeClienteComponent implements OnInit {
   colunasTabela: ColunaTabela[] = [
   { campo: 'id', titulo: 'Ordem', tipo: 'texto' },
   { campo: 'dataHoraCriacao', titulo: 'Data/Hora', tipo: 'data' },
-  { campo: 'descricaoEquipamento', titulo: 'Aparelho', tipo: 'texto', truncar: 30 },
+  { campo: 'descricaoEquipamento', titulo: 'Equipamento', tipo: 'texto', truncar: 30 },
   { campo: 'estadoAtual', titulo: 'Situação Atual', tipo: 'estado' },
-  { campo: 'valorOrcado', titulo: 'Valor Previsto', tipo: 'texto' },
   { campo: 'acoes', titulo: 'Ações', tipo: 'acao' }
 ];
 
@@ -81,9 +80,11 @@ export class HomeClienteComponent implements OnInit {
 
   onBusca(valor: string) {
     const termo = valor.toLowerCase();
-    this.dadosFiltrados = this.listaSolicitacoes.filter(s => 
-      s.descricaoEquipamento.toLowerCase().includes(termo) || 
-      s.estadoAtual.toLowerCase().includes(termo)
+    this.dadosFiltrados = this.listaSolicitacoes.filter(s =>
+      s.id?.toString().includes(termo) ||
+      s.descricaoEquipamento.toLowerCase().includes(termo) ||
+      s.estadoAtual.toLowerCase().includes(termo) ||
+      s.dataHoraCriacao?.toLowerCase().includes(termo)
     );
     this.paginaAtual = 1;
     this.atualizarPaginacao();

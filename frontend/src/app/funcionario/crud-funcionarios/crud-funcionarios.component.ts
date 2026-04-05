@@ -73,10 +73,12 @@ export class CrudFuncionariosComponent implements OnInit {
   }
 
   get funcionariosFiltrados(): Funcionario[] {
+    const termo = this.termoPesquisa.toLowerCase();
     let filtrados = this.dados.filter(f =>
-      f.nome.toLowerCase().includes(this.termoPesquisa.toLowerCase()) ||
-      f.cargo.toLowerCase().includes(this.termoPesquisa.toLowerCase()) ||
-      f.email.toLowerCase().includes(this.termoPesquisa.toLowerCase())
+      f.id?.toString().includes(termo) ||
+      f.nome.toLowerCase().includes(termo) ||
+      f.cargo.toLowerCase().includes(termo) ||
+      f.email.toLowerCase().includes(termo)
     );
 
     if (this.mostrarInativas) {

@@ -72,6 +72,7 @@
 .redirecionar__info_box p {
   margin: 0 0 4px 0;
   font-weight: 500;
+  word-break: break-word;
   color: #000;
   font-size: 14px;
 }

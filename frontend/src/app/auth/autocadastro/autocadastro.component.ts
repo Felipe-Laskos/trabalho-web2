@@ -54,7 +54,7 @@ export class AutocadastroComponent {
   private dialog = inject(MatDialog);
 
   constructor(public router: Router, private http: HttpClient) {}
-  
+
   aplicarMascaraCPF(valor: string) {
     let v = valor.replace(/\D/g, '');
     if (v.length > 11) v = v.substring(0, 11);
@@ -124,33 +124,33 @@ export class AutocadastroComponent {
       return;
     }
 
-      this.usuario.senha = this.gerarSenhaAleatoria();
-      this.clienteService.inserir({
-        nome: this.usuario.nome,
-        cpf: this.usuario.cpf,
-        email: this.usuario.email,
-        telefone: this.usuario.telefone,
-        senha: this.usuario.senha,
-        endereco: {
-          cep: this.usuario.cep,
-          logradouro: this.usuario.logradouro,
-          bairro: this.usuario.bairro,
-          cidade: this.usuario.cidade,
-          uf: this.usuario.uf,
-          numero: this.usuario.numero,
-          complemento: this.usuario.complemento
-        }
-      });
-      const dialogRef = this.dialog.open(ModalGenericoComponent, {
-        width: '400px',
-        data: {
-          titulo: 'Cadastro Concluído',
-          mensagem: `Seu cadastro foi realizado com sucesso! Sua senha de acesso gerada é: ${this.usuario.senha}`
-        }
-      });
+    this.usuario.senha = this.gerarSenhaAleatoria();
+    this.clienteService.inserir({
+      nome: this.usuario.nome,
+      cpf: this.usuario.cpf,
+      email: this.usuario.email,
+      telefone: this.usuario.telefone,
+      senha: this.usuario.senha,
+      endereco: {
+        cep: this.usuario.cep,
+        logradouro: this.usuario.logradouro,
+        bairro: this.usuario.bairro,
+        cidade: this.usuario.cidade,
+        uf: this.usuario.uf,
+        numero: this.usuario.numero,
+        complemento: this.usuario.complemento
+      }
+    });
+    const dialogRef = this.dialog.open(ModalGenericoComponent, {
+      width: '400px',
+      data: {
+        titulo: 'Cadastro Concluído',
+        mensagem: `Seu cadastro foi realizado com sucesso! Sua senha de acesso gerada é: ${this.usuario.senha}`
+      }
+    });
 
-      dialogRef.afterClosed().subscribe(() => {
-        this.router.navigate(['/login']);
-      });
+    dialogRef.afterClosed().subscribe(() => {
+      this.router.navigate(['/login']);
+    });
   }
 }

@@ -9,28 +9,22 @@
       
       <div class="linha-form-superior">
         <div class="campo-flex">
-          <app-combo 
+          <app-combo
             titulo="Categoria do Equipamento"
-            largura="100%" 
-            altura="52px"
+            largura="100%"
             [lista]="categoriasLista"
             (mudou)="solicitacao.categoriaId = $event">
-          </app-combo> <div class="container-erro">
-            <span class="msg-erro" *ngIf="!solicitacao.categoria && enviou">Obrigatório.</span>
-          </div>
+          </app-combo>
         </div>
 
         <div class="campo-flex">
-          <app-input 
+          <app-input
             titulo="Descrição do Equipamento"
             placeholder="Ex: Dell Inspiron 15"
-            largura="100%" 
-            altura="52px"
+            largura="100%"
             [valor]="solicitacao.modelo"
             (mudou)="solicitacao.modelo = $event">
-          </app-input> <div class="container-erro">
-            <span class="msg-erro" *ngIf="!solicitacao.modelo && enviou">Obrigatório.</span>
-          </div>
+          </app-input>
         </div>
       </div>
 
@@ -46,11 +40,6 @@
           <div class="previsao-tag">Previsão de análise 24h úteis</div>
         </div>
         
-        <div class="container-erro">
-          <span class="msg-erro" *ngIf="!solicitacao.descricaoDefeito && enviou">
-            A descrição do defeito é obrigatória.
-          </span>
-        </div>
       </div>
 
       <div class="acoes-form">

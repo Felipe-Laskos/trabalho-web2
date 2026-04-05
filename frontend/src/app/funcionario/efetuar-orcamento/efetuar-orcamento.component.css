@@ -84,12 +84,10 @@ input:focus {
 }
 
 .col p {
-  margin: 12px 0; 
+  margin: 12px 0;
   font-size: 15px;
-  line-height: 1.6; 
-  display: flex;
-  justify-content: flex-start;
-  gap: 5px; 
+  line-height: 1.6;
+  word-break: break-word;
 }
 
 .col p b {

@@ -15,6 +15,7 @@ export class InputComponent {
 
   @Input() largura = '100%';
   @Input() altura = '52px';
+  @Input() maxLength: number = 200;
 
   @HostBinding('style.width')
    get hostWidth() {

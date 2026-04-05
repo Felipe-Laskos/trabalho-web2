@@ -29,7 +29,8 @@ export class HomeFuncionarioComponent implements OnInit {
   colunas: ColunaTabela[] = [
     { campo: 'dataHoraCriacao', titulo: 'Data/Hora da Solicitação', tipo: 'data' },
     { campo: 'cliente.nome', titulo: 'Cliente', tipo: 'nome' },
-    { campo: 'descricaoEquipamento', titulo: 'Descrição do Produto', truncar: 30 },
+    { campo: 'descricaoEquipamento', titulo: 'Equipamento', truncar: 30 },
+    { campo: 'estadoAtual', titulo: 'Status', tipo: 'estado' },
     { campo: 'acao', titulo: '-', tipo: 'acao' }
   ];
 

@@ -14,6 +14,7 @@ export class TextAreaComponent {
 
   @Input() altura: string ='100%';
   @Input() largura: string ='120px';
+  @Input() maxLength: number = 200;
 
   @HostBinding('style.width')
   get hostWidth() {

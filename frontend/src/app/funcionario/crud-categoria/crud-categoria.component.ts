@@ -76,8 +76,11 @@ export class CrudCategoriaComponent implements OnInit {
   }
 
   get categoriasFiltradas(): CategoriaEquipamento[] {
+    const termo = this.termoPesquisa.toLowerCase();
     let filtradas = this.dados.filter(c =>
-      c.nome.toLowerCase().includes(this.termoPesquisa.toLowerCase())
+      c.nome.toLowerCase().includes(termo) ||
+      c.id?.toString().includes(termo) ||
+      (c as any).quantidade?.toString().includes(termo)
     );
 
     if (!this.mostrarInativas) {

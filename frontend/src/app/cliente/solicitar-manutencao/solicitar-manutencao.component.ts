@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 import { ComboComponent, OpcaoCombo } from '../../shared/combo/combo.component';
 import { InputComponent } from '../../shared/input/input.component';
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
@@ -44,6 +46,7 @@ export class SolicitarManutencaoComponent implements OnInit {
   private categoriaService = inject(CategoriaService);
   private clienteService = inject(ClienteService);
   private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
 
   categoriasLista: OpcaoCombo[] = [];
 
@@ -65,10 +68,20 @@ export class SolicitarManutencaoComponent implements OnInit {
   }
 
   solicitarManutencao(): void {
-    this.enviou = true;
+    const faltando: string[] = [];
+    if (!this.solicitacao.categoriaId) faltando.push('Categoria do Equipamento');
+    if (!this.solicitacao.modelo) faltando.push('Descrição do Equipamento');
+    if (!this.solicitacao.descricaoDefeito) faltando.push('Descrição do Defeito');
 
-    if (!this.solicitacao.categoriaId || !this.solicitacao.modelo || !this.solicitacao.descricaoDefeito) {
-      this.aviso.open('Por favor, preencha todos os campos obrigatórios.', 'OK', { duration: 3000 });
+    if (faltando.length > 0) {
+      this.dialog.open(ModalGenericoComponent, {
+        data: {
+          tipo: 'confirmacao',
+          titulo: 'Campos obrigatórios',
+          mensagem: 'Preencha os seguintes campos:<br><br>• ' + faltando.join('<br>• '),
+          textoConfirmar: 'OK'
+        }
+      });
       return;
     }
 

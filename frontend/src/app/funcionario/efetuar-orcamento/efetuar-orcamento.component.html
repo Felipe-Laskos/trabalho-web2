@@ -15,7 +15,7 @@
     <h3>Dados da Solicitação</h3>
 
     <p><b>Equipamento:</b> {{ solicitacao.descricaoEquipamento }}</p>
-    <p><b>Categoria:</b> {{ solicitacao.categoria?.nome }}</p>
+    <p><b>Categoria:</b> {{ solicitacao.categoria.nome }}</p>
     <p><b>Defeito:</b> {{ solicitacao.descricaoDefeito }}</p>
     <p><b>Data:</b> {{ solicitacao.dataHoraCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
     <p><b>Estado Atual:</b> {{ solicitacao.estadoAtual }}</p>

@@ -102,6 +102,7 @@ h2 {
   font-weight: 600;
   color: #000;
   font-size: 15px;
+  word-break: break-word;
 }
 
 .visualizar__info_sub {
@@ -210,6 +211,7 @@ h2 {
   border-radius: 10px;
   padding: 18px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
 .visualizar__timeline_card_header {
@@ -300,6 +302,7 @@ h2 {
   color: #555;
   font-size: 14px;
   line-height: 1.5;
+  word-break: break-word;
 }
 
 .visualizar__voltar {
