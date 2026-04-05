@@ -17,11 +17,11 @@
 
         <div class="linha-flex-ajustada recuo-superior">
           <div class="flex-1">
-            <app-input titulo="CPF" [valor]="usuario.cpf" (mudou)="aplicarMascaraCPF($event)" (focusout)="camposTocados.cpf = true" altura="34px" largura="100%"></app-input>
+            <app-input titulo="CPF" [valor]="usuario.cpf" (mudou)="aplicarMascaraCPF($event)" (focusout)="camposTocados.cpf = true" altura="34px" largura="100%" [maxLength]="14"></app-input>
             <span *ngIf="camposTocados.cpf && !usuario.cpf" class="msg-erro">O CPF é obrigatório.</span>
           </div>
           <div class="flex-1">
-            <app-input titulo="Telefone" [valor]="usuario.telefone" (mudou)="aplicarMascaraTelefone($event)" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%"></app-input>
+            <app-input titulo="Telefone" [valor]="usuario.telefone" (mudou)="aplicarMascaraTelefone($event)" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%" [maxLength]="15"></app-input>
             <span *ngIf="camposTocados.telefone && !usuario.telefone" class="msg-erro">O Telefone é obrigatório.</span>
           </div>
         </div>
@@ -31,7 +31,7 @@
         <h3 class="titulo-secao">Endereço (ViaCEP)</h3>
         <div class="linha-flex-ajustada">
           <div class="flex-1">
-            <app-input titulo="CEP" [valor]="usuario.cep" (mudou)="aplicarMascaraCEP($event)" (focusout)="buscarCep(); camposTocados.cep = true" altura="34px" largura="100%"></app-input>
+            <app-input titulo="CEP" [valor]="usuario.cep" (mudou)="aplicarMascaraCEP($event)" (focusout)="buscarCep(); camposTocados.cep = true" altura="34px" largura="100%" [maxLength]="9"></app-input>
             <span *ngIf="camposTocados.cep && !usuario.cep" class="msg-erro">O CEP é obrigatório.</span>
           </div>
           <div class="flex-1">
