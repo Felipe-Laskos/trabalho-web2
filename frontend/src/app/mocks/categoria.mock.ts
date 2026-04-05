@@ -18,7 +18,7 @@ export const mockCategoria: CategoriaEquipamento[] = [
   },
   {
     id: 4,
-    nome: "Periféricos",
+    nome: "Mouse",
     ativo: true,
   },
   {
@@ -28,7 +28,7 @@ export const mockCategoria: CategoriaEquipamento[] = [
   },
   {
     id: 6,
-    nome: "Dispositivos Móveis",
+    nome: "Dispositivo Móvel",
     ativo: true,
   },
   {
@@ -40,5 +40,10 @@ export const mockCategoria: CategoriaEquipamento[] = [
     id: 8,
     nome: "Rede",
     ativo: false,
+  },
+  {
+    id: 9,
+    nome: "Teclado",
+    ativo: true,
   }
 ];
