@@ -13,6 +13,10 @@
   flex-direction: column;
 }
 
+.input-label {
+  margin-bottom: 8px;
+}
+
 .card {
   background: #f3f3f3;
   border-radius: 10px;

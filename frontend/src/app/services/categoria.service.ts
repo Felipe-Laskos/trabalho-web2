@@ -51,7 +51,7 @@ export class CategoriaService {
 
   remover(id: number): void {
     const categorias = this.listarTodos();
-    const categoria = categorias.find(c => c.id === id);
+    const categoria = categorias.find(c => Number(c.id) === Number(id));
     if (categoria) {
       categoria.ativo = false;
       localStorage[LS_CHAVE] = JSON.stringify(categorias);

@@ -7,43 +7,40 @@
 
     <form (ngSubmit)="efetuarLogin()">
       <app-input-card label="Acesso ao Sistema" largura="100%">
-        
         <div class="field-group">
-          <label class="label-padrao">E-mail</label>
-          <input 
-            type="email"
-            class="input-customizado"
+          <app-input
+            titulo="E-mail"
             placeholder="exemplo@email.com"
-            [(ngModel)]="credenciais.email"
-            name="email"
-            (blur)="marcarComoTocado('email')"
-            style="height: 52px; width: 100%;">
-          
+            altura="52px"
+            largura="100%"
+            [valor]="credenciais.email"
+            (mudou)="credenciais.email = $event"
+            (focusout)="marcarComoTocado('email')">
+          </app-input>
           <div class="container-erro">
             <span class="msg-erro" *ngIf="!credenciais.email && (emailTocado || enviou)">
               O e-mail é obrigatório.
             </span>
           </div>
         </div>
-
         <div class="field-group">
-          <label class="label-padrao">Senha</label>
-          <input 
-            type="password" 
-            class="input-customizado"
+          <app-input
+            titulo="Senha"
+            tipo="password"
             placeholder="Digite sua senha"
-            [(ngModel)]="credenciais.senha"
-            name="senha"
-            (blur)="marcarComoTocado('senha')"
-            style="height: 52px; width: 100%;">
-          
+            altura="52px"
+            largura="100%"
+            [valor]="credenciais.senha"
+            (mudou)="credenciais.senha = $event"
+            (focusout)="marcarComoTocado('senha')">
+          </app-input>
+
           <div class="container-erro">
             <span class="msg-erro" *ngIf="!credenciais.senha && (senhaTocado || enviou)">
               A senha é obrigatória.
             </span>
           </div>
         </div>
-
       </app-input-card>
 
       <div class="acoes-login">
