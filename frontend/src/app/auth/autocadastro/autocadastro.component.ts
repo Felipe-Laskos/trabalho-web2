@@ -60,6 +60,10 @@ export class AutocadastroComponent {
     v = v.replace(/(\d{3})(\d)/, '$1.$2');
     v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
     this.usuario.cpf = v;
+    this.usuario.cpf = valor; 
+      setTimeout(() => {
+        this.usuario.cpf = v;
+      });
   }
 
   aplicarMascaraTelefone(valor: string) {
@@ -68,6 +72,10 @@ export class AutocadastroComponent {
     v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
     v = v.replace(/(\d{5})(\d)/, '$1-$2');
     this.usuario.telefone = v;
+    this.usuario.telefone = valor;
+    setTimeout(() => {
+      this.usuario.telefone = v;
+    });
   }
 
   aplicarMascaraCEP(valor: string) {
@@ -75,6 +83,10 @@ export class AutocadastroComponent {
     if (v.length > 8) v = v.substring(0, 8);
     v = v.replace(/(\d{5})(\d)/, '$1-$2');
     this.usuario.cep = v;
+    this.usuario.cep = valor;
+    setTimeout(() => {
+      this.usuario.cep = v;
+    });
   }
 
   buscarCep() {
