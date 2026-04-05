@@ -43,9 +43,8 @@
       </div>
 
       <div class="acoes-form">
-        <app-botao-cancelar 
-          [confirmacao]="true"
-          (clicou)="router.navigate(['/cliente'])">
+        <app-botao-cancelar
+          (clicou)="confirmarCancelamento()">
           Cancelar Solicitação
         </app-botao-cancelar> <app-botao-aprovar (clicou)="solicitarManutencao()">
           Enviar Solicitação

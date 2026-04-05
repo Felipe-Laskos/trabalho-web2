@@ -117,4 +117,19 @@ export class SolicitarManutencaoComponent implements OnInit {
     this.aviso.open('Solicitação enviada com sucesso!', 'OK', { duration: 4000, verticalPosition: 'top' });
     this.router.navigate(['/cliente']);
   }
+
+  confirmarCancelamento(): void {
+    const dialogRef = this.dialog.open(ModalGenericoComponent, {
+      data: {
+        tipo: 'confirmacao',
+        titulo: 'Confirmar Cancelamento',
+        mensagem: 'Deseja realmente cancelar? Dados não salvos serão perdidos.',
+        textoConfirmar: 'Sim, cancelar',
+        textoCancelar: 'Não'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.router.navigate(['/cliente']);
+    });
+  }
 }
