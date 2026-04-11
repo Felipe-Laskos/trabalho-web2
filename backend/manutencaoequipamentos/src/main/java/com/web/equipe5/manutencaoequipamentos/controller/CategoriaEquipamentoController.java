@@ -20,8 +20,9 @@ public class CategoriaEquipamentoController {
     }
 
     @GetMapping
-    public List<CategoriaEquipamento> listar() {
-        return repository.findByAtivoTrue();
+    public ResponseEntity<List<CategoriaEquipamento>> listar() {
+        List<CategoriaEquipamento> lista = repository.findByAtivoTrue();
+        return ResponseEntity.ok(lista);
     }
 
     @DeleteMapping("/{id}")
