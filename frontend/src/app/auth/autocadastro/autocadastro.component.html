@@ -19,7 +19,7 @@
             <app-input titulo="CPF" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.cpf" (mudou)="aplicarMascaraCPF($event)" altura="34px" largura="100%" [maxLength]="14"></app-input>
           </div>
           <div class="flex-1">
-            <app-input titulo="Telefone" [obrigatorio]="true" [inteiro] = true [valor]="usuario.telefone" (mudou)="aplicarMascaraTelefone($event)" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%" [maxLength]="15"></app-input>
+            <app-input titulo="Telefone" [obrigatorio]="true" [inteiro] = "true" [valor]="usuario.telefone" (mudou)="aplicarMascaraTelefone($event)" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%" [maxLength]="15"></app-input>
           </div>
         </div>
       </div>
