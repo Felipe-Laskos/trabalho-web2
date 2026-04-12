@@ -3,19 +3,21 @@
   box-sizing: border-box;
 }
 
+.campo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; 
+}
+
 .campo-input {
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.42); 
+  min-height: 40px; 
+  border: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: 8px;
-  -webkit-font-smoothing: antialiased;
-  padding: 0 16px;
-  font-family: inherit;
+  padding: 8px 16px; 
   font-size: 16px;
   background-color: transparent;
-  outline: none;
-  transition: border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 input:hover {
@@ -27,9 +29,19 @@ input:focus {
   padding: 0 15px; 
 }
 
-h4 {
-  font-family: 'Arial', sans-serif;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: #000000;
+.asterisco {
+  color: #e53935;
+}
+
+.label-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+
+.msg-erro {
+  font-size: 12px;
+  color: #e53935;
 }

@@ -120,3 +120,14 @@ input:focus {
   display: block;
   margin-bottom: 4px;
 }
+
+.botao {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.campo-valor {
+  position: relative;
+  padding-bottom: 20px;
+}

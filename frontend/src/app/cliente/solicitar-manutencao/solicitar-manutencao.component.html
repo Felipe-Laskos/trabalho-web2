@@ -23,6 +23,8 @@
             placeholder="Ex: Dell Inspiron 15"
             largura="100%"
             [valor]="solicitacao.modelo"
+            [textoNum]="true"
+            [obrigatorio]="true"
             (mudou)="solicitacao.modelo = $event">
           </app-input>
         </div>
@@ -35,6 +37,8 @@
           altura="180px"
           placeholder="Descreva o problema detalhadamente..."
           [valor]="solicitacao.descricaoDefeito"
+          [obrigatorio]="true"
+          [textoNum]="true"
           (mudou)="solicitacao.descricaoDefeito = $event">
         </app-text-area> <div class="previsao-externa-wrapper">
           <div class="previsao-tag">Previsão de análise 24h úteis</div>

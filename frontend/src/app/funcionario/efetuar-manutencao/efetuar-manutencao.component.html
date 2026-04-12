@@ -56,6 +56,8 @@
         titulo="Descrição do Problema:"
         placeholder="Digite algo..."
         [valor]="form.controls.descricao.value || '' "
+        [obrigatorio]="true"
+        [textoNum]="true"
         (mudou)="form.controls.descricao.setValue($event)">
         </app-text-area>
     </div>
@@ -65,6 +67,8 @@
         titulo="Orientações para o Cliente:"
         placeholder="Digite algo..."
         [valor]="form.controls.orientacoes.value || '' "
+        [obrigatorio]="true"
+        [textoNum]="true"
         (mudou)="form.controls.orientacoes.setValue($event)">
         </app-text-area>
     </div>

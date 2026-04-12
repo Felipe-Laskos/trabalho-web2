@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../../shared/input/input.component';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
@@ -13,7 +13,6 @@ import { Solicitacao } from '../../models/solicitacao.model';
 import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/modal-generico.component';
-
 
 @Component({
   selector: 'app-efetuar-orcamento',

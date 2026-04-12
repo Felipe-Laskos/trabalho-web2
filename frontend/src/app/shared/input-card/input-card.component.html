@@ -1,6 +1,9 @@
 <div class="input-card">
     @if (label) {
-      <label class="input-label"> {{ label }} </label>
+      <label class="input-label"> 
+         {{ label }} 
+         <span class="asterisco" *ngIf="obrigatorio">*</span>
+      </label>
     }
     <div class="card">
       <div class="input-field"> 

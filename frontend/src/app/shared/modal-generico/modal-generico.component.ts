@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { InputCardComponent } from '../input-card/input-card.component';
 import { cpfValidator } from '../validators/cpf.validator';
 import { FormControl } from '@angular/forms';
-import { EmailValidator } from '../validators/email.validator';
 import { MatIconModule } from '@angular/material/icon';
+import { InputComponent } from '../input/input.component';
 
 export interface CampoFormulario {
   label: string;
@@ -16,6 +16,9 @@ export interface CampoFormulario {
   obrigatorio?: boolean;
   senha?: string;
   readonly?: boolean;
+
+  validacao?: 'texto' | 'textoNum' | 'email' | 'inteiro';
+  msgAviso?: string;
 }
 
 export interface ModalDados{
@@ -37,7 +40,8 @@ export interface ModalDados{
     MatButtonModule,
     FormsModule,
     InputCardComponent,
-    MatIconModule
+    MatIconModule,
+    InputComponent
   ],
   templateUrl: './modal-generico.component.html',
   styleUrl: './modal-generico.component.css'
@@ -75,14 +79,6 @@ export class ModalGenericoComponent {
       }
 
       this.formData.cpf = cpfLimpo;
-    }
-
-    if (this.formData.email) {
-      const emailControl = new FormControl(this.formData.email);
-      if (EmailValidator(emailControl)) {
-        alert('Email inválido!');
-        return;
-      }
     }
     
     const camposInvalidos = (this.data.campos || []).filter(campo => {
