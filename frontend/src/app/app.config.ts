@@ -6,6 +6,7 @@ import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { provideNgxMask } from 'ngx-mask';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { provideHttpClient } from '@angular/common/http';
 
 registerLocaleData(localePt);
 
@@ -14,7 +15,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
+    provideHttpClient(),
     provideNgxMask(),           
     { provide: LOCALE_ID, useValue: 'pt-BR' } 
+    
   ]
 };
