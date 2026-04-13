@@ -14,11 +14,11 @@ import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancel
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
-import { SolicitacaoService } from '../../services/solicitacao.service';
-import { HistoricoService } from '../../services/historico.service';
-import { CategoriaService } from '../../services/categoria.service';
-import { ClienteService } from '../../services/cliente.service';
-import { AuthService } from '../../services/auth.service';
+import { SolicitacaoService } from '../../core/services/solicitacao.service';
+import { HistoricoService } from '../../core/services/historico.service';
+import { CategoriaService } from '../../core/services/categoria.service';
+import { ClienteService } from '../../core/services/cliente.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-solicitar-manutencao',
