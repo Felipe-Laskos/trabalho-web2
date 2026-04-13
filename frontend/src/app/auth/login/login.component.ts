@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { InputComponent } from '../../shared/input/input.component';
@@ -19,7 +19,8 @@ import { AuthService } from '../../core/services/auth.service';
     InputComponent,
     BotaoAprovarComponent,
     CardVisualizacaoComponent,
-    InputCardComponent
+    InputCardComponent,
+    RouterLink
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
