@@ -56,9 +56,16 @@ export class ClienteService implements IClienteService {
     localStorage[LS_CHAVE] = JSON.stringify(clientes);
   }
 
+  listarAtivos(): Cliente[] {
+    return this.listarTodos().filter(c => c.ativo === true);
+  }
+
   remover(id: number): void {
-    let clientes = this.listarTodos();
-    clientes = clientes.filter(c => c.id !== id);
-    localStorage[LS_CHAVE] = JSON.stringify(clientes);
+    const clientes = this.listarTodos();
+    const cliente = clientes.find(c => c.id === id);
+    if (cliente) {
+      cliente.ativo = false;
+      localStorage[LS_CHAVE] = JSON.stringify(clientes);
+    }
   }
 }

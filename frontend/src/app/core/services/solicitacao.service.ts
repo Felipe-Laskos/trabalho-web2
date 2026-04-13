@@ -48,9 +48,12 @@ export class SolicitacaoService implements ISolicitacaoService {
     localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
   }
 
-  remover(id: number): void {
-    let solicitacoes = this.listarTodos();
-    solicitacoes = solicitacoes.filter(s => s.id !== id);
-    localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
+ remover(id: number): void {
+    const solicitacoes = this.listarTodos();
+    const solicitacao = solicitacoes.find(s => s.id === id);
+    if (solicitacao) {
+      solicitacao.ativo = false;
+      localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
+    }
   }
 }
