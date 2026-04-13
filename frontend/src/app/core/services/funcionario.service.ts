@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Funcionario } from '../../models/funcionario.model';
-import { mockFuncionario } from '../../mocks/funcionario.mock';
+import { Funcionario } from '../models/funcionario.model';
+import { mockFuncionario } from '../mocks/funcionario.mock';
 import { IFuncionarioService } from '../interfaces/funcionario.service.interface';
 
 const LS_CHAVE = "funcionarios";

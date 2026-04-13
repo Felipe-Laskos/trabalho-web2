@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CategoriaEquipamento } from '../../models/categoria.model';
-import { mockCategoria } from '../../mocks/categoria.mock';
+import { CategoriaEquipamento } from '../models/categoria.model';
+import { mockCategoria } from '../mocks/categoria.mock';
 import { ICategoriaService } from '../interfaces/categoria.service.interface';
 
 const LS_CHAVE = "categorias";

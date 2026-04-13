@@ -1,12 +1,12 @@
-import { Funcionario } from '../../models/funcionario.model';
+import { Funcionario } from '../models/funcionario.model';
 
-export abstract class IFuncionarioService {
-  abstract listarTodos(): Funcionario[];
-  abstract buscarPorId(id: number): Funcionario | undefined;
-  abstract buscarPorEmail(email: string): Funcionario | undefined;
-  abstract buscarPorCpf(cpf: string): Funcionario | undefined;
-  abstract listarAtivos(): Funcionario[];
-  abstract inserir(funcionario: Funcionario): void;
-  abstract atualizar(funcionario: Funcionario): void;
-  abstract remover(id: number): void;
+export interface IFuncionarioService {
+  listarTodos(): Funcionario[];
+  buscarPorId(id: number): Funcionario | undefined;
+  buscarPorEmail(email: string): Funcionario | undefined;
+  buscarPorCpf(cpf: string): Funcionario | undefined;
+  listarAtivos(): Funcionario[];
+  inserir(funcionario: Funcionario): void;
+  atualizar(funcionario: Funcionario): void;
+  remover(id: number): void;
 }

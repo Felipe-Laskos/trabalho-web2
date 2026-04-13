@@ -1,11 +1,11 @@
-import { Cliente } from '../../models/cliente.model';
+import { Cliente } from '../models/cliente.model';
 
-export abstract class IClienteService {
-  abstract listarTodos(): Cliente[];
-  abstract buscarPorId(id: number): Cliente | undefined;
-  abstract buscarPorEmail(email: string): Cliente | undefined;
-  abstract buscarPorCpf(cpf: string): Cliente | undefined;
-  abstract inserir(cliente: Cliente): void;
-  abstract atualizar(cliente: Cliente): void;
-  abstract remover(id: number): void;
+export interface IClienteService {
+  listarTodos(): Cliente[];
+  buscarPorId(id: number): Cliente | undefined;
+  buscarPorEmail(email: string): Cliente | undefined;
+  buscarPorCpf(cpf: string): Cliente | undefined;
+  inserir(cliente: Cliente): void;
+  atualizar(cliente: Cliente): void;
+  remover(id: number): void;
 }

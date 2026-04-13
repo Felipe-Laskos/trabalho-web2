@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { HistoricoSolicitacao } from '../../models/historico.model';
-import { mockHistoricoSolicitacao } from '../../mocks/historico.mock';
+import { HistoricoSolicitacao } from '../models/historico.model';
+import { mockHistoricoSolicitacao } from '../mocks/historico.mock';
 import { IHistoricoService } from '../interfaces/historico.service.interface';
 
 const LS_CHAVE = "historicos";

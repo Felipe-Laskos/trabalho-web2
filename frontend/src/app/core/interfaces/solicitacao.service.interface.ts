@@ -1,9 +1,9 @@
-import { Solicitacao } from "../../models/solicitacao.model";
+import { Solicitacao } from "../models/solicitacao.model"; 
 
-export abstract class ISolicitacaoService {
-  abstract listarTodos(): Solicitacao[];
-  abstract buscarPorId(id: number): Solicitacao | undefined;
-  abstract inserir(solicitacao: Solicitacao): void;
-  abstract atualizar(solicitacao: Solicitacao): void;
-  abstract remover(id: number): void;
+export interface ISolicitacaoService {
+  listarTodos(): Solicitacao[];
+  buscarPorId(id: number): Solicitacao | undefined;
+  inserir(solicitacao: Solicitacao): void;
+  atualizar(solicitacao: Solicitacao): void;
+  remover(id: number): void;
 }

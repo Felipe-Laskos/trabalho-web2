@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CategoriaEquipamento } from '../../models/categoria.model';
+import { CategoriaEquipamento } from '../../core/models/categoria.model';
 import { CategoriaService } from '../../services/categoria.service';
 import { TabelaComponent } from '../../shared/tabela/tabela.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';

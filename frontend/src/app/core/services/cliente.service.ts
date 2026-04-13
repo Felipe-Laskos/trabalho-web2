@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Cliente } from '../../models/cliente.model';
-import { mockCliente } from '../../mocks/clientes.mock';
+import { Cliente } from '../models/cliente.model';
+import { mockCliente } from '../mocks/clientes.mock';
 import { IClienteService } from '../interfaces/cliente.service.interface';
 
 const LS_CHAVE = "clientes";

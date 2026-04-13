@@ -17,7 +17,6 @@ export class AuthService implements IAuthService {
   private clienteService = inject(ClienteService);
   private funcionarioService = inject(FuncionarioService);
   private router = inject(Router);
-  //preparado para a semana 9 para finalizar a implementação do HttpClient
   private http = inject(HttpClient);
 
   validarLogin(email: string, senha: string): { sucesso: boolean, mensagem: string } {

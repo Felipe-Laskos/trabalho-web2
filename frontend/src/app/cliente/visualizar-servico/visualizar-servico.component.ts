@@ -2,15 +2,15 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { Solicitacao } from '../../models/solicitacao.model';
-import { HistoricoSolicitacao } from '../../models/historico.model';
+import { Solicitacao } from '../../core/models/solicitacao.model';
+import { HistoricoSolicitacao } from '../../core/models/historico.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 import { SolicitacaoService } from '../../services/solicitacao.service';
 import { HistoricoService } from '../../services/historico.service';
-import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
+import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 
 @Component({
   selector: 'app-visualizar-servico',

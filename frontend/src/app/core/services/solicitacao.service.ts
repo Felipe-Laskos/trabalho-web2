@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface';
-import { Solicitacao } from '../../models/solicitacao.model';
-import { mockSolicitacao } from '../../mocks/solicitacao.mock';
+import { Solicitacao } from '../models/solicitacao.model';
+import { mockSolicitacao } from '../mocks/solicitacao.mock';
 
 const LS_CHAVE = "solicitacoes";
 

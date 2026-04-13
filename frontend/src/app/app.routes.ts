@@ -14,7 +14,7 @@ import { RedirecionarManutencaoComponent } from './funcionario/redirecionar-manu
 import { RelatorioReceitasComponent } from './funcionario/relatorio-receitas/relatorio-receitas.component';
 import { PagarServicoComponent } from './cliente/pagar-servico/pagar-servico.component';
 import { VisualizarServicoComponent } from './cliente/visualizar-servico/visualizar-servico.component';
-import { clienteGuard, funcionarioGuard } from './guards/auth.guard';
+import { clienteGuard, funcionarioGuard } from './core/config/guards/auth.guard';
 import { RelatorioCategoriasComponent } from './funcionario/relatorio-categoria/relatorio-categoria.component';
 
 export const routes: Routes = [

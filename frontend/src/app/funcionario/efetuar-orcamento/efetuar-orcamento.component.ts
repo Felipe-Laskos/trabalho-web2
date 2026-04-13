@@ -9,8 +9,8 @@ import { AuthService } from '../../services/auth.service';
 import { SolicitacaoService } from '../../services/solicitacao.service';
 import { HistoricoService } from '../../services/historico.service';
 import { FuncionarioService } from '../../services/funcionario.service';
-import { Solicitacao } from '../../models/solicitacao.model';
-import { SolicitacaoENUM } from '../../models/solicitacaoENUM.model';
+import { Solicitacao } from '../../core/models/solicitacao.model';
+import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/modal-generico.component';
 
