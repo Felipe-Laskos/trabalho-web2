@@ -103,15 +103,17 @@ export class CrudFuncionariosComponent implements OnInit {
 
   adicionar(): void {
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
+      width: '700px',
+      maxWidth: '95vw',
       data: {
         tipo: 'formulario',
         titulo: 'Adicionar Funcionário',
         campos: [
-          { label: 'Nome', campo: 'nome', tipo: 'text', obrigatorio: true },
-          { label: 'CPF', campo: 'cpf', tipo: 'text', obrigatorio: true },
-          { label: 'Email', campo: 'email', tipo: 'text', obrigatorio: true },
-          { label: 'Data de Nascimento', campo: 'dataNascimento', tipo: 'date', obrigatorio: true },
-          { label: 'Cargo', campo: 'cargo', tipo: 'text', obrigatorio: true },
+          { label: 'Nome', campo: 'nome', tipo: 'text', validacao: 'texto', obrigatorio: true  },
+          { label: 'CPF', campo: 'cpf', tipo: 'text', validacao: 'inteiro', obrigatorio: true  },
+          { label: 'Email', campo: 'email', tipo: 'text', validacao: 'email', obrigatorio: true  },
+          { label: 'Data de Nascimento', campo: 'dataNascimento', tipo: 'date', obrigatorio: true  },
+          { label: 'Cargo', campo: 'cargo', tipo: 'text', obrigatorio: true, validacao: 'textoNum' },
           { senha: true, label: 'Senha', campo: 'senha', tipo: 'password', obrigatorio: true }
         ],
         formData: {
@@ -171,15 +173,17 @@ export class CrudFuncionariosComponent implements OnInit {
     if (!this.funcionarioSelecionado) return;
 
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
+      width: '700px',
+      maxWidth: '95vw',
       data: {
         tipo: 'formulario',
         titulo: 'Editar Funcionário',
         campos: [
-          { label: 'Nome', campo: 'nome', tipo: 'text' },
-          { label: 'Email', campo: 'email', tipo: 'text' },
+          { label: 'Nome', campo: 'nome', tipo: 'text', validacao: 'texto', obrigatorio: true },
+          { label: 'Email', campo: 'email', tipo: 'text', validacao: 'email', obrigatorio: true },
           { label: 'CPF', campo: 'cpf', tipo: 'text', readonly: true },
-          { label: 'Data de Nascimento', campo: 'dataNascimento', tipo: 'date' },
-          { label: 'Cargo', campo: 'cargo', tipo: 'text' }
+          { label: 'Data de Nascimento', campo: 'dataNascimento', tipo: 'date', obrigatorio: true },
+          { label: 'Cargo', campo: 'cargo', tipo: 'text', validacao: 'texto', obrigatorio: true }
         ],
         formData: { ...this.funcionarioSelecionado }
       }

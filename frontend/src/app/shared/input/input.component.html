@@ -1,14 +1,30 @@
-  @if (titulo) {
-  <h4>{{ titulo }}</h4>
-}
+<div class="campo-container">
+    <label class="label-input" *ngIf="!esconderLabel"> 
+      {{titulo}} 
+      <span class = "asterisco" *ngIf="obrigatorio">*</span>
+    </label>
+    
 
-<input
-  class="campo-input"
-  [placeholder]="placeholder"
-  [value]="valor"
-  (input)="aoDigitar($event)"
-  [type]="tipo"
-  [attr.maxlength]="maxLength">
+  <input
+    class="campo-input"
+    appInputValidation
+    [decimal]="decimal"
+    [inteiro]="inteiro"
+    [texto]="texto"
+    [textoNum]="textoNum"
+    [email]="email"
+    [obrigatorio]="obrigatorio"
+    [msgAviso]="msgAviso"
+    [readonly]="readonly"
+    [placeholder]="placeholder"
+    [value]="valor"
+    (input)="aoDigitar($event)"
+    [type]="tipo"
+    [attr.maxlength]="maxLength"
+    (avisoEmitido)="onAvisoEmitido($any($event))"
+    (avisoOculto)="onAvisoOculto()"
+  />
 
-
+  <span class="msg-erro" *ngIf="msgDirective"> {{ msgDirective }}</span>
+</div>
   

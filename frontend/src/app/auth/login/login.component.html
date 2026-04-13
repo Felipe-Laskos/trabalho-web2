@@ -14,14 +14,10 @@
             altura="52px"
             largura="100%"
             [valor]="credenciais.email"
-            (mudou)="credenciais.email = $event"
-            (focusout)="marcarComoTocado('email')">
+            [email]="true"
+            [obrigatorio] ="true"
+            (mudou)="credenciais.email = $event">
           </app-input>
-          <div class="container-erro">
-            <span class="msg-erro" *ngIf="!credenciais.email && (emailTocado || enviou)">
-              O e-mail é obrigatório.
-            </span>
-          </div>
         </div>
         <div class="field-group">
           <app-input
@@ -31,15 +27,9 @@
             altura="52px"
             largura="100%"
             [valor]="credenciais.senha"
-            (mudou)="credenciais.senha = $event"
-            (focusout)="marcarComoTocado('senha')">
+            [obrigatorio] ="true"
+            (mudou)="credenciais.senha = $event">
           </app-input>
-
-          <div class="container-erro">
-            <span class="msg-erro" *ngIf="!credenciais.senha && (senhaTocado || enviou)">
-              A senha é obrigatória.
-            </span>
-          </div>
         </div>
       </app-input-card>
 

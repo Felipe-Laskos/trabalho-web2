@@ -1,15 +1,17 @@
 import { Component, Input, HostBinding } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-input-card',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './input-card.component.html',
   styleUrl: './input-card.component.css'
 })
 export class InputCardComponent {
   @Input() label: string = '';
+  @Input() obrigatorio: boolean = false;
 
   @Input() largura = '100%';
   @Input() altura = 'auto';

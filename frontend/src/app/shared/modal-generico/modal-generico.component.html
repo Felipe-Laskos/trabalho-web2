@@ -6,14 +6,20 @@
 
     @case ('formulario') {
       <div *ngFor="let campo of data.campos">
-        <app-input-card [label]="campo.label">
-            <input 
-              [type]="campo.senha ? (mostrarSenha[campo.campo] ? 'text' : 'password') : campo.tipo"
-              [value]="formData[campo.campo]"
-              [(ngModel)]="formData[campo.campo]"
-              [readonly]="campo.readonly || false"
-              style="width: 100%; border: none; background: transparent; padding: 4px;"
-              />
+        <app-input-card [label]="campo.label" [obrigatorio]="campo.obrigatorio ?? false">
+            <app-input 
+              [tipo]="campo.tipo ?? 'text'"
+              [valor]="formData[campo.campo]"
+              [obrigatorio]="campo.obrigatorio ?? false"
+              [esconderLabel]="true"
+              [email]="campo.validacao == 'email'"
+              [inteiro]="campo.validacao == 'inteiro'"
+              [texto]="campo.validacao == 'texto'"
+              [textoNum]="campo.validacao == 'textoNum'"
+              [readonly]="campo.readonly ?? false"
+              [msgAviso]="campo.msgAviso ?? ''"
+              (mudou)="formData[campo.campo] = $event">
+          </app-input>
         </app-input-card>
       </div>
     }

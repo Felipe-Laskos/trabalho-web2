@@ -33,6 +33,8 @@ export class LoginComponent {
   senhaTocado = false;
   enviou = false;
 
+  msgEmail: string = '';
+
   private authService = inject(AuthService);
 
   constructor(private router: Router, private aviso: MatSnackBar) {}

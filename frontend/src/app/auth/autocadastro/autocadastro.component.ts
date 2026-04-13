@@ -4,7 +4,7 @@ import { FormControl, FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ValidarCpf } from './validacao-cpf';
+import { ValidarCpf } from './validacao-cpf';  // isso aqui tem q sair, já existe um validator de cpf 
 import { InputCardComponent } from '../../shared/input-card/input-card.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';

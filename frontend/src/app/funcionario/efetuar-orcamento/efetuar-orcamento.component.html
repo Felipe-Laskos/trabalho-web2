@@ -46,23 +46,28 @@
   </div>
 
   <div class="col col-acao">
-
-    <app-input
-      altura="52px"
-      largura="100%"
-      titulo="Valor do Orçamento"
-      placeholder="Digite o valor"
-      [valor]="valorDigitado"
-      (mudou)="valorDigitado = $event">
-    </app-input>
-
-<app-botao
-  texto="Salvar Orçamento"
-  cor="primary"
-  icone="save"
-  [desabilitado]="!valorValido()"
-  (click)="registrarOrcamento()">
-</app-botao>
+    <div class ="campo-valor">
+      <app-input
+        altura="52px"
+        largura="100%"
+        titulo="Valor do Orçamento"
+        placeholder="Digite o valor"
+        [valor]="valorDigitado"
+        [decimal]="true"
+        [obrigatorio]="true"
+        (mudou)="valorDigitado = $event">
+      </app-input>
+    </div>
+    
+    <div class="botao">
+      <app-botao
+        texto="Salvar Orçamento"
+        cor="primary"
+        icone="save"
+        [desabilitado]="!valorValido()"
+        (click)="registrarOrcamento()">
+      </app-botao>
+    </div>
   </div>
 
 </div>

@@ -1,6 +1,7 @@
-   @if (titulo) {
-  <h4>{{ titulo }}</h4>
-}
+<label class="label-textarea" *ngIf="titulo">
+  {{ titulo }}
+  <span class="asterisco" *ngIf="obrigatorio">*</span>
+</label>
 
 <div class="campo-container largura-total">
   <textarea
@@ -20,4 +21,7 @@
       {{ inputRef.value.length || 0 }}/{{ maxLength }}
     </span>
 </div>
+
+<span class="msg-erro" *ngIf="msgDirective">{{ msgDirective }}</span>
+<span class="msg-erro" *ngIf="exibirObrigatorio && !msgDirective">O campo é obrigatório.</span>
 
