@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CategoriaEquipamento } from '../../core/models/categoria.model';
-import { CategoriaService } from '../../services/categoria.service';
+import { CategoriaService } from '../../core/services/categoria.service';
 import { TabelaComponent } from '../../shared/tabela/tabela.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';

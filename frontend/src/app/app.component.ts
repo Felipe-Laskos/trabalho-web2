@@ -2,9 +2,9 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
-import { SolicitacaoService } from './services/solicitacao.service';
-import { FuncionarioService } from './services/funcionario.service';
-import { ClienteService } from './services/cliente.service';
+import { SolicitacaoService } from './core/services/solicitacao.service';
+import { FuncionarioService } from './core/services/funcionario.service';
+import { ClienteService } from './core/services/cliente.service';
 
 @Component({
   selector: 'app-root',

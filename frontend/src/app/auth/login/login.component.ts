@@ -7,7 +7,7 @@ import { InputComponent } from '../../shared/input/input.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 import { InputCardComponent } from "../../shared/input-card/input-card.component";
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',

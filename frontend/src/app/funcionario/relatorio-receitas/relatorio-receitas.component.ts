@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Solicitacao } from '../../core/models/solicitacao.model';
-import { SolicitacaoService } from '../../services/solicitacao.service';
+import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';

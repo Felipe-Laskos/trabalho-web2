@@ -11,8 +11,8 @@ import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancel
 import { InputComponent } from "../../shared/input/input.component";
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 import { ModalGenericoComponent } from "../../shared/modal-generico/modal-generico.component";
-import { ClienteService } from '../../services/cliente.service';
-import { FuncionarioService } from '../../services/funcionario.service';
+import { ClienteService } from '../../core/services/cliente.service';
+import { FuncionarioService } from '../../core/services/funcionario.service';
 
 @Component({
   selector: 'app-autocadastro',

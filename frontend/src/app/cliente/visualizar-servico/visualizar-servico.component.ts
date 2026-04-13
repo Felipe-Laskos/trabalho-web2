@@ -8,8 +8,8 @@ import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-v
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
-import { SolicitacaoService } from '../../services/solicitacao.service';
-import { HistoricoService } from '../../services/historico.service';
+import { SolicitacaoService } from '../../core/services/solicitacao.service';
+import { HistoricoService } from '../../core/services/historico.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 
 @Component({
