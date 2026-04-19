@@ -21,6 +21,7 @@ public class Funcionario {
     private String email;
     // dps transformar a senha em hash
     private String senha;
+    private String salt;
     private LocalDate  dataNascimento;
     private String cargo;
     private Boolean ativo = true;
