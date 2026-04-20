@@ -6,6 +6,7 @@ import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -45,6 +46,22 @@ public class SolicitacaoController {
     @GetMapping("/estado")
     public ResponseEntity<List<Solicitacao>> listarPorEstado(@RequestParam EstadoSolicitacao estadoAtual) {
         return ResponseEntity.ok(service.listarPorEstado(estadoAtual));
+    }
+
+    //atendendo a semana 7 do roadmap
+    @PatchMapping("/{id}/redirecionar")
+    public ResponseEntity<Solicitacao> redirecionar(
+            @PathVariable Long id,
+            @RequestBody Map<String, Long> payload, 
+            @RequestHeader("X-Funcionario-Id") Long idFuncionarioLogado) {
+        
+        Long idFuncionarioDestino = payload.get("idFuncionarioDestino");
+        return ResponseEntity.ok(service.redirecionar(id, idFuncionarioLogado, idFuncionarioDestino));
+    }
+    //atendendo a semana 7 do roadmap
+    @PatchMapping("/{id}/efetuar-manutencao")
+    public ResponseEntity<Solicitacao> efetuarManutencao(@PathVariable Long id) {
+        return ResponseEntity.ok(service.efetuarManutencao(id));
     }
 
 }
