@@ -2,6 +2,7 @@ package com.web.equipe5.manutencaoequipamentos.service;
 
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.repository.FuncionarioRepository;
+import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 
 import java.time.format.DateTimeParseException;
@@ -17,7 +18,7 @@ import java.util.List;
 public class FuncionarioService {
     public final FuncionarioRepository repository;
 
-    private FuncionarioService(FuncionarioRepository repository) {
+    public FuncionarioService(FuncionarioRepository repository) {
         this.repository = repository;
     }
     
@@ -27,46 +28,46 @@ public class FuncionarioService {
 
     public Funcionario buscarPorId(Long id) {
         return repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com ID: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado com ID: " + id));
     }
 
     public Funcionario buscarPorEmail(String email) {
         return repository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com email: " + email));
+            .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado com email: " + email));
     }
 
     public Funcionario buscarPorCpf(String cpf) {
         return repository.findByCpf(cpf)
-            .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com CPF: " + cpf));
+            .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado com CPF: " + cpf));
     }
 
     public Funcionario salvar(Funcionario funcionario) {
         if (funcionario.getNome() == null || funcionario.getNome().trim().isEmpty()) {
-            throw new RuntimeException("Nome do funcionário é obrigatório.");
+            throw new BusinessRuleException("Nome do funcionário é obrigatório.");
         }
         
         if (funcionario.getCpf() == null || funcionario.getCpf().trim().isEmpty()) {
-            throw new RuntimeException("CPF do funcionário é obrigatório.");
+            throw new BusinessRuleException("CPF do funcionário é obrigatório.");
         }
         
         if (funcionario.getEmail() == null || funcionario.getEmail().trim().isEmpty()) {
-            throw new RuntimeException("Email do funcionário é obrigatório.");
+            throw new BusinessRuleException("Email do funcionário é obrigatório.");
         }
         
         if (funcionario.getSenha() == null || funcionario.getSenha().trim().isEmpty()) {
-            throw new RuntimeException("Senha do funcionário é obrigatória.");
+            throw new BusinessRuleException("Senha do funcionário é obrigatória.");
         }
         
         if (funcionario.getCargo() == null || funcionario.getCargo().trim().isEmpty()) {
-            throw new RuntimeException("Cargo do funcionário é obrigatório.");
+            throw new BusinessRuleException("Cargo do funcionário é obrigatório.");
         }
         
         if (repository.existsByCpf(funcionario.getCpf())) {
-            throw new RuntimeException("Já existe um funcionário com este CPF.");
+            throw new BusinessRuleException("Já existe um funcionário com este CPF.");
         }
         
         if (repository.existsByEmail(funcionario.getEmail())) {
-            throw new RuntimeException("Já existe um funcionário com este email.");
+            throw new BusinessRuleException("Já existe um funcionário com este email.");
         }
         
         if (funcionario.getAtivo() == null) {
@@ -78,7 +79,7 @@ public class FuncionarioService {
 
     public Funcionario atualizar(Long id, Map<String, Object> campos) {
         Funcionario funcionarioExistente = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Funcionario não encontrada com ID: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Funcionario não encontrada com ID: " + id));
         
         campos.forEach((campo, valor) -> {
             if (valor != null) {
@@ -87,7 +88,16 @@ public class FuncionarioService {
                     funcionarioExistente.setNome((String) valor);
                     break;
                 case "email":
-                    funcionarioExistente.setEmail((String) valor);
+                    String novoEmail = (String) valor;
+                    
+                    if (repository.existsByEmail(novoEmail)) {
+                        Funcionario funcionarioComEsteEmail = repository.findByEmail(novoEmail).get();
+                        
+                        if (!funcionarioComEsteEmail.getId().equals(funcionarioExistente.getId())) {
+                            throw new BusinessRuleException("Email já está em uso por outro funcionário: " + novoEmail);
+                        }
+                    }
+                    funcionarioExistente.setEmail((String) valor);  // ← pode ser 'novoEmail'
                     break;
                 case "dataNascimento": 
                     if (valor instanceof String) {
@@ -111,13 +121,12 @@ public class FuncionarioService {
                     funcionarioExistente.setAtivo((Boolean) valor);
                     break;
                 case "cpf":  
-                    throw new RuntimeException("Não é permitido alterar o CPF!");
+                    throw new BusinessRuleException("Não é permitido alterar o CPF!");
                 case "senha": 
                     funcionarioExistente.setSenha((String) valor);
                     break;
                 default:
-                    System.out.println("Campo desconhecido: " + campo);
-                    break;
+                    throw new BusinessRuleException("Campo desconhecido" + campo);
                 }
             }
         });
@@ -126,7 +135,7 @@ public class FuncionarioService {
 
     public Funcionario deletar(Long id, Long idFuncionarioLogado) {
         if (id.equals(idFuncionarioLogado)) {
-            throw new RuntimeException("Você não pode remover seu próprio cadastro!");
+            throw new BusinessRuleException("Você não pode remover seu próprio cadastro!");
         }    
 
         Funcionario fun = repository.findById(id)
@@ -134,7 +143,7 @@ public class FuncionarioService {
 
         long totalAtivos = repository.countByAtivoTrue();
         if (totalAtivos <= 1) {
-            throw new RuntimeException("Não é possível remover o único funcionário ativo do sistema!");
+            throw new BusinessRuleException("Não é possível remover o único funcionário ativo do sistema!");
         }
             
         fun.setAtivo(false);
