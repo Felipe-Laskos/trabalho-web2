@@ -1,8 +1,12 @@
 package com.web.equipe5.manutencaoequipamentos.controller;
 
+import com.web.equipe5.manutencaoequipamentos.dto.request.FuncionarioRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.response.FuncionarioResponseDTO;
+import com.web.equipe5.manutencaoequipamentos.mapper.FuncionarioMapper;
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.service.FuncionarioService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,9 +48,10 @@ public class FuncionarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Funcionario> criar(@RequestBody Funcionario funcionario) {
-        Funcionario novoFuncionario = service.salvar(funcionario);
-        return ResponseEntity.status(201).body(novoFuncionario);
+    public ResponseEntity<FuncionarioResponseDTO> criar(@RequestBody FuncionarioRequestDTO requisicao) {
+        Funcionario funcionario = service.salvar(requisicao);
+        FuncionarioResponseDTO novoFuncionario = FuncionarioMapper.toDTO(funcionario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoFuncionario);
     }
     
     @PatchMapping("/{id}")  

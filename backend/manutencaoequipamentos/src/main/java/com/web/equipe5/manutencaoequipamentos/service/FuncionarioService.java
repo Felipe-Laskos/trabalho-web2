@@ -1,10 +1,17 @@
 package com.web.equipe5.manutencaoequipamentos.service;
 
+import com.web.equipe5.manutencaoequipamentos.dto.request.ClienteRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.request.FuncionarioRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.response.FuncionarioResponseDTO;
+import com.web.equipe5.manutencaoequipamentos.mapper.ClienteMapper;
+import com.web.equipe5.manutencaoequipamentos.mapper.FuncionarioMapper;
+import com.web.equipe5.manutencaoequipamentos.model.Cliente;
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.repository.FuncionarioRepository;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 
+import jakarta.transaction.Transactional;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,9 +24,16 @@ import java.util.List;
 @Service
 public class FuncionarioService {
     public final FuncionarioRepository repository;
+    private final HashService hashService;
+    private final EmailService emailService;
 
-    public FuncionarioService(FuncionarioRepository repository) {
+    public FuncionarioService(
+        FuncionarioRepository repository,
+        HashService hashService,
+        EmailService emailService) {
         this.repository = repository;
+        this.hashService = hashService;
+        this.emailService = emailService;
     }
     
     public List<Funcionario> listarAtivos() {
@@ -41,40 +55,48 @@ public class FuncionarioService {
             .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado com CPF: " + cpf));
     }
 
-    public Funcionario salvar(Funcionario funcionario) {
-        if (funcionario.getNome() == null || funcionario.getNome().trim().isEmpty()) {
+    @Transactional
+    public Funcionario salvar(FuncionarioRequestDTO requisicao) {
+        if (requisicao.getNome() == null || requisicao.getNome().trim().isEmpty()) {
             throw new BusinessRuleException("Nome do funcionário é obrigatório.");
         }
         
-        if (funcionario.getCpf() == null || funcionario.getCpf().trim().isEmpty()) {
+        if (requisicao.getCpf() == null || requisicao.getCpf().trim().isEmpty()) {
             throw new BusinessRuleException("CPF do funcionário é obrigatório.");
         }
         
-        if (funcionario.getEmail() == null || funcionario.getEmail().trim().isEmpty()) {
+        if (requisicao.getEmail() == null || requisicao.getEmail().trim().isEmpty()) {
             throw new BusinessRuleException("Email do funcionário é obrigatório.");
         }
         
-        if (funcionario.getSenha() == null || funcionario.getSenha().trim().isEmpty()) {
-            throw new BusinessRuleException("Senha do funcionário é obrigatória.");
-        }
-        
-        if (funcionario.getCargo() == null || funcionario.getCargo().trim().isEmpty()) {
+        if (requisicao.getCargo() == null || requisicao.getCargo().trim().isEmpty()) {
             throw new BusinessRuleException("Cargo do funcionário é obrigatório.");
         }
         
-        if (repository.existsByCpf(funcionario.getCpf())) {
+        if (repository.existsByCpf(requisicao.getCpf())) {
             throw new BusinessRuleException("Já existe um funcionário com este CPF.");
         }
         
-        if (repository.existsByEmail(funcionario.getEmail())) {
+        if (repository.existsByEmail(requisicao.getEmail())) {
             throw new BusinessRuleException("Já existe um funcionário com este email.");
         }
         
-        if (funcionario.getAtivo() == null) {
-            funcionario.setAtivo(true);
+        if (requisicao.getAtivo() == null) {
+            requisicao.setAtivo(true);
         }
         
-        return repository.save(funcionario);
+        String senhaBruta = hashService.gerarSenha();
+        String saltHex = hashService.gerarSaltHex();
+        String hashHex = hashService.sha256Hex(senhaBruta, saltHex);
+
+        Funcionario funcionario = FuncionarioMapper.toEntity(requisicao);
+        funcionario.setSenha(hashHex);
+        funcionario.setSalt(saltHex);
+
+        Funcionario salvo = repository.save(funcionario);
+        //emailService.enviarSenhaAutocadastro(salvo.getEmail(), salvo.getNome(), senhaBruta);
+
+        return salvo;
     }
 
     public Funcionario atualizar(Long id, Map<String, Object> campos) {
@@ -99,21 +121,6 @@ public class FuncionarioService {
                     }
                     funcionarioExistente.setEmail((String) valor);  // ← pode ser 'novoEmail'
                     break;
-                case "dataNascimento": 
-                    if (valor instanceof String) {
-                            // formato YYY-MM-dd (ISO)
-                            String dataStr = (String) valor;
-                            try {
-                                funcionarioExistente.setDataNascimento(LocalDate.parse(dataStr));
-                            } catch (DateTimeParseException e) {
-                                // aqui pega formato brasileiro dd-MM-YYYY
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                                funcionarioExistente.setDataNascimento(LocalDate.parse(dataStr, formatter));
-                            }
-                    } else if (valor instanceof LocalDate) {
-                        funcionarioExistente.setDataNascimento((LocalDate) valor);
-                    }
-                    break;
                 case "cargo":
                     funcionarioExistente.setCargo((String) valor);
                     break;
@@ -122,8 +129,13 @@ public class FuncionarioService {
                     break;
                 case "cpf":  
                     throw new BusinessRuleException("Não é permitido alterar o CPF!");
-                case "senha": 
-                    funcionarioExistente.setSenha((String) valor);
+                case "senha":
+                    String novaSenha = (String) valor;
+                    String novoSalt = hashService.gerarSaltHex();
+                    String novoHash = hashService.sha256Hex(novaSenha, novoSalt);
+
+                    funcionarioExistente.setSalt(novoSalt);
+                    funcionarioExistente.setSenha(novoHash);
                     break;
                 default:
                     throw new BusinessRuleException("Campo desconhecido" + campo);
