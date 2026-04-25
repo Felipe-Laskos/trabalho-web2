@@ -1,5 +1,7 @@
 package com.web.equipe5.manutencaoequipamentos.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -7,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
+
     private final JavaMailSender javaMailSender;
 
     @Value("${app.mail.from}")
@@ -17,6 +21,8 @@ public class EmailService {
     }
 
     public void enviarSenhaAutocadastro(String destino, String nome, String senhaBruta) {
+        log.info("[DEV] Senha gerada para {} ({}): {}", nome, destino, senhaBruta);
+
         SimpleMailMessage mensagem = new SimpleMailMessage();
 
         mensagem.setFrom(from);
