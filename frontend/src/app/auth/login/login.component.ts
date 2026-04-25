@@ -8,6 +8,7 @@ import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 import { InputCardComponent } from "../../shared/input-card/input-card.component";
 import { AuthService } from '../../core/services/auth.service';
+import { PerfilENUM } from '../../core/models/perfilENUM.model';
 
 @Component({
   selector: 'app-login',
@@ -33,6 +34,7 @@ export class LoginComponent {
   emailTocado = false;
   senhaTocado = false;
   enviou = false;
+  carregando = false;
 
   msgEmail: string = '';
 
@@ -57,15 +59,19 @@ export class LoginComponent {
       return;
     }
 
-    const resultado = this.authService.validarLogin(this.credenciais.email, this.credenciais.senha);
-
-    if (resultado.sucesso) {
-      const perfil = this.authService.getPerfil();
-      this.router.navigate([perfil === 'funcionario' ? '/funcionario' : '/cliente']);
-    } else {
-      this.aviso.open(resultado.mensagem, 'FECHAR', {
-        panelClass: ['snack-erro-destaque']
-      });
-    }
+    this.carregando = true;
+    this.authService.login(this.credenciais).subscribe({
+      next: () => {
+        this.carregando = false;
+        const perfil = this.authService.getPerfil();
+        this.router.navigate([perfil === PerfilENUM.FUNCIONARIO ? '/funcionario' : '/cliente']);
+      },
+      error: (err: Error) => {
+        this.carregando = false;
+        this.aviso.open(err.message, 'FECHAR', {
+          panelClass: ['snack-erro-destaque']
+        });
+      }
+    });
   }
 }

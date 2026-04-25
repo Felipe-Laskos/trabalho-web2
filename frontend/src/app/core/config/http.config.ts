@@ -1,4 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
+export const API_URL = environment.apiUrl;
 
 export const defaultHttpOptions = {
   observe: 'response' as const,
