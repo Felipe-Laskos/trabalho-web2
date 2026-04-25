@@ -4,12 +4,12 @@
     </div>
 
     <nav class="header_nav">
-        @if (logado && perfil === 'cliente') {
+        @if (logado && perfil === PerfilENUM.CLIENTE) {
             <a routerLink="/cliente">Minhas Solicitações</a>
             <a routerLink="/cliente/solicitar-manutencao">Nova Solicitação</a>
         }
 
-        @if (logado && perfil === 'funcionario') {
+        @if (logado && perfil === PerfilENUM.FUNCIONARIO) {
             <a routerLink="/funcionario">Solicitações</a>
             <a routerLink="/funcionario/visualizar-solicitacoes">Visualizar</a>
             <a routerLink="/funcionario/categorias">Categorias</a>

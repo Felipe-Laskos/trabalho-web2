@@ -18,6 +18,8 @@ export class HeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  readonly PerfilENUM = PerfilENUM;
+
   logado: boolean = false;
   nomeUsuario: string = '';
   perfil: PerfilENUM | null = null;

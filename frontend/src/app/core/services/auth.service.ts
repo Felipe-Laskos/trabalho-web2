@@ -38,7 +38,7 @@ export class AuthService implements IAuthService {
     localStorage.setItem(LS_TOKEN, dados.token);
     localStorage.setItem(LS_USUARIO, dados.nome);
     localStorage.setItem(LS_EMAIL, dados.email);
-    localStorage.setItem(LS_PERFIL, dados.perfil);
+    localStorage.setItem(LS_PERFIL, (dados.perfil ?? '').toUpperCase());
     localStorage.setItem(LS_USER_ID, String(dados.id));
   }
 
@@ -68,9 +68,9 @@ export class AuthService implements IAuthService {
   }
 
   getPerfil(): PerfilENUM | null {
-    const perfil = localStorage.getItem(LS_PERFIL);
+    const perfil = (localStorage.getItem(LS_PERFIL) ?? '').toUpperCase();
     if (perfil === PerfilENUM.CLIENTE || perfil === PerfilENUM.FUNCIONARIO) {
-      return perfil;
+      return perfil as PerfilENUM;
     }
     return null;
   }
