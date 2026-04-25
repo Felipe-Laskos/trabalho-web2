@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Cliente } from '../models/cliente.model';
 import { mockCliente } from '../mocks/clientes.mock';
 import { IClienteService } from '../interfaces/cliente.service.interface';
+import { ClienteRequest } from '../dto/request/cliente-request.model';
+import { ClienteResponse } from '../dto/response/cliente-response.model';
+import { API_URL, defaultHttpOptions } from '../config/http.config';
 
 const LS_CHAVE = "clientes";
 
@@ -15,6 +19,10 @@ export class ClienteService implements IClienteService {
     if (!localStorage[LS_CHAVE]) {
       localStorage[LS_CHAVE] = JSON.stringify(mockCliente);
     }
+  }
+
+  autocadastrar(requisicao: ClienteRequest): Observable<HttpResponse<ClienteResponse>> {
+    return this.http.post<ClienteResponse>(`${API_URL}/clientes`, requisicao, defaultHttpOptions);
   }
 
   listarTodos(): Cliente[] {

@@ -1,32 +1,43 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
+  const authService = inject(AuthService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       let mensagemErro = 'Ocorreu um erro desconhecido!';
 
       if (error.error instanceof ErrorEvent) {
-        // Erro no lado do cliente
         mensagemErro = `Erro: ${error.error.message}`;
       } else {
-        // Erro retornado pelo Backend
+        const mensagemBackend: string | undefined = error.error?.mensagem;
+
         switch (error.status) {
+          case 400:
+            mensagemErro = mensagemBackend || 'Dados inválidos enviados na requisição.';
+            break;
           case 401:
-            mensagemErro = 'Sessão expirada ou não autorizada. Faça login novamente.';
+            if (req.url.includes('/api/auth/login')) {
+              mensagemErro = mensagemBackend || 'Credenciais inválidas.';
+            } else {
+              mensagemErro = 'Sessão expirada ou não autorizada. Faça login novamente.';
+              authService.efetuarLogout();
+            }
             break;
           case 403:
-            mensagemErro = 'Você não tem permissão para acessar este recurso.';
+            mensagemErro = mensagemBackend || 'Você não tem permissão para acessar este recurso.';
             break;
           case 404:
-            mensagemErro = 'Recurso não encontrado.';
+            mensagemErro = mensagemBackend || 'Recurso não encontrado.';
             break;
-          case 400:
-            mensagemErro = error.error?.message || 'Dados inválidos enviados na requisição.';
+          case 409:
+            mensagemErro = mensagemBackend || 'Já existe um registro com esses dados.';
+            break;
+          case 422:
+            mensagemErro = mensagemBackend || 'Operação não permitida pela regra de negócio.';
             break;
           case 500:
             mensagemErro = 'Erro interno no servidor. Tente novamente mais tarde.';

@@ -1,11 +1,17 @@
+import { HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { LoginRequest } from '../dto/request/login-request.model';
+import { LoginResponse } from '../dto/response/login-response.model';
+import { PerfilENUM } from '../models/perfilENUM.model';
+
 export interface IAuthService {
-  validarLogin(email: string, senha: string): { sucesso: boolean, mensagem: string };
-  salvarSessao(nome: string, email: string, perfil: 'cliente' | 'funcionario'): void;
+  login(credenciais: LoginRequest): Observable<HttpResponse<LoginResponse>>;
   efetuarLogout(): void;
   estaLogado(): boolean;
+  getToken(): string | null;
   getNome(): string;
   getEmail(): string;
-  getPerfil(): 'cliente' | 'funcionario' | null;
+  getPerfil(): PerfilENUM | null;
   isCliente(): boolean;
   isFuncionario(): boolean;
 }
