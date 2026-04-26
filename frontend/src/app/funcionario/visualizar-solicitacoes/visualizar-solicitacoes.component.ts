@@ -3,11 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-
-import { TabelaComponent, ColunaTabela, AcaoTabela } from '../../shared/tabela/tabela.component';
+import {
+  TabelaComponent,
+  ColunaTabela,
+  AcaoTabela,
+} from '../../shared/tabela/tabela.component';
 import { ComboComponent, OpcaoCombo } from '../../shared/combo/combo.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
-import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/modal-generico.component';
+import {
+  ModalGenericoComponent,
+  ModalDados,
+} from '../../shared/modal-generico/modal-generico.component';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
@@ -25,13 +31,12 @@ import { FuncionarioService } from '../../core/services/funcionario.service';
     TabelaComponent,
     ComboComponent,
     PaginacaoComponent,
-    CardVisualizacaoComponent
+    CardVisualizacaoComponent,
   ],
   templateUrl: './visualizar-solicitacoes.component.html',
-  styleUrl: './visualizar-solicitacoes.component.css'
+  styleUrl: './visualizar-solicitacoes.component.css',
 })
 export class VisualizarSolicitacoesComponent implements OnInit {
-
   private solicitacaoService = inject(SolicitacaoService);
   private historicoService = inject(HistoricoService);
   private authService = inject(AuthService);
@@ -42,7 +47,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   opcoesFiltro: OpcaoCombo[] = [
     { value: 'TODAS', viewValue: 'Todas' },
     { value: 'HOJE', viewValue: 'Hoje' },
-    { value: 'PERIODO', viewValue: 'Período' }
+    { value: 'PERIODO', viewValue: 'Período' },
   ];
 
   filtro: 'TODAS' | 'HOJE' | 'PERIODO' = 'TODAS';
@@ -54,17 +59,37 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   colunas: ColunaTabela[] = [
     { campo: 'id', titulo: 'ID', tipo: 'texto' },
-    { campo: 'descricaoEquipamento', titulo: 'Equipamento', tipo: 'texto', truncar: 30 },
+    {
+      campo: 'descricaoEquipamento',
+      titulo: 'Equipamento',
+      tipo: 'texto',
+      truncar: 30,
+    },
     { campo: 'dataHoraCriacao', titulo: 'Data', tipo: 'data' },
     { campo: 'estadoAtual', titulo: 'Status', tipo: 'estado' },
     { campo: 'valorOrcado', titulo: 'Valor', tipo: 'texto' },
-    { campo: 'acao', titulo: 'Ação', tipo: 'acao' }
+    { campo: 'acao', titulo: 'Ação', tipo: 'acao' },
   ];
 
   acoes: AcaoTabela[] = [
-    { nome: 'Efetuar Orçamento', acao: 'orcamento', cor: 'primary', estados: ['ABERTA'] },
-    { nome: 'Efetuar Manutenção', acao: 'manutencao', cor: 'accent', estados: ['APROVADA', 'REDIRECIONADA'] },
-    { nome: 'Finalizar Solicitação', acao: 'finalizar', cor: 'warn', estados: ['PAGA'] }
+    {
+      nome: 'Efetuar Orçamento',
+      acao: 'orcamento',
+      cor: 'primary',
+      estados: ['ABERTA'],
+    },
+    {
+      nome: 'Efetuar Manutenção',
+      acao: 'manutencao',
+      cor: 'accent',
+      estados: ['APROVADA', 'REDIRECIONADA'],
+    },
+    {
+      nome: 'Finalizar Solicitação',
+      acao: 'finalizar',
+      cor: 'warn',
+      estados: ['PAGA'],
+    },
   ];
 
   paginaAtual: number = 1;
@@ -76,7 +101,14 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   }
 
   private carregarSolicitacoes(): void {
-    this.solicitacoes = this.solicitacaoService.listarTodos();
+    this.solicitacaoService.listarTodos().subscribe({
+      next: (dadosQueChegaram) => {
+        this.solicitacoes = dadosQueChegaram;
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar a lista de solicitações:', erro);
+      },
+    });
   }
 
   getFuncionarioLogadoId(): number | undefined {
@@ -103,17 +135,19 @@ export class VisualizarSolicitacoesComponent implements OnInit {
           titulo: 'Finalizar Solicitação',
           mensagem: 'Deseja realmente finalizar esta solicitação?',
           textoConfirmar: 'Finalizar',
-          textoCancelar: 'Cancelar'
+          textoCancelar: 'Cancelar',
         };
 
         const dialogRef = this.dialog.open(ModalGenericoComponent, {
           data: modalData,
-          width: '400px'
+          width: '400px',
         });
 
-        dialogRef.afterClosed().subscribe(confirmado => {
+        dialogRef.afterClosed().subscribe((confirmado) => {
           if (confirmado && item) {
-            const funcionarioLogado = this.funcionarioService.buscarPorEmail(this.authService.getEmail());
+            const funcionarioLogado = this.funcionarioService.buscarPorEmail(
+              this.authService.getEmail(),
+            );
 
             this.historicoService.inserir({
               dataHora: new Date().toISOString(),
@@ -121,14 +155,14 @@ export class VisualizarSolicitacoesComponent implements OnInit {
               estadoNovo: SolicitacaoENUM.FINALIZADA,
               solicitacaoId: item.id!,
               funcionario: funcionarioLogado,
-              observacao: 'Solicitação finalizada pelo funcionário.'
+              observacao: 'Solicitação finalizada pelo funcionário.',
             });
 
             item.estadoAtual = SolicitacaoENUM.FINALIZADA;
             item.dataHoraFinalizacao = new Date().toISOString();
             item.funcionarioResponsavel = {
               id: funcionarioLogado?.id,
-              nome: this.authService.getNome()
+              nome: this.authService.getNome(),
             };
 
             this.solicitacaoService.atualizar(item);
@@ -156,7 +190,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     let lista = [...this.solicitacoes];
     const hoje = new Date();
 
-    lista = lista.filter(s => {
+    lista = lista.filter((s) => {
       if (s.estadoAtual === 'REDIRECIONADA') {
         return s.funcionarioResponsavel?.id === funcionarioLogadoId;
       }
@@ -164,7 +198,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     });
 
     if (this.filtro === 'HOJE') {
-      lista = lista.filter(s => {
+      lista = lista.filter((s) => {
         const data = new Date(s.dataHoraCriacao);
         return data.toDateString() === hoje.toDateString();
       });
@@ -177,14 +211,17 @@ export class VisualizarSolicitacoesComponent implements OnInit {
       const inicio = new Date(anoI, mesI - 1, diaI, 0, 0, 0, 0);
       const fim = new Date(anoF, mesF - 1, diaF, 23, 59, 59, 999);
 
-      lista = lista.filter(s => {
+      lista = lista.filter((s) => {
         const data = new Date(s.dataHoraCriacao);
         return data >= inicio && data <= fim;
       });
     }
 
     lista.sort((a, b) => {
-      return new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime();
+      return (
+        new Date(a.dataHoraCriacao).getTime() -
+        new Date(b.dataHoraCriacao).getTime()
+      );
     });
 
     this.solicitacoesFiltradas = lista;

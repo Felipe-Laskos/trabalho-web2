@@ -48,6 +48,11 @@ public class SolicitacaoController {
         return ResponseEntity.ok(service.listarPorEstado(estadoAtual));
     }
 
+    @GetMapping("/{id}") 
+    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
     //atendendo a semana 7 do roadmap
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<Solicitacao> redirecionar(

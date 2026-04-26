@@ -50,11 +50,18 @@ export class HomeFuncionarioComponent implements OnInit {
     this.nomeFuncionario = this.authService.getNome();
     this.carregarSolicitacoes();
   }
-
+  
   private carregarSolicitacoes(): void {
-    this.solicitacoesAbertas = this.solicitacaoService.listarTodos()
+    this.solicitacaoService.listarTodos().subscribe({
+      next: (lista) => {
+        this.solicitacoesAbertas = lista
       .filter(s => s.estadoAtual === SolicitacaoENUM.ABERTA)
       .sort((a, b) => new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime());
+      },
+      error: (erro) => {
+      console.error('Erro ao carregar solicitações', erro);
+      }
+    });
   }
 
   get dadosPaginados() {

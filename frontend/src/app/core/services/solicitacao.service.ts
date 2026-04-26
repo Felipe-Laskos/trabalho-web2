@@ -1,59 +1,57 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface';
 import { Solicitacao } from '../models/solicitacao.model';
-import { mockSolicitacao } from '../mocks/solicitacao.mock';
-
-const LS_CHAVE = "solicitacoes";
+import { SolicitacaoENUM } from '../models/solicitacaoENUM.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SolicitacaoService implements ISolicitacaoService {
+  private readonly API_URL = 'http://localhost:8080/api/solicitacoes';
 
-  constructor(private http: HttpClient) {
-    if (!localStorage[LS_CHAVE]) {
-      localStorage[LS_CHAVE] = JSON.stringify(mockSolicitacao);
-    }
+  constructor(private http: HttpClient) {}
+
+  listarTodos(): Observable<Solicitacao[]> {
+    return this.http.get<Solicitacao[]>(this.API_URL);
+  } 
+
+  buscarPorId(id: number): Observable<Solicitacao> {
+    return this.http.get<Solicitacao>(`${this.API_URL}/${id}`);
+  } 
+
+  inserir(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.post<Solicitacao>(this.API_URL, solicitacao);
   }
 
-  listarTodos(): Solicitacao[] {
-    const solicitacoes = localStorage[LS_CHAVE];
-    return solicitacoes ? JSON.parse(solicitacoes) : [];
+  aprovar(id: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.API_URL}/${id}/aprovar`, {});
   }
 
-  buscarPorId(id: number): Solicitacao | undefined {
-    const solicitacoes = this.listarTodos();
-    return solicitacoes.find(s => s.id === id);
+  rejeitar(id: number, motivo: string): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(
+      `${this.API_URL}/${id}/rejeitar?motivoRejeicao=${motivo}`,
+      {},
+    );
   }
 
-  inserir(solicitacao: Solicitacao): void {
-    const solicitacoes = this.listarTodos();
-    const maiorId = solicitacoes.length > 0
-    ? Math.max(...solicitacoes.map(s => s.id || 0))
-    : 0;
-
-    solicitacao.id = maiorId + 1;
-    solicitacoes.push(solicitacao);
-    localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
+  resgatar(id: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.API_URL}/${id}/resgatar`, {});
   }
 
-  atualizar(solicitacao: Solicitacao): void {
-    const solicitacoes = this.listarTodos();
-    solicitacoes.forEach((obj, index, objs) => {
-      if (solicitacao.id === obj.id) {
-        objs[index] = solicitacao;
-      }
-    });
-    localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
+  pagar(id: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.API_URL}/${id}/pagar`, {});
   }
 
- remover(id: number): void {
-    const solicitacoes = this.listarTodos();
-    const solicitacao = solicitacoes.find(s => s.id === id);
-    if (solicitacao) {
-      solicitacao.ativo = false;
-      localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
-    }
+  atualizar(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.put<Solicitacao>(
+      `${this.API_URL}/${solicitacao.id}`,
+      solicitacao,
+    );
+  }
+
+  remover(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
 }

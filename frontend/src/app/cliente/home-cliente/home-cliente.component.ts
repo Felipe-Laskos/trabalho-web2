@@ -71,12 +71,27 @@ export class HomeClienteComponent implements OnInit {
     this.nomeUsuario = this.authService.getNome() || 'Cliente';
     const emailLogado = this.authService.getEmail();
 
-    this.listaSolicitacoes = this.solicitacaoService.listarTodos()
-      .filter(s => s.cliente?.email === emailLogado)
-      .sort((a, b) => new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime());
+    this.solicitacaoService.listarTodos().subscribe({
+    next: (lista) => {
+      this.listaSolicitacoes = lista
+        .filter(s => s.cliente?.email === emailLogado)
+        .sort((a, b) =>
+          new Date(a.dataHoraCriacao).getTime() -
+          new Date(b.dataHoraCriacao).getTime()
+        );
 
-    this.identificarUltimoPedidoEmAnalise();
-  }
+      this.dadosFiltrados = this.listaSolicitacoes;
+      this.identificarUltimoPedidoEmAnalise();
+      this.atualizarPaginacao();
+    },
+    error: () => {
+      this.aviso.open('Erro ao carregar solicitações.', 'OK', {
+        duration: 3000,
+        verticalPosition: 'top'
+      });
+    }
+  });
+}
 
   onBusca(valor: string) {
     const termo = valor.toLowerCase();
@@ -124,13 +139,24 @@ export class HomeClienteComponent implements OnInit {
         observacao: 'Solicitação resgatada pelo cliente.'
       });
       item.estadoAtual = SolicitacaoENUM.APROVADA;
-      this.solicitacaoService.atualizar(item);
-      this.carregarDadosIniciais();
-      this.dadosFiltrados = this.listaSolicitacoes;
-      this.atualizarPaginacao();
-      this.aviso.open('Solicitação resgatada! Estado alterado para APROVADA.', 'OK', { duration: 3000, verticalPosition: 'top' });
-    }
+
+      this.solicitacaoService.atualizar(item).subscribe({
+      next: () => {
+        this.carregarDadosIniciais();
+
+        this.aviso.open('Solicitação resgatada! Estado alterado para APROVADA.','OK',
+          { duration: 3000, verticalPosition: 'top' }
+        );
+      },
+      error: () => {
+        this.aviso.open('Erro ao resgatar solicitação.', 'OK', {
+          duration: 3000,
+          verticalPosition: 'top'
+        });
+      }
+    });
   }
+}
   pagar(item: Solicitacao) { this.router.navigate(['/cliente/pagar', item.id]); } // RF010 Laura
 
   irParaSolicitacao(): void {

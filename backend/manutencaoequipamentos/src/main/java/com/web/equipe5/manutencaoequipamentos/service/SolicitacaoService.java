@@ -92,6 +92,11 @@ public class SolicitacaoService {
         return repository.findByEstadoAtual(estado);
     }
 
+    public Solicitacao buscarPorId(Long id) { //ADICIONEI
+    return repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Solicitação " + id + " não encontrada"));
+    }
+
     public Solicitacao redirecionar(Long idSolicitacao, Long idFuncionarioLogado, Long idFuncionarioDestino) {
         Solicitacao s = repository.findById(idSolicitacao)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));

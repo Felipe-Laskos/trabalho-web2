@@ -1,4 +1,9 @@
-import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit, inject } from '@angular/core';
@@ -11,21 +16,27 @@ import { FuncionarioService } from '../../core/services/funcionario.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
-import { TextAreaComponent } from "../../shared/text-area/text-area.component";
+import { TextAreaComponent } from '../../shared/text-area/text-area.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
-import { BotaoCancelarComponent } from "../../shared/botao-cancelar/botao-cancelar.component"; 
-
+import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 
 @Component({
   selector: 'app-efetuar-manutencao',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatSnackBarModule, CardVisualizacaoComponent, BotaoComponent, TextAreaComponent, BotaoAprovarComponent, BotaoCancelarComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatSnackBarModule,
+    CardVisualizacaoComponent,
+    BotaoComponent,
+    TextAreaComponent,
+    BotaoAprovarComponent,
+    BotaoCancelarComponent,
+  ],
   templateUrl: './efetuar-manutencao.component.html',
-  styleUrls: ['./efetuar-manutencao.component.css']
+  styleUrls: ['./efetuar-manutencao.component.css'],
 })
-
 export class EfetuarManutencaoComponent implements OnInit {
-
   private solicitacaoService = inject(SolicitacaoService);
   private historicoService = inject(HistoricoService);
   private funcionarioService = inject(FuncionarioService);
@@ -50,38 +61,60 @@ export class EfetuarManutencaoComponent implements OnInit {
 
   form = new FormGroup({
     descricao: new FormControl('', [Validators.required]),
-    orientacoes: new FormControl('', [Validators.required])
+    orientacoes: new FormControl('', [Validators.required]),
   });
 
   ngOnInit(): void {
     const id = +this.route.snapshot.params['id'];
-    const res = this.solicitacaoService.buscarPorId(id);
 
-    if (res && (res.estadoAtual === SolicitacaoENUM.APROVADA || res.estadoAtual === SolicitacaoENUM.REDIRECIONADA)) {
-      this.solicitacao = res;
-    } else {
-      this.aviso.open('Solicitação não encontrada ou não está disponível para manutenção.', 'OK', { duration: 3000 });
-      this.router.navigate(['/funcionario/visualizar-solicitacoes']);
-    }
+    this.solicitacaoService.buscarPorId(id).subscribe({
+      next: (res) => {
+        if (
+          res &&
+          (res.estadoAtual === SolicitacaoENUM.APROVADA ||
+            res.estadoAtual === SolicitacaoENUM.REDIRECIONADA)
+        ) {
+          this.solicitacao = res;
+        } else {
+          this.aviso.open(
+            'Solicitação não encontrada ou não está disponível para manutenção.',
+            'OK',
+            { duration: 3000 },
+          );
+          this.router.navigate(['/funcionario/visualizar-solicitacoes']);
+        }
+      },
+      error: () => {
+        this.aviso.open('Erro ao carregar solicitação.', 'OK', {
+          duration: 3000,
+        });
+
+        this.router.navigate(['/funcionario/visualizar-solicitacoes']);
+      },
+    });
   }
 
   abrirFormulario() {
-    if(this.botaoDesativado) return;
+    if (this.botaoDesativado) return;
     this.mostrarFormulario = true;
   }
 
- confirmarManutencao(): void {  
-    const dados = this.form.value;  
+  confirmarManutencao(): void {
+    const dados = this.form.value;
 
     if (!dados.descricao || !dados.orientacoes) {
-      this.aviso.open('Preencha todos os campos!', 'OK', { duration: 3000, verticalPosition: 'top' });
+      this.aviso.open('Preencha todos os campos!', 'OK', {
+        duration: 3000,
+        verticalPosition: 'top',
+      });
       return;
     }
 
     if (!this.solicitacao) return;
 
     const emailLogado = this.authService.getEmail();
-    const funcionarioLogado = this.funcionarioService.buscarPorEmail(emailLogado);
+    const funcionarioLogado =
+      this.funcionarioService.buscarPorEmail(emailLogado);
 
     this.historicoService.inserir({
       dataHora: new Date().toISOString(),
@@ -89,64 +122,77 @@ export class EfetuarManutencaoComponent implements OnInit {
       estadoNovo: SolicitacaoENUM.ARRUMADA,
       solicitacaoId: this.solicitacao.id!,
       funcionario: funcionarioLogado,
-      observacao: `Manutenção realizada. Descrição: ${dados.descricao}`
+      observacao: `Manutenção realizada. Descrição: ${dados.descricao}`,
     });
 
     this.solicitacao.estadoAtual = SolicitacaoENUM.ARRUMADA;
     this.solicitacao.descricaoManutencao = dados.descricao;
     this.solicitacao.orientacoesCliente = dados.orientacoes;
     this.solicitacao.funcionarioResponsavel = funcionarioLogado;
-    this.solicitacaoService.atualizar(this.solicitacao);
 
-    this.form.reset();
-    this.exibirModal = false;
-    this.estadoModal = 'confirmacao';
-    this.mostrarFormulario = false;
-    this.exibirToastSucesso = true;
+    this.solicitacaoService.atualizar(this.solicitacao).subscribe({
+      next: () => {
+        this.form.reset();
+        this.exibirModal = false;
+        this.estadoModal = 'confirmacao';
+        this.mostrarFormulario = false;
+        this.exibirToastSucesso = true;
 
-    setTimeout(() => { 
-        this.exibirToastSucesso = false;
-        this.router.navigate(['/funcionario/visualizar-solicitacoes']);
-      }, 2500);
+        setTimeout(() => {
+          this.exibirToastSucesso = false;
+          this.router.navigate(['/funcionario/visualizar-solicitacoes']);
+        }, 2500);
+      },
+      error: () => {
+        this.aviso.open('Erro ao salvar manutenção.', 'OK', { duration: 3000 });
+      },
+    });
   }
 
   redirecionar() {
-    if(this.botaoDesativado) return;
+    if (this.botaoDesativado) return;
     if (this.solicitacao) {
-       this.router.navigate(['/funcionario/redirecionar-manutencao', this.solicitacao.id]);
+      this.router.navigate([
+        '/funcionario/redirecionar-manutencao',
+        this.solicitacao.id,
+      ]);
     } else {
       alert('Nenhuma solicitação encontrada para redirecionar!');
     }
   }
 
-   fecharModal() {
+  fecharModal() {
     this.exibirModal = false;
     this.estadoModal = 'confirmacao';
-    
+
     if (!this.exibirToastSucesso) {
       this.botaoDesativado = false;
     }
   }
 
-   aprovarServico(): void {
-    if(this.form.invalid) {
-     this.aviso.open('Preencha todos os campos obrigatórios antes de aprovar.', 'OK', { duration: 3000 });
-     return;
+  aprovarServico(): void {
+    if (this.form.invalid) {
+      this.aviso.open(
+        'Preencha todos os campos obrigatórios antes de aprovar.',
+        'OK',
+        { duration: 3000 },
+      );
+      return;
     }
 
-  if(this.botaoDesativado) return;
+    if (this.botaoDesativado) return;
     this.estadoModal = 'confirmacao';
     this.exibirModal = true;
   }
 
   cancelarFormulario() {
     this.mostrarFormulario = false;
-      this.form.reset();
-      this.botaoDesativado = false;
+    this.form.reset();
+    this.botaoDesativado = false;
   }
 
   obterCorDoBadge(estado: string | undefined): string {
-    if (!estado) return 'badge-cinza'; 
+    if (!estado) return 'badge-cinza';
     switch (estado.toUpperCase()) {
       case 'APROVADA':
         return 'badge-amarelo';

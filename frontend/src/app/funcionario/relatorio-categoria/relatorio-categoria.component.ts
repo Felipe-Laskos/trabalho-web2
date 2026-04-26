@@ -71,46 +71,53 @@ export class RelatorioCategoriasComponent implements OnInit {
 
   filtrar(): void {
   this.paginaAtual = 1;
+  
 
-  const solicitacoes = this.solicitacaoService.listarTodos();
+  //ALTEREI A PARTIR DAQUI - TODO O CÓDIGO DE FILTRAGEM, AGRUPAMENTO E TRANSFORMAÇÃO FICOU DENTRO DO "next" DA INSCRIÇÃO DO SERVICE E ACEITA OBSERVABLE
 
-  let pagas = solicitacoes.filter(s =>
-    s.estadoAtual === SolicitacaoENUM.PAGA ||
-    s.estadoAtual === SolicitacaoENUM.FINALIZADA
-  );
+  this.solicitacaoService.listarTodos().subscribe({
+      next: (solicitacoes: Solicitacao[]) => {
+        
+        let pagas = solicitacoes.filter((s: Solicitacao) =>
+          s.estadoAtual === SolicitacaoENUM.PAGA ||
+          s.estadoAtual === SolicitacaoENUM.FINALIZADA
+        );
 
-  if (this.categoria) {
-    pagas = pagas.filter(s => 
-      s.categoria?.nome.toLowerCase().includes(this.categoria.toLowerCase())
-    );
+        if (this.categoria) {
+          pagas = pagas.filter((s: Solicitacao) => 
+            s.categoria?.nome.toLowerCase().includes(this.categoria.toLowerCase())
+          );
+        }
+        
+        const agrupado: Record<string, { quantidade: number; total: number }> = {};
+
+        pagas.forEach((s: Solicitacao) => {
+          const nomeCategoria = s.categoria?.nome || 'Sem Categoria';
+
+          if (!agrupado[nomeCategoria]) {
+            agrupado[nomeCategoria] = { quantidade: 0, total: 0 };
+          }
+
+          agrupado[nomeCategoria].quantidade++;
+          agrupado[nomeCategoria].total += s.valorOrcado || 0;
+        });
+        this.receitasPorCategoria = Object.keys(agrupado).map(nomeCategoria => ({
+          categoria: nomeCategoria,
+          quantidade: agrupado[nomeCategoria].quantidade,
+          total: agrupado[nomeCategoria].total,
+          totalFormatado: agrupado[nomeCategoria].total.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+          })
+        }));
+        this.totalGeral = this.receitasPorCategoria.reduce((acc, r) => acc + r.total, 0);
+        this.quantidadeTotal = this.receitasPorCategoria.reduce((acc, r) => acc + r.quantidade, 0);
+      },
+      error: (err) => {
+        console.error('Erro ao carregar relatório de categorias:', err);
+      }
+    });
   }
-
-  const agrupado: Record<string, { quantidade: number; total: number }> = {};
-
-  pagas.forEach(s => {
-    const nomeCategoria = s.categoria?.nome || 'Sem Categoria';
-
-    if (!agrupado[nomeCategoria]) {
-      agrupado[nomeCategoria] = { quantidade: 0, total: 0 };
-    }
-
-    agrupado[nomeCategoria].quantidade++;
-    agrupado[nomeCategoria].total += s.valorOrcado || 0;
-  });
-
-  this.receitasPorCategoria = Object.keys(agrupado).map(nomeCategoria => ({
-    categoria: nomeCategoria,
-    quantidade: agrupado[nomeCategoria].quantidade,
-    total: agrupado[nomeCategoria].total,
-    totalFormatado: agrupado[nomeCategoria].total.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    })
-  }));
-
-  this.totalGeral = this.receitasPorCategoria.reduce((acc, r) => acc + r.total, 0);
-  this.quantidadeTotal = this.receitasPorCategoria.reduce((acc, r) => acc + r.quantidade, 0);
-}
 
   gerarPdf(): void {
     const doc = new jsPDF();
