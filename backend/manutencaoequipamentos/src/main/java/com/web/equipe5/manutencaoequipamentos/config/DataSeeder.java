@@ -82,7 +82,7 @@ private void seedClientes() {
     c2.setEmail("jose@gmail.com");
     c2.setCpf("11122233344");
     c2.setTelefone("4199999998");
-    c2.setAtivo(false);
+    c2.setAtivo(true);
     c2.setDataCadastro(LocalDateTime.of(2024, 2, 15, 0, 0));
 
     salvarCliente(c2, "2222");
@@ -102,7 +102,7 @@ private void seedClientes() {
     c4.setEmail("joaquina@gmail.com");
     c4.setCpf("12345678911");
     c4.setTelefone("4199999996");
-    c4.setAtivo(false);
+    c4.setAtivo(true);
     c4.setDataCadastro(LocalDateTime.of(2024, 4, 20, 0, 0));
 
     salvarCliente(c4, "4444");
@@ -112,7 +112,7 @@ private void seedCategorias() {
     List<CategoriaEquipamento> categorias = List.of(
         new CategoriaEquipamento(null, "Notebook", true),
         new CategoriaEquipamento(null, "Desktop", true),
-        new CategoriaEquipamento(null, "Monitor", true),
+        new CategoriaEquipamento(null, "Teclado", true),
         new CategoriaEquipamento(null, "Mouse", true),
         new CategoriaEquipamento(null, "Impressora", true)
     );
