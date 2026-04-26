@@ -1,0 +1,4 @@
+export enum PerfilENUM {
+  CLIENTE = 'CLIENTE',
+  FUNCIONARIO = 'FUNCIONARIO'
+}

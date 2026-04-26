@@ -4,6 +4,7 @@ import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../core/services/auth.service';
+import { PerfilENUM } from '../../core/models/perfilENUM.model';
 
 @Component({
   selector: 'app-header',
@@ -17,9 +18,11 @@ export class HeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  readonly PerfilENUM = PerfilENUM;
+
   logado: boolean = false;
   nomeUsuario: string = '';
-  perfil: 'cliente' | 'funcionario' | null = null;
+  perfil: PerfilENUM | null = null;
 
   ngOnInit(): void {
     this.atualizarSessao();

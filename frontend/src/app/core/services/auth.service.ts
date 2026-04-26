@@ -1,64 +1,62 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { ClienteService } from './cliente.service';
-import { FuncionarioService } from './funcionario.service';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 import { IAuthService } from '../interfaces/auth.service.interface';
+import { LoginRequest } from '../dto/request/login-request.model';
+import { LoginResponse } from '../dto/response/login-response.model';
+import { PerfilENUM } from '../models/perfilENUM.model';
+import { API_URL, defaultHttpOptions } from '../config/http.config';
 
-const LS_USUARIO = "usuarioSessao";
-const LS_PERFIL = "usuarioPerfil";
-const LS_EMAIL = "usuarioEmail";
+const LS_TOKEN = 'authToken';
+const LS_USUARIO = 'usuarioSessao';
+const LS_PERFIL = 'usuarioPerfil';
+const LS_EMAIL = 'usuarioEmail';
+const LS_USER_ID = 'usuarioId';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService implements IAuthService {
 
-  private clienteService = inject(ClienteService);
-  private funcionarioService = inject(FuncionarioService);
-  private router = inject(Router);
   private http = inject(HttpClient);
+  private router = inject(Router);
 
-  validarLogin(email: string, senha: string): { sucesso: boolean, mensagem: string } {
-    const cliente = this.clienteService.buscarPorEmail(email);
-    const funcionario = this.funcionarioService.buscarPorEmail(email);
-
-    if (cliente) {
-      if (cliente.ativo === false) return { sucesso: false, mensagem: 'Usuário desativado.' };
-      if (cliente.senha === senha) {
-        this.salvarSessao(cliente.nome, email, 'cliente');
-        return { sucesso: true, mensagem: '' };
-      }
-      return { sucesso: false, mensagem: 'Senha incorreta.' };
-    }
-
-    if (funcionario) {
-      if (funcionario.ativo === false) return { sucesso: false, mensagem: 'Usuário desativado.' };
-      if (funcionario.senha === senha) {
-        this.salvarSessao(funcionario.nome, email, 'funcionario');
-        return { sucesso: true, mensagem: '' };
-      }
-      return { sucesso: false, mensagem: 'Senha incorreta.' };
-    }
-
-    return { sucesso: false, mensagem: 'E-mail não encontrado.' };
+  login(credenciais: LoginRequest): Observable<HttpResponse<LoginResponse>> {
+    return this.http
+      .post<LoginResponse>(`${API_URL}/auth/login`, credenciais, defaultHttpOptions)
+      .pipe(
+        tap((res) => {
+          if (res.body) {
+            this.salvarSessao(res.body);
+          }
+        })
+      );
   }
 
-  salvarSessao(nome: string, email: string, perfil: 'cliente' | 'funcionario'): void {
-    localStorage.setItem(LS_USUARIO, nome);
-    localStorage.setItem(LS_PERFIL, perfil);
-    localStorage.setItem(LS_EMAIL, email);
+  private salvarSessao(dados: LoginResponse): void {
+    localStorage.setItem(LS_TOKEN, dados.token);
+    localStorage.setItem(LS_USUARIO, dados.nome);
+    localStorage.setItem(LS_EMAIL, dados.email);
+    localStorage.setItem(LS_PERFIL, (dados.perfil ?? '').toUpperCase());
+    localStorage.setItem(LS_USER_ID, String(dados.id));
   }
 
   efetuarLogout(): void {
+    localStorage.removeItem(LS_TOKEN);
     localStorage.removeItem(LS_USUARIO);
     localStorage.removeItem(LS_PERFIL);
     localStorage.removeItem(LS_EMAIL);
+    localStorage.removeItem(LS_USER_ID);
     this.router.navigate(['/login']);
   }
 
   estaLogado(): boolean {
-    return !!localStorage.getItem(LS_USUARIO);
+    return !!this.getToken();
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(LS_TOKEN);
   }
 
   getNome(): string {
@@ -69,17 +67,19 @@ export class AuthService implements IAuthService {
     return localStorage.getItem(LS_EMAIL) || '';
   }
 
-  getPerfil(): 'cliente' | 'funcionario' | null {
-    const perfil = localStorage.getItem(LS_PERFIL);
-    if (perfil === 'cliente' || perfil === 'funcionario') return perfil;
+  getPerfil(): PerfilENUM | null {
+    const perfil = (localStorage.getItem(LS_PERFIL) ?? '').toUpperCase();
+    if (perfil === PerfilENUM.CLIENTE || perfil === PerfilENUM.FUNCIONARIO) {
+      return perfil as PerfilENUM;
+    }
     return null;
   }
 
   isCliente(): boolean {
-    return this.getPerfil() === 'cliente';
+    return this.getPerfil() === PerfilENUM.CLIENTE;
   }
 
   isFuncionario(): boolean {
-    return this.getPerfil() === 'funcionario';
+    return this.getPerfil() === PerfilENUM.FUNCIONARIO;
   }
 }

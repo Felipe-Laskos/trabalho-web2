@@ -2,9 +2,9 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ValidarCpf } from './validacao-cpf';  // isso aqui tem q sair, já existe um validator de cpf 
+import { ValidarCpf } from './validacao-cpf';  // isso aqui tem q sair, já existe um validator de cpf
 import { InputCardComponent } from '../../shared/input-card/input-card.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
@@ -12,7 +12,7 @@ import { InputComponent } from "../../shared/input/input.component";
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
 import { ModalGenericoComponent } from "../../shared/modal-generico/modal-generico.component";
 import { ClienteService } from '../../core/services/cliente.service';
-import { FuncionarioService } from '../../core/services/funcionario.service';
+import { ClienteRequest } from '../../core/dto/request/cliente-request.model';
 
 @Component({
   selector: 'app-autocadastro',
@@ -20,7 +20,6 @@ import { FuncionarioService } from '../../core/services/funcionario.service';
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule,
     MatDialogModule,
     InputCardComponent,
     BotaoAprovarComponent,
@@ -43,14 +42,14 @@ export class AutocadastroComponent {
     cidade: '',
     uf: '',
     numero: '',
-    complemento: '',
-    senha: ''
+    complemento: ''
   };
 
   exibirModal = false;
   camposTocados: any = {};
+  enviando = false;
+
   private clienteService = inject(ClienteService);
-  private funcionarioService = inject(FuncionarioService);
   private dialog = inject(MatDialog);
 
   constructor(public router: Router, private http: HttpClient) {}
@@ -62,7 +61,7 @@ export class AutocadastroComponent {
     v = v.replace(/(\d{3})(\d)/, '$1.$2');
     v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
     this.usuario.cpf = v;
-    this.usuario.cpf = valor; 
+    this.usuario.cpf = valor;
       setTimeout(() => {
         this.usuario.cpf = v;
       });
@@ -104,11 +103,9 @@ export class AutocadastroComponent {
     }
   }
 
-  gerarSenhaAleatoria(): string {
-    return Math.floor(1000 + Math.random() * 9000).toString();
-  }
-
   onSubmit(form: NgForm) {
+    if (this.enviando) return;
+
     if (!this.usuario.nome || !this.usuario.cpf || !this.usuario.email ||
         !this.usuario.telefone || !this.usuario.cep) {
       alert('Preencha todos os campos obrigatórios!');
@@ -123,25 +120,11 @@ export class AutocadastroComponent {
       return;
     }
 
-    if (this.clienteService.buscarPorEmail(this.usuario.email) ||
-        this.funcionarioService.buscarPorEmail(this.usuario.email)) {
-      alert('E-mail já cadastrado no sistema!');
-      return;
-    }
-
-    const cpfLimpo = this.usuario.cpf.replace(/\D/g, '');
-    if (this.clienteService.listarTodos().find(c => c.cpf.replace(/\D/g, '') === cpfLimpo)) {
-      alert('CPF já cadastrado!');
-      return;
-    }
-
-    this.usuario.senha = this.gerarSenhaAleatoria();
-    this.clienteService.inserir({
+    const requisicao: ClienteRequest = {
       nome: this.usuario.nome,
       cpf: this.usuario.cpf,
       email: this.usuario.email,
       telefone: this.usuario.telefone,
-      senha: this.usuario.senha,
       endereco: {
         cep: this.usuario.cep,
         logradouro: this.usuario.logradouro,
@@ -151,17 +134,27 @@ export class AutocadastroComponent {
         numero: this.usuario.numero,
         complemento: this.usuario.complemento
       }
-    });
-    const dialogRef = this.dialog.open(ModalGenericoComponent, {
-      width: '400px',
-      data: {
-        titulo: 'Cadastro Concluído',
-        mensagem: `Seu cadastro foi realizado com sucesso! Sua senha de acesso gerada é: ${this.usuario.senha}`
-      }
-    });
+    };
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.router.navigate(['/login']);
+    this.enviando = true;
+    this.clienteService.autocadastrar(requisicao).subscribe({
+      next: () => {
+        this.enviando = false;
+        const dialogRef = this.dialog.open(ModalGenericoComponent, {
+          width: '400px',
+          data: {
+            titulo: 'Cadastro Concluído',
+            mensagem: 'Seu cadastro foi realizado com sucesso! Sua senha de acesso foi enviada para o seu e-mail.'
+          }
+        });
+        dialogRef.afterClosed().subscribe(() => {
+          this.router.navigate(['/login']);
+        });
+      },
+      error: (err: Error) => {
+        this.enviando = false;
+        alert(err.message);
+      }
     });
   }
 }
