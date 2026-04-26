@@ -2,10 +2,15 @@ package com.web.equipe5.manutencaoequipamentos.service;
 
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
+import com.web.equipe5.manutencaoequipamentos.model.Cliente;
+import com.web.equipe5.manutencaoequipamentos.model.CategoriaEquipamento;
+import com.web.equipe5.manutencaoequipamentos.dto.request.EfetuarManutencaoRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.request.SolicitacaoCreateRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import com.web.equipe5.manutencaoequipamentos.repository.FuncionarioRepository;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
-import com.web.equipe5.manutencaoequipamentos.repository.FuncionarioRepository;
+import com.web.equipe5.manutencaoequipamentos.repository.ClienteRepository;
+import com.web.equipe5.manutencaoequipamentos.repository.CategoriaRepository;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,10 +22,14 @@ import java.util.List;
 public class SolicitacaoService {
     private final SolicitacaoRepository repository;
     private final FuncionarioRepository funcionarioRepository;
+    private final ClienteRepository clienteRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public SolicitacaoService(SolicitacaoRepository repository, FuncionarioRepository funcionarioRepository) {
+    public SolicitacaoService(SolicitacaoRepository repository, FuncionarioRepository funcionarioRepository, ClienteRepository clienteRepository, CategoriaRepository categoriaRepository) {
         this.repository = repository;
         this.funcionarioRepository = funcionarioRepository;
+        this.clienteRepository = clienteRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public Solicitacao aprovar(Long id) {
@@ -115,44 +124,72 @@ public class SolicitacaoService {
         return repository.save(s);
     }
 
-    public Solicitacao criar(Solicitacao solicitacao) {
+    public Solicitacao criar(SolicitacaoCreateRequestDTO request, Long clienteId) {
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+
+        CategoriaEquipamento categoria = categoriaRepository.findById(request.categoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+        Solicitacao solicitacao = new Solicitacao();
+        solicitacao.setDescricaoEquipamento(request.descricaoEquipamento());
+        solicitacao.setDescricaoDefeito(request.descricaoDefeito());
+        solicitacao.setCliente(cliente);
+        solicitacao.setCategoriaEquipamento(categoria);
         solicitacao.setEstadoAtual(EstadoSolicitacao.ABERTA);
         solicitacao.setDataHoraCriacao(LocalDateTime.now());
+        solicitacao.setAtivo(true);
+
         return repository.save(solicitacao);
     }
 
     public Solicitacao orcar(Long id, Double valor, Long funcionarioId) {
         Solicitacao s = repository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
         if (s.getEstadoAtual() != EstadoSolicitacao.ABERTA) {
-            throw new RuntimeException();
+            throw new BusinessRuleException("Só é possível orçar solicitações ABERTAS");
         }
 
         Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
         s.setValorOrcado(valor);
         s.setFuncionarioResponsavel(funcionario);
         s.setEstadoAtual(EstadoSolicitacao.ORCADA);
 
-        return repository.save(s);
-}
+        s.setDataHoraOrcamento(LocalDateTime.now());
 
-    public Solicitacao efetuarManutencao(Long id) {
-        Solicitacao s = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
-
-        if (s.getEstadoAtual() != EstadoSolicitacao.APROVADA) {
-            throw new BusinessRuleException("Só é possível efetuar manutenção em solicitações APROVADAS");
-        }
-
-        s.setEstadoAtual(EstadoSolicitacao.ARRUMADA);
 
         return repository.save(s);
 }
 
-    public Solicitacao finalizar(Long id) {
+public Solicitacao efetuarManutencao(Long id, EfetuarManutencaoRequestDTO dto, Long funcionarioId) {
+
+    Solicitacao s = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
+
+    if (s.getEstadoAtual() != EstadoSolicitacao.APROVADA &&
+        s.getEstadoAtual() != EstadoSolicitacao.REDIRECIONADA) {
+
+        throw new BusinessRuleException(
+            "Só é possível efetuar manutenção em solicitações APROVADAS ou REDIRECIONADAS"
+        );
+    }
+
+    Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+            .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
+
+    s.setDescricaoManutencao(dto.descricaoManutencao());
+    s.setOrientacoesCliente(dto.orientacoesCliente());
+    s.setFuncionarioResponsavel(funcionario);
+        s.setDataHoraManutencao(LocalDateTime.now());
+    s.setEstadoAtual(EstadoSolicitacao.ARRUMADA);
+
+    return repository.save(s);
+}
+
+    public Solicitacao finalizar(Long id, Long funcionarioId) {
         Solicitacao s = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
@@ -161,7 +198,13 @@ public class SolicitacaoService {
         }
 
         s.setEstadoAtual(EstadoSolicitacao.FINALIZADA);
+        s.setDataHoraFinalizacao(LocalDateTime.now());
+
+        // TODO: Usar HistoricoService para registrar que o funcionário finalizou a solicitação
+
         return repository.save(s);
+
+
     }
 
 }

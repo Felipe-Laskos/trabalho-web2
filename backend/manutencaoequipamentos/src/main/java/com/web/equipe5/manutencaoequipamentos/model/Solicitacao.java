@@ -38,6 +38,7 @@ public class Solicitacao {
     private String orientacoesCliente;
 
     private LocalDateTime dataHoraCriacao;
+    private LocalDateTime dataHoraManutencao;
     private LocalDateTime dataHoraPagamento;
     private LocalDateTime dataHoraFinalizacao;
 
