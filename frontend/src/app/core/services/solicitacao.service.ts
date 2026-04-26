@@ -40,7 +40,7 @@ export class SolicitacaoService implements ISolicitacaoService {
 
   rejeitar(id: number, motivo: string): Observable<Solicitacao> {
     const params = new HttpParams().set('motivoRejeicao', motivo);
-    const opcoes = { Headers: this.defaultHttpOptions.headers, params: params };
+    const opcoes = { headers: this.defaultHttpOptions.headers, params: params };
 
     return this.http.patch<Solicitacao>(`${this.base}/${id}/rejeitar`, {}, opcoes);
   }

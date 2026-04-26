@@ -1,11 +1,11 @@
 package com.web.equipe5.manutencaoequipamentos.service;
 
-import com.web.equipe5.manutencaoequipamentos.model.AuthenticatedUser;
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
 import com.web.equipe5.manutencaoequipamentos.repository.FuncionarioRepository;
+import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
@@ -99,12 +99,12 @@ public class SolicitacaoService {
             .orElseThrow(() -> new ResourceNotFoundException("Solicitação " + id + " não encontrada"));
     }
 
-    public Solicitacao buscarPorIdECliente(Long id, AuthenticatedUser principal) { //ADICIONEI
+    public Solicitacao buscarPorIdECliente(Long id, AuthenticatedPrincipal principal) { 
     Solicitacao solicitacao = repository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-    if (principal.getTipo() == AuthenticatedUser.Tipo.CLIENTE) {
-        if (!solicitacao.getCliente().getId().equals(principal.getId())) {
+    if (principal.perfil().toUpperCase().contains("CLIENTE")) {
+        if (!solicitacao.getCliente().getId().equals(principal.id())) {
             throw new AccessDeniedException("Você não tem permissão para visualizar esta solicitação.");
         }
     }
