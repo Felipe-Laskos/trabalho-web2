@@ -4,7 +4,6 @@ import { environment } from '../../../environments/environment';
 export const API_URL = environment.apiUrl;
 
 export const defaultHttpOptions = {
-  observe: 'response' as const,
   headers: new HttpHeaders({
     'Content-Type': 'application/json'
   })

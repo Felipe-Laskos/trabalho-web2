@@ -6,6 +6,6 @@ public record FuncionarioRequestDTO(
     String cpf,
     String email,
     String senha,
-    LocalDate dataNascimento,
-    String cargo
+    String cargo,
+    LocalDate dataNascimento
 ) {}

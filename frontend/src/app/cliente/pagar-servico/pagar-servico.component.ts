@@ -9,19 +9,25 @@ import { HistoricoService } from '../../core/services/historico.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
-import { BotaoCancelarComponent } from "../../shared/botao-cancelar/botao-cancelar.component";
-import { BotaoAprovarComponent } from "../../shared/botao-aprovar/botao-aprovar.component";
+import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
+import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 
 @Component({
   selector: 'app-pagar-servico',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatSnackBarModule, CardVisualizacaoComponent, BotaoComponent, BotaoCancelarComponent, BotaoAprovarComponent],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    CardVisualizacaoComponent,
+    BotaoComponent,
+    BotaoCancelarComponent,
+    BotaoAprovarComponent,
+  ],
   templateUrl: './pagar-servico.component.html',
   styleUrl: './pagar-servico.component.css',
 })
-
 export class PagarServicoComponent implements OnInit {
-
   private solicitacaoService = inject(SolicitacaoService);
   private historicoService = inject(HistoricoService);
   private route = inject(ActivatedRoute);
@@ -37,14 +43,22 @@ export class PagarServicoComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) return;
 
-    this.solicitacao = this.solicitacaoService.buscarPorId(Number(idParam));
+    this.solicitacaoService
+      .buscarPorId(Number(idParam))
+      .subscribe((solicitacao) => {
+        this.solicitacao = solicitacao;
+      });
   }
 
   confirmarPagamento(): void {
     if (this.solicitacao?.estadoAtual === SolicitacaoENUM.ARRUMADA) {
       this.exibirModalConfirmacao = true;
     } else {
-      this.aviso.open('Esta solicitação não está pronta para pagamento!', 'OK', { duration: 3000, verticalPosition: 'top' });
+      this.aviso.open(
+        'Esta solicitação não está pronta para pagamento!',
+        'OK',
+        { duration: 3000, verticalPosition: 'top' },
+      );
     }
   }
 
@@ -55,15 +69,29 @@ export class PagarServicoComponent implements OnInit {
         estadoAnterior: this.solicitacao.estadoAtual,
         estadoNovo: SolicitacaoENUM.PAGA,
         solicitacaoId: this.solicitacao.id!,
-        observacao: `Pagamento realizado. Valor: R$ ${this.solicitacao.valorOrcado?.toFixed(2)}`
+        observacao: `Pagamento realizado. Valor: R$ ${this.solicitacao.valorOrcado?.toFixed(2)}`,
       });
       this.solicitacao.estadoAtual = SolicitacaoENUM.PAGA;
       this.solicitacao.dataHoraPagamento = new Date().toISOString();
-      this.solicitacaoService.atualizar(this.solicitacao);
 
-      this.exibirModalConfirmacao = false;
-      this.aviso.open('Pagamento realizado com sucesso!', 'OK', { duration: 3000, verticalPosition: 'top' });
-      this.router.navigate(['/cliente']);
+      this.solicitacaoService.pagar(this.solicitacao.id!).subscribe({ 
+        next: () => {
+          this.exibirModalConfirmacao = false;
+
+          this.aviso.open('Pagamento realizado com sucesso!', 'OK', {
+            duration: 3000,
+            verticalPosition: 'top',
+          });
+
+          this.router.navigate(['/cliente']);
+        },
+        error: () => {
+          this.aviso.open('Erro ao finalizar pagamento!', 'OK', {
+            duration: 3000,
+            verticalPosition: 'top',
+          });
+        },
+      });
     }
   }
 
@@ -73,10 +101,9 @@ export class PagarServicoComponent implements OnInit {
     const dia = String(data.getDate()).padStart(2, '0');
     const horas = String(data.getHours()).padStart(2, '0');
     const minutos = String(data.getMinutes()).padStart(2, '0');
-    
+
     return `${ano}-${mes}-${dia} ${horas}:${minutos}`;
   }
-
 
   cancelar(): void {
     this.exibirModalConfirmacao = false;
@@ -89,15 +116,24 @@ export class PagarServicoComponent implements OnInit {
   obterCorDoBadge(estado: string | undefined): string {
     if (!estado) return 'badge-cinza';
     switch (estado.toUpperCase()) {
-      case 'ABERTA': return 'badge-cinza';
-      case 'ORCADA': return 'badge-marrom';
-      case 'REJEITADA': return 'badge-vermelho';
-      case 'APROVADA': return 'badge-amarelo';
-      case 'REDIRECIONADA': return 'badge-roxo';
-      case 'ARRUMADA': return 'badge-azul';
-      case 'PAGA': return 'badge-alaranjado';
-      case 'FINALIZADA': return 'badge-verde';
-      default: return 'badge-cinza';
-     }
-   }
- }
+      case 'ABERTA':
+        return 'badge-cinza';
+      case 'ORCADA':
+        return 'badge-marrom';
+      case 'REJEITADA':
+        return 'badge-vermelho';
+      case 'APROVADA':
+        return 'badge-amarelo';
+      case 'REDIRECIONADA':
+        return 'badge-roxo';
+      case 'ARRUMADA':
+        return 'badge-azul';
+      case 'PAGA':
+        return 'badge-alaranjado';
+      case 'FINALIZADA':
+        return 'badge-verde';
+      default:
+        return 'badge-cinza';
+    }
+  }
+}

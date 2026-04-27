@@ -38,7 +38,13 @@ export class EfetuarOrcamentoComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.buscarPorId(id);
+    
+    this.solicitacaoService.buscarPorId(id).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao = solicitacao;
+      }
+    });
+    
     this.nomeFuncionario = this.authService.getNome();
   }
 
@@ -91,19 +97,21 @@ export class EfetuarOrcamentoComponent implements OnInit {
     this.solicitacao.estadoAtual = SolicitacaoENUM.ORCADA;
     this.solicitacao.funcionarioResponsavel = funcionarioLogado;
 
-    this.solicitacaoService.atualizar(this.solicitacao);
-
-    const dialogRef = this.dialog.open(ModalGenericoComponent, {
-      data: {
-        tipo: 'confirmacao',
-        titulo: 'Orçamento Registrado',
-        mensagem: `Funcionário: ${this.solicitacao?.funcionarioOrcamento} - Data/Hora: ${this.formatarData(new Date(this.solicitacao!.dataHoraOrcamento!))}`,
-        textoConfirmar: 'OK'
+    this.solicitacaoService.atualizar(this.solicitacao).subscribe({
+      next: () => {
+        const dialogRef = this.dialog.open(ModalGenericoComponent, {
+          data: {
+            tipo: 'confirmacao',
+            titulo: 'Orçamento Registrado',
+            mensagem: `Funcionário: ${this.solicitacao?.funcionarioOrcamento} - Data/Hora: ${this.formatarData(new Date(this.solicitacao!.dataHoraOrcamento!))}`,
+            textoConfirmar: 'OK'
       }
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.router.navigate(['/funcionario']);
+        dialogRef.afterClosed().subscribe(() => {
+          this.router.navigate(['/funcionario']);
+        });
+      }
     });
   }
 }

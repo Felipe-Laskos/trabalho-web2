@@ -6,7 +6,10 @@ import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { InputComponent } from '../../shared/input/input.component';
-import { TabelaComponent, ColunaTabela } from '../../shared/tabela/tabela.component';
+import {
+  TabelaComponent,
+  ColunaTabela,
+} from '../../shared/tabela/tabela.component';
 import { CardInfoComponent } from '../../shared/card-info/card-info.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { MatIcon } from '@angular/material/icon';
@@ -30,13 +33,12 @@ export interface ReceitaDia {
     TabelaComponent,
     CardInfoComponent,
     PaginacaoComponent,
-    MatIcon
+    MatIcon,
   ],
   templateUrl: './relatorio-receitas.component.html',
-  styleUrl: './relatorio-receitas.component.css'
+  styleUrl: './relatorio-receitas.component.css',
 })
 export class RelatorioReceitasComponent implements OnInit {
-
   private solicitacaoService = inject(SolicitacaoService);
 
   dataInicio: string = '';
@@ -50,7 +52,7 @@ export class RelatorioReceitasComponent implements OnInit {
   colunasTabela: ColunaTabela[] = [
     { campo: 'data', titulo: 'Data', tipo: 'texto' },
     { campo: 'quantidade', titulo: 'Qtd. Serviços', tipo: 'texto' },
-    { campo: 'totalFormatado', titulo: 'Receita do Dia', tipo: 'texto' }
+    { campo: 'totalFormatado', titulo: 'Receita do Dia', tipo: 'texto' },
   ];
 
   get dadosPaginados(): any[] {
@@ -76,94 +78,123 @@ export class RelatorioReceitasComponent implements OnInit {
 
   filtrar(): void {
     this.paginaAtual = 1;
-    const solicitacoes = this.solicitacaoService.listarTodos();
 
-    let pagas = solicitacoes.filter(s =>
-      s.estadoAtual === SolicitacaoENUM.PAGA ||
-      s.estadoAtual === SolicitacaoENUM.FINALIZADA
-    );
+    //ALTEREI A PARTIR DAQUI - TODO O CÓDIGO DE FILTRAGEM, AGRUPAMENTO E TRANSFORMAÇÃO FICOU DENTRO DO "next" DA INSCRIÇÃO DO SERVICE E ACEITA OBSERVABLE
 
-    if (this.dataInicio) {
-      const [ano, mes, dia] = this.dataInicio.split('-').map(Number);
-      const inicio = new Date(ano, mes - 1, dia, 0, 0, 0, 0);
-      pagas = pagas.filter(s => {
-        const data = new Date(s.dataHoraPagamento || s.dataHoraCriacao);
-        return data >= inicio;
-      });
-    }
+    this.solicitacaoService.listarTodos().subscribe({
+      next: (solicitacoes: Solicitacao[]) => {
+        let pagas = solicitacoes.filter(
+          (s: Solicitacao) =>
+            s.estadoAtual === SolicitacaoENUM.PAGA ||
+            s.estadoAtual === SolicitacaoENUM.FINALIZADA,
+        );
 
-    if (this.dataFim) {
-      const [ano, mes, dia] = this.dataFim.split('-').map(Number);
-      const fim = new Date(ano, mes - 1, dia, 23, 59, 59, 999);
-      pagas = pagas.filter(s => {
-        const data = new Date(s.dataHoraPagamento || s.dataHoraCriacao);
-        return data <= fim;
-      });
-    }
+        if (this.dataInicio) {
+          const [ano, mes, dia] = this.dataInicio.split('-').map(Number);
+          const inicio = new Date(ano, mes - 1, dia, 0, 0, 0, 0);
+          pagas = pagas.filter((s: Solicitacao) => {
+            const data = new Date(s.dataHoraPagamento || s.dataHoraCriacao);
+            return data >= inicio;
+          });
+        }
 
-    const agrupado: Record<string, { quantidade: number; total: number }> = {};
+        if (this.dataFim) {
+          const [ano, mes, dia] = this.dataFim.split('-').map(Number);
+          const fim = new Date(ano, mes - 1, dia, 23, 59, 59, 999);
+          pagas = pagas.filter((s: Solicitacao) => {
+            const data = new Date(s.dataHoraPagamento || s.dataHoraCriacao);
+            return data <= fim;
+          });
+        }
 
-    pagas.forEach(s => {
-      const dataStr = s.dataHoraPagamento || s.dataHoraCriacao;
-      const dia = new Date(dataStr).toLocaleDateString('pt-BR');
+        const agrupado: Record<string, { quantidade: number; total: number }> =
+          {};
 
-      if (!agrupado[dia]) {
-        agrupado[dia] = { quantidade: 0, total: 0 };
-      }
-      agrupado[dia].quantidade++;
-      agrupado[dia].total += s.valorOrcado || 0;
+        pagas.forEach((s: Solicitacao) => {
+          const dataStr = s.dataHoraPagamento || s.dataHoraCriacao;
+          const dia = new Date(dataStr).toLocaleDateString('pt-BR');
+
+          if (!agrupado[dia]) {
+            agrupado[dia] = { quantidade: 0, total: 0 };
+          }
+          agrupado[dia].quantidade++;
+          agrupado[dia].total += s.valorOrcado || 0;
+        });
+
+        this.receitasPorDia = Object.keys(agrupado)
+          .sort((a, b) => {
+            const [dA, mA, yA] = a.split('/').map(Number);
+            const [dB, mB, yB] = b.split('/').map(Number);
+            return (
+              new Date(yA, mA - 1, dA).getTime() -
+              new Date(yB, mB - 1, dB).getTime()
+            );
+          })
+          .map((dia) => ({
+            data: dia,
+            quantidade: agrupado[dia].quantidade,
+            total: agrupado[dia].total,
+            totalFormatado: agrupado[dia].total.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }),
+          }));
+
+        this.totalGeral = this.receitasPorDia.reduce(
+          (acc, r) => acc + r.total,
+          0,
+        );
+        this.quantidadeTotal = this.receitasPorDia.reduce(
+          (acc, r) => acc + r.quantidade,
+          0,
+        );
+      },
+      error: (err) => {
+        console.error('Erro ao buscar dados para o relatório:', err);
+      },
     });
-
-    this.receitasPorDia = Object.keys(agrupado)
-      .sort((a, b) => {
-        const [dA, mA, yA] = a.split('/').map(Number);
-        const [dB, mB, yB] = b.split('/').map(Number);
-        return new Date(yA, mA - 1, dA).getTime() - new Date(yB, mB - 1, dB).getTime();
-      })
-      .map(dia => ({
-        data: dia,
-        quantidade: agrupado[dia].quantidade,
-        total: agrupado[dia].total,
-        totalFormatado: agrupado[dia].total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-      }));
-
-    this.totalGeral = this.receitasPorDia.reduce((acc, r) => acc + r.total, 0);
-    this.quantidadeTotal = this.receitasPorDia.reduce((acc, r) => acc + r.quantidade, 0);
   }
 
   gerarPdf(): void {
-      const doc = new jsPDF();
-  
-      doc.setFontSize(16);
-      doc.text('Relatório de Receita por Período', 14, 15);
-  
-      doc.setFontSize(10);
-      const dataAtual = new Date().toLocaleDateString('pt-BR');
-      doc.text(`Gerado em: ${dataAtual}`, 14, 22);
-  
-      const colunas = ['Data', 'Qtd. Serviços', 'Receita'];
-      const linhas = this.receitasPorDia.map(r => [
-        r.data,
-        r.quantidade.toString(),
-        r.totalFormatado
-      ]);
-  
-      autoTable(doc, {
-        startY: 30,
-        head: [colunas],
-        body: linhas,
-      });
-  
-      const finalY = (doc as any).lastAutoTable.finalY + 10;
-  
-      doc.setFontSize(12);
-      doc.text(`Total de Serviços: ${this.quantidadeTotal}`, 14, finalY);
-      doc.text(`Total Geral: ${this.formatarMoeda(this.totalGeral)}`, 14, finalY + 7);
-  
-      doc.save('relatorio-receitas.pdf');
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text('Relatório de Receita por Período', 14, 15);
+
+    doc.setFontSize(10);
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+    doc.text(`Gerado em: ${dataAtual}`, 14, 22);
+
+    const colunas = ['Data', 'Qtd. Serviços', 'Receita'];
+    const linhas = this.receitasPorDia.map((r) => [
+      r.data,
+      r.quantidade.toString(),
+      r.totalFormatado,
+    ]);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [colunas],
+      body: linhas,
+    });
+
+    const finalY = (doc as any).lastAutoTable.finalY + 10;
+
+    doc.setFontSize(12);
+    doc.text(`Total de Serviços: ${this.quantidadeTotal}`, 14, finalY);
+    doc.text(
+      `Total Geral: ${this.formatarMoeda(this.totalGeral)}`,
+      14,
+      finalY + 7,
+    );
+
+    doc.save('relatorio-receitas.pdf');
   }
 
   formatarMoeda(valor: number): string {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
   }
 }

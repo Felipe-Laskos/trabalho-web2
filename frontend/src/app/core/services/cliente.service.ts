@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Cliente } from '../models/cliente.model';
 import { mockCliente } from '../mocks/clientes.mock';
@@ -21,7 +21,7 @@ export class ClienteService implements IClienteService {
     }
   }
 
-  autocadastrar(requisicao: ClienteRequest): Observable<HttpResponse<ClienteResponse>> {
+  autocadastrar(requisicao: ClienteRequest): Observable<ClienteResponse> {
     return this.http.post<ClienteResponse>(`${API_URL}/clientes`, requisicao, defaultHttpOptions);
   }
 

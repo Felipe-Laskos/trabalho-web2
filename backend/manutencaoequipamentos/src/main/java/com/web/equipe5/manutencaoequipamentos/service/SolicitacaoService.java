@@ -11,8 +11,10 @@ import com.web.equipe5.manutencaoequipamentos.repository.FuncionarioRepository;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
 import com.web.equipe5.manutencaoequipamentos.repository.ClienteRepository;
 import com.web.equipe5.manutencaoequipamentos.repository.CategoriaRepository;
+import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,12 +26,19 @@ public class SolicitacaoService {
     private final FuncionarioRepository funcionarioRepository;
     private final ClienteRepository clienteRepository;
     private final CategoriaRepository categoriaRepository;
+    private final HistoricoService historicoService;
 
-    public SolicitacaoService(SolicitacaoRepository repository, FuncionarioRepository funcionarioRepository, ClienteRepository clienteRepository, CategoriaRepository categoriaRepository) {
+    public SolicitacaoService(
+            SolicitacaoRepository repository,
+            FuncionarioRepository funcionarioRepository,
+            ClienteRepository clienteRepository,
+            CategoriaRepository categoriaRepository,
+            HistoricoService historicoService) {
         this.repository = repository;
         this.funcionarioRepository = funcionarioRepository;
         this.clienteRepository = clienteRepository;
         this.categoriaRepository = categoriaRepository;
+        this.historicoService = historicoService;
     }
 
     public Solicitacao aprovar(Long id) {
@@ -40,9 +49,15 @@ public class SolicitacaoService {
             throw new BusinessRuleException("Só é possível aprovar solicitações ORÇADAS");
         }
 
-        s.setEstadoAtual(EstadoSolicitacao.APROVADA);
-        //TODO Chamar e utilizar o historicoService aqui para registrar a transição, assim que ele for implementado.
+        EstadoSolicitacao anterior = s.getEstadoAtual();
 
+        s.setEstadoAtual(EstadoSolicitacao.APROVADA);
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.APROVADA,
+            null
+        );
         return repository.save(s);
     }
 
@@ -58,10 +73,18 @@ public class SolicitacaoService {
             throw new BusinessRuleException("Só é possível rejeitar solicitações ORÇADAS");
         }
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setEstadoAtual(EstadoSolicitacao.REJEITADA);
         s.setMotivoRejeicao(motivoRejeicao);
 
-        //TODO Chamar e utilizar o historicoService aqui para registrar a transição, assim que ele for implementado.
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.REJEITADA,
+            null
+        );
+
         return repository.save(s);
     }
 
@@ -73,9 +96,17 @@ public class SolicitacaoService {
             throw new BusinessRuleException("Só é possível resgatar solicitações REJEITADAS");
         }
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setEstadoAtual(EstadoSolicitacao.APROVADA);
 
-        //TODO Chamar e utilizar o historicoService aqui para registrar a transição, assim que ele for implementado.
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.APROVADA,
+            null
+        );
+
         return repository.save(s);
     }
 
@@ -87,10 +118,18 @@ public class SolicitacaoService {
             throw new BusinessRuleException("Só é possível pagar solicitações ARRUMADAS");
         }
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setEstadoAtual(EstadoSolicitacao.PAGA);
         s.setDataHoraPagamento(LocalDateTime.now());
 
-        //TODO Chamar e utilizar o historicoService aqui para registrar a transição, assim que ele for implementado.
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.PAGA,
+            null
+        );
+
         return repository.save(s);
     }
 
@@ -100,6 +139,23 @@ public class SolicitacaoService {
 
     public List<Solicitacao> listarPorEstado(EstadoSolicitacao estado) {
         return repository.findByEstadoAtual(estado);
+    }
+
+    public Solicitacao buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação " + id + " não encontrada"));
+    }
+
+    public Solicitacao buscarPorIdECliente(Long id, AuthenticatedPrincipal principal) {
+        Solicitacao solicitacao = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
+
+        if (principal.perfil().toUpperCase().contains("CLIENTE")) {
+            if (!solicitacao.getCliente().getId().equals(principal.id())) {
+                throw new AccessDeniedException("Você não tem permissão para visualizar esta solicitação.");
+            }
+        }
+        return solicitacao;
     }
 
     public Solicitacao redirecionar(Long idSolicitacao, Long idFuncionarioLogado, Long idFuncionarioDestino) {
@@ -117,10 +173,18 @@ public class SolicitacaoService {
         Funcionario novoFuncionario = funcionarioRepository.findById(idFuncionarioDestino)
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário de destino não encontrado."));
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setFuncionarioResponsavel(novoFuncionario);
         s.setEstadoAtual(EstadoSolicitacao.REDIRECIONADA);
 
-        //TODO Chamar e utilizar o historicoService aqui para registrar a transição, assim que ele for implementado.
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.REDIRECIONADA,
+            novoFuncionario
+        );
+
         return repository.save(s);
     }
 
@@ -157,37 +221,34 @@ public class SolicitacaoService {
         s.setValorOrcado(valor);
         s.setFuncionarioResponsavel(funcionario);
         s.setEstadoAtual(EstadoSolicitacao.ORCADA);
-
         s.setDataHoraOrcamento(LocalDateTime.now());
 
-
         return repository.save(s);
-}
-
-public Solicitacao efetuarManutencao(Long id, EfetuarManutencaoRequestDTO dto, Long funcionarioId) {
-
-    Solicitacao s = repository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
-
-    if (s.getEstadoAtual() != EstadoSolicitacao.APROVADA &&
-        s.getEstadoAtual() != EstadoSolicitacao.REDIRECIONADA) {
-
-        throw new BusinessRuleException(
-            "Só é possível efetuar manutenção em solicitações APROVADAS ou REDIRECIONADAS"
-        );
     }
 
-    Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
-            .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
+    public Solicitacao efetuarManutencao(Long id, EfetuarManutencaoRequestDTO dto, Long funcionarioId) {
+        Solicitacao s = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-    s.setDescricaoManutencao(dto.descricaoManutencao());
-    s.setOrientacoesCliente(dto.orientacoesCliente());
-    s.setFuncionarioResponsavel(funcionario);
+        if (s.getEstadoAtual() != EstadoSolicitacao.APROVADA &&
+            s.getEstadoAtual() != EstadoSolicitacao.REDIRECIONADA) {
+
+            throw new BusinessRuleException(
+                "Só é possível efetuar manutenção em solicitações APROVADAS ou REDIRECIONADAS"
+            );
+        }
+
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
+
+        s.setDescricaoManutencao(dto.descricaoManutencao());
+        s.setOrientacoesCliente(dto.orientacoesCliente());
+        s.setFuncionarioResponsavel(funcionario);
         s.setDataHoraManutencao(LocalDateTime.now());
-    s.setEstadoAtual(EstadoSolicitacao.ARRUMADA);
+        s.setEstadoAtual(EstadoSolicitacao.ARRUMADA);
 
-    return repository.save(s);
-}
+        return repository.save(s);
+    }
 
     public Solicitacao finalizar(Long id, Long funcionarioId) {
         Solicitacao s = repository.findById(id)
@@ -203,8 +264,6 @@ public Solicitacao efetuarManutencao(Long id, EfetuarManutencaoRequestDTO dto, L
         // TODO: Usar HistoricoService para registrar que o funcionário finalizou a solicitação
 
         return repository.save(s);
-
-
     }
 
 }

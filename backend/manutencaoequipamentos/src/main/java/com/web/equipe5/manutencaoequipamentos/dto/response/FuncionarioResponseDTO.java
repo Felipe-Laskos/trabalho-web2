@@ -8,6 +8,5 @@ public record FuncionarioResponseDTO(
     String cpf,
     String email,
     LocalDate dataNascimento,
-    String cargo,
-    Boolean ativo
+    String cargo
 ) {}

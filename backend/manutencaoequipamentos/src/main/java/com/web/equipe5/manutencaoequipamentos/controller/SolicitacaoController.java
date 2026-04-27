@@ -54,15 +54,21 @@ public class SolicitacaoController {
         return ResponseEntity.ok(service.listarPorEstado(estadoAtual));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        return ResponseEntity.ok(service.buscarPorIdECliente(id, principal));
+    }
+
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<Solicitacao> redirecionar(
             @PathVariable Long id,
             @RequestBody RedirecionarRequestDTO dto,
             @RequestHeader("X-Funcionario-Id") Long idFuncionarioLogado) {
         Long idFuncionarioDestino = dto.idFuncionarioDestino();
-        
+
         return ResponseEntity.ok(service.redirecionar(id, idFuncionarioLogado, idFuncionarioDestino));
     }
+
     @PostMapping
     public ResponseEntity<Solicitacao> criar(
             @RequestBody SolicitacaoCreateRequestDTO request,
@@ -91,12 +97,8 @@ public class SolicitacaoController {
         return ResponseEntity.ok(service.efetuarManutencao(id, dto, funcionarioId));
     }
 
-
     @PatchMapping("/{id}/finalizar")
     public ResponseEntity<Solicitacao> finalizar(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
         return ResponseEntity.ok(service.finalizar(id, principal.id()));
     }
-
-
-
 }
