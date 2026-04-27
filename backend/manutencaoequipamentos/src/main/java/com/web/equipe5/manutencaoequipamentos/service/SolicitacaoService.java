@@ -5,8 +5,10 @@ import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
 import com.web.equipe5.manutencaoequipamentos.repository.FuncionarioRepository;
+import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -123,6 +125,23 @@ public class SolicitacaoService {
     public List<Solicitacao> listarPorEstado(EstadoSolicitacao estado) {
         return repository.findByEstadoAtual(estado);
     }
+
+    public Solicitacao buscarPorId(Long id) { //ADICIONEI
+    return repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Solicitação " + id + " não encontrada"));
+    }
+
+    public Solicitacao buscarPorIdECliente(Long id, AuthenticatedPrincipal principal) { 
+    Solicitacao solicitacao = repository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
+
+    if (principal.perfil().toUpperCase().contains("CLIENTE")) {
+        if (!solicitacao.getCliente().getId().equals(principal.id())) {
+            throw new AccessDeniedException("Você não tem permissão para visualizar esta solicitação.");
+        }
+    }
+    return solicitacao;
+   }
 
     public Solicitacao redirecionar(Long idSolicitacao, Long idFuncionarioLogado, Long idFuncionarioDestino) {
         Solicitacao s = repository.findById(idSolicitacao)

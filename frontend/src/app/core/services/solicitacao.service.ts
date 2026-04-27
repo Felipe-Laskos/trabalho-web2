@@ -1,59 +1,66 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface';
 import { Solicitacao } from '../models/solicitacao.model';
-import { mockSolicitacao } from '../mocks/solicitacao.mock';
-
-const LS_CHAVE = "solicitacoes";
+import { API_URL, defaultHttpOptions } from '../config/http.config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SolicitacaoService implements ISolicitacaoService {
+  private base = `${API_URL}/solicitacoes`;
 
-  constructor(private http: HttpClient) {
-    if (!localStorage[LS_CHAVE]) {
-      localStorage[LS_CHAVE] = JSON.stringify(mockSolicitacao);
-    }
+  constructor(private http: HttpClient) {}
+
+  listarTodos(): Observable<Solicitacao[]> {
+    return this.http.get<Solicitacao[]>(this.base, defaultHttpOptions);
   }
 
-  listarTodos(): Solicitacao[] {
-    const solicitacoes = localStorage[LS_CHAVE];
-    return solicitacoes ? JSON.parse(solicitacoes) : [];
+  buscarPorId(id: number): Observable<Solicitacao> {
+    return this.http.get<Solicitacao>(`${this.base}/${id}`, defaultHttpOptions);
+  } 
+
+  inserir(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.post<Solicitacao>(this.base, solicitacao, defaultHttpOptions);
   }
 
-  buscarPorId(id: number): Solicitacao | undefined {
-    const solicitacoes = this.listarTodos();
-    return solicitacoes.find(s => s.id === id);
+  aprovar(id: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.base}/${id}/aprovar`, {}, defaultHttpOptions);
   }
 
-  inserir(solicitacao: Solicitacao): void {
-    const solicitacoes = this.listarTodos();
-    const maiorId = solicitacoes.length > 0
-    ? Math.max(...solicitacoes.map(s => s.id || 0))
-    : 0;
+  rejeitar(id: number, motivo: string): Observable<Solicitacao> {
+    const params = new HttpParams().set('motivoRejeicao', motivo);
+    const opcoes = { headers: defaultHttpOptions.headers, params: params };
 
-    solicitacao.id = maiorId + 1;
-    solicitacoes.push(solicitacao);
-    localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
+    return this.http.patch<Solicitacao>(`${this.base}/${id}/rejeitar`, {}, opcoes);
   }
 
-  atualizar(solicitacao: Solicitacao): void {
-    const solicitacoes = this.listarTodos();
-    solicitacoes.forEach((obj, index, objs) => {
-      if (solicitacao.id === obj.id) {
-        objs[index] = solicitacao;
-      }
-    });
-    localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
+  resgatar(id: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.base}/${id}/resgatar`, {}, defaultHttpOptions);
   }
 
- remover(id: number): void {
-    const solicitacoes = this.listarTodos();
-    const solicitacao = solicitacoes.find(s => s.id === id);
-    if (solicitacao) {
-      solicitacao.ativo = false;
-      localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
-    }
+  pagar(id: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.base}/${id}/pagar`, {}, defaultHttpOptions);
+  }
+
+  atualizar(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.base}/${solicitacao.id}`, solicitacao, defaultHttpOptions); //put
+  }
+
+  remover(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`, defaultHttpOptions);
+  }
+
+  listarPorCliente(clienteId: number): Observable<Solicitacao[]> {
+    return this.http.get<Solicitacao[]>(`${this.base}/cliente/${clienteId}`, defaultHttpOptions);
+  }
+
+  efetuarManutencao(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.base}/${solicitacao.id}/efetuar-manutencao`, solicitacao, defaultHttpOptions);
+  }
+
+   redirecionar(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(`${this.base}/${solicitacao.id}/redirecionar`, solicitacao, defaultHttpOptions);
   }
 }

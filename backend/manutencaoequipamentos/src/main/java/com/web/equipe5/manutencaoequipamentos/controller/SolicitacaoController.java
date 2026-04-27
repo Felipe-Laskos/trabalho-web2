@@ -1,11 +1,15 @@
 package com.web.equipe5.manutencaoequipamentos.controller;
 
 import com.web.equipe5.manutencaoequipamentos.dto.RedirecionarRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
 import com.web.equipe5.manutencaoequipamentos.service.SolicitacaoService;
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+
 import java.util.List;
 
 @RestController
@@ -46,6 +50,11 @@ public class SolicitacaoController {
     @GetMapping("/estado")
     public ResponseEntity<List<Solicitacao>> listarPorEstado(@RequestParam EstadoSolicitacao estadoAtual) {
         return ResponseEntity.ok(service.listarPorEstado(estadoAtual));
+    }
+
+    @GetMapping("/{id}") 
+    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        return ResponseEntity.ok(service.buscarPorIdECliente(id, principal));
     }
 
     //atendendo a semana 7 do roadmap

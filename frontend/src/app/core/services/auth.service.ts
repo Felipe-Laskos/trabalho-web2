@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { IAuthService } from '../interfaces/auth.service.interface';
 import { LoginRequest } from '../dto/request/login-request.model';
@@ -22,13 +22,13 @@ export class AuthService implements IAuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  login(credenciais: LoginRequest): Observable<HttpResponse<LoginResponse>> {
+  login(credenciais: LoginRequest): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${API_URL}/auth/login`, credenciais, defaultHttpOptions)
       .pipe(
-        tap((res) => {
-          if (res.body) {
-            this.salvarSessao(res.body);
+        tap((dados) => {
+          if (dados) {
+            this.salvarSessao(dados);
           }
         })
       );

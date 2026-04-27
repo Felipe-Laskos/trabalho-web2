@@ -1,11 +1,10 @@
-import { HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LoginRequest } from '../dto/request/login-request.model';
 import { LoginResponse } from '../dto/response/login-response.model';
 import { PerfilENUM } from '../models/perfilENUM.model';
 
 export interface IAuthService {
-  login(credenciais: LoginRequest): Observable<HttpResponse<LoginResponse>>;
+  login(credenciais: LoginRequest): Observable<LoginResponse>;
   efetuarLogout(): void;
   estaLogado(): boolean;
   getToken(): string | null;
