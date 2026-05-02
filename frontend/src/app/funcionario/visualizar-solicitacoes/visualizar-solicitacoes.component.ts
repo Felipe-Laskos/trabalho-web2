@@ -76,19 +76,19 @@ export class VisualizarSolicitacoesComponent implements OnInit {
       nome: 'Efetuar Orçamento',
       acao: 'orcamento',
       cor: 'primary',
-      estados: ['ABERTA'],
+      estados: [SolicitacaoENUM.ABERTA],
     },
     {
       nome: 'Efetuar Manutenção',
       acao: 'manutencao',
       cor: 'accent',
-      estados: ['APROVADA', 'REDIRECIONADA'],
+      estados: [SolicitacaoENUM.APROVADA, SolicitacaoENUM.REDIRECIONADA],
     },
     {
       nome: 'Finalizar Solicitação',
       acao: 'finalizar',
       cor: 'warn',
-      estados: ['PAGA'],
+      estados: [SolicitacaoENUM.PAGA],
     },
   ];
 
@@ -97,21 +97,26 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarSolicitacoes();
-    this.aplicarFiltros();
   }
 
-  private carregarSolicitacoes(): void {
+  carregarSolicitacoes(): void {
     this.solicitacaoService.listarTodos().subscribe({
-      next: (dadosQueChegaram) => {
-        this.solicitacoes = dadosQueChegaram;
+      next: (dados) => {
+          console.log(dados);
+
+        this.solicitacoes = dados;
+        this.aplicarFiltros();
       },
       error: (erro) => {
-        console.error('Erro ao buscar a lista de solicitações:', erro);
-      },
+        console.error('Erro ao buscar solicitações:', erro);
+      }
     });
   }
-
   getFuncionarioLogadoId(): number | undefined {
+    const id = this.authService.getId();
+    if (id) {
+      return id;
+    }
     const email = this.authService.getEmail();
     const funcionario = this.funcionarioService.buscarPorEmail(email);
     return funcionario?.id;
@@ -158,16 +163,17 @@ export class VisualizarSolicitacoesComponent implements OnInit {
               observacao: 'Solicitação finalizada pelo funcionário.',
             });
 
-            item.estadoAtual = SolicitacaoENUM.FINALIZADA;
-            item.dataHoraFinalizacao = new Date().toISOString();
-            item.funcionarioResponsavel = {
-              id: funcionarioLogado?.id,
-              nome: this.authService.getNome(),
-            };
-
-            this.solicitacaoService.atualizar(item);
-            this.carregarSolicitacoes();
-            this.aplicarFiltros();
+            this.solicitacaoService.finalizar(item.id!).subscribe({
+              next: (solicitacaoAtualizada) => {
+                item.estadoAtual = solicitacaoAtualizada.estadoAtual;
+                item.dataHoraFinalizacao = solicitacaoAtualizada.dataHoraFinalizacao;
+                item.funcionarioResponsavel = solicitacaoAtualizada.funcionarioResponsavel;
+                this.carregarSolicitacoes();
+              },
+              error: (erro) => {
+                console.error('Erro ao finalizar solicitação', erro);
+              }
+            });
           }
         });
         break;
@@ -176,12 +182,6 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   onFiltroChange(valor: string | number) {
     this.filtro = valor as 'TODAS' | 'HOJE' | 'PERIODO';
-
-    if (this.filtro !== 'PERIODO') {
-      this.dataInicio = undefined;
-      this.dataFim = undefined;
-    }
-
     this.aplicarFiltros();
   }
 
@@ -191,10 +191,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     const hoje = new Date();
 
     lista = lista.filter((s) => {
-      if (s.estadoAtual === 'REDIRECIONADA') {
-        return s.funcionarioResponsavel?.id === funcionarioLogadoId;
-      }
-      return true;
+      return s.funcionarioResponsavel?.id === funcionarioLogadoId;
     });
 
     if (this.filtro === 'HOJE') {

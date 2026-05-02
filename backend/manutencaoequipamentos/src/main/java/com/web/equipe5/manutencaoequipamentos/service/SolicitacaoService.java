@@ -141,6 +141,10 @@ public class SolicitacaoService {
         return repository.findByEstadoAtual(estado);
     }
 
+    public List<Solicitacao> listarTodos() {
+    return repository.findAll();
+    }
+
     public Solicitacao buscarPorId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação " + id + " não encontrada"));
@@ -224,6 +228,7 @@ public class SolicitacaoService {
 
         s.setValorOrcado(valor);
         s.setFuncionarioResponsavel(funcionario);
+        s.setFuncionarioOrcamento(funcionario.getNome());
         s.setEstadoAtual(EstadoSolicitacao.ORCADA);
         s.setDataHoraOrcamento(LocalDateTime.now());
 

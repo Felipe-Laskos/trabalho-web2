@@ -67,6 +67,11 @@ export class AuthService implements IAuthService {
     return localStorage.getItem(LS_EMAIL) || '';
   }
 
+  getId(): number | undefined {
+    const id = Number(localStorage.getItem(LS_USER_ID));
+    return Number.isInteger(id) ? id : undefined;
+  }
+
   getPerfil(): PerfilENUM | null {
     const perfil = (localStorage.getItem(LS_PERFIL) ?? '').toUpperCase();
     if (perfil === PerfilENUM.CLIENTE || perfil === PerfilENUM.FUNCIONARIO) {

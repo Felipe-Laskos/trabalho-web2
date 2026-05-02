@@ -36,17 +36,24 @@ export class EfetuarOrcamentoComponent implements OnInit {
   nomeFuncionario: string = '';
   valorDigitado: string = '';
 
-  ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    
+ngOnInit(): void {
+  const id = Number(this.route.snapshot.paramMap.get('id'));
+
+  console.log('ID recebido:', id);
+
     this.solicitacaoService.buscarPorId(id).subscribe({
       next: (solicitacao) => {
+        console.log('DADOS RECEBIDOS DO BACKEND:', solicitacao);
+
         this.solicitacao = solicitacao;
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar solicitação:', erro);
       }
     });
-    
-    this.nomeFuncionario = this.authService.getNome();
-  }
+
+  this.nomeFuncionario = this.authService.getNome();
+}
 
   valorValido(): boolean {
     const v = parseFloat(this.valorDigitado);
@@ -91,26 +98,33 @@ export class EfetuarOrcamentoComponent implements OnInit {
       observacao: `Orçamento de R$ ${this.valorOrcamento.toFixed(2)} registrado.`
     });
 
-    this.solicitacao.funcionarioOrcamento = this.authService.getNome();
-    this.solicitacao.dataHoraOrcamento = new Date().toISOString();
-    this.solicitacao.valorOrcado = this.valorOrcamento;
-    this.solicitacao.estadoAtual = SolicitacaoENUM.ORCADA;
-    this.solicitacao.funcionarioResponsavel = funcionarioLogado;
+    this.solicitacaoService.orcar(
+      this.solicitacao.id!,
+      this.valorOrcamento
+    ).subscribe({
+      next: (solicitacaoAtualizada) => {
+        this.solicitacao = solicitacaoAtualizada;
 
-    this.solicitacaoService.atualizar(this.solicitacao).subscribe({
-      next: () => {
+        const nomeFuncionarioOrcamento =
+          this.solicitacao?.funcionarioOrcamento ||
+          this.solicitacao?.funcionarioResponsavel?.nome ||
+          'Não informado';
+
         const dialogRef = this.dialog.open(ModalGenericoComponent, {
           data: {
             tipo: 'confirmacao',
             titulo: 'Orçamento Registrado',
-            mensagem: `Funcionário: ${this.solicitacao?.funcionarioOrcamento} - Data/Hora: ${this.formatarData(new Date(this.solicitacao!.dataHoraOrcamento!))}`,
+            mensagem: `Funcionário: ${nomeFuncionarioOrcamento} - Data/Hora: ${this.formatarData(new Date(this.solicitacao!.dataHoraOrcamento!))}`,
             textoConfirmar: 'OK'
-      }
-    });
+          }
+        });
 
         dialogRef.afterClosed().subscribe(() => {
           this.router.navigate(['/funcionario']);
         });
+      },
+      error: (erro) => {
+        console.error('Erro ao registrar orçamento', erro);
       }
     });
   }

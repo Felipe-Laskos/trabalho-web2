@@ -74,4 +74,58 @@ export class SolicitacaoService implements ISolicitacaoService {
       defaultHttpOptions
     );
   }
+
+  finalizar(id: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(
+      `${this.base}/${id}/finalizar`,
+      {},
+      defaultHttpOptions
+    );
+  }
+
+  listarPorEstado(estado: string): Observable<Solicitacao[]> {
+  const params = new HttpParams().set('estadoAtual', estado);
+
+  return this.http.get<Solicitacao[]>(
+    `${this.base}/estado`,
+    {
+      ...defaultHttpOptions,
+      params
+    }
+  );
+}
+
+  orcar(id: number, valor: number): Observable<Solicitacao> {
+    return this.http.patch<Solicitacao>(
+      `${this.base}/${id}/orcar`,
+      { valor },
+      defaultHttpOptions
+    );
+  }
+
+  listarComFiltros(
+  filtro: string,
+  dataInicio?: string,
+  dataFim?: string
+): Observable<Solicitacao[]> {
+  let params = new HttpParams().set('filtro', filtro);
+
+  if (dataInicio) {
+    params = params.set('dataInicio', dataInicio);
+  }
+
+  if (dataFim) {
+    params = params.set('dataFim', dataFim);
+  }
+
+  const opcoes = {
+    headers: defaultHttpOptions.headers,
+    params
+  };
+
+  return this.http.get<Solicitacao[]>(
+    `${this.base}/filtros`,
+    opcoes
+  );
+}
 }

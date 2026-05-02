@@ -52,10 +52,8 @@ export class HomeFuncionarioComponent implements OnInit {
   }
   
   private carregarSolicitacoes(): void {
-    this.solicitacaoService.listarTodos().subscribe({
-      next: (lista) => {
+        this.solicitacaoService.listarPorEstado(SolicitacaoENUM.ABERTA).subscribe({      next: (lista) => {
         this.solicitacoesAbertas = lista
-      .filter(s => s.estadoAtual === SolicitacaoENUM.ABERTA)
       .sort((a, b) => new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime());
       },
       //Trocar para abrir um modal de erro 

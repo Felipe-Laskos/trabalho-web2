@@ -101,7 +101,7 @@ export class SolicitarManutencaoComponent implements OnInit {
       dataHoraCriacao: new Date().toISOString(),
       ativo: true,
       cliente: clienteLogado,
-      categoria: categoriaSelecionada,
+      categoriaEquipamento: categoriaSelecionada,
       historico: []
     };
 

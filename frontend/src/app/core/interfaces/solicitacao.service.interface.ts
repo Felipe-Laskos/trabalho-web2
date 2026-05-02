@@ -16,4 +16,5 @@ export interface ISolicitacaoService {
     id: number,
     dto: { descricaoManutencao: string; orientacoesCliente: string }
   ): Observable<Solicitacao>;
+  finalizar(id: number): Observable<Solicitacao>;
 }

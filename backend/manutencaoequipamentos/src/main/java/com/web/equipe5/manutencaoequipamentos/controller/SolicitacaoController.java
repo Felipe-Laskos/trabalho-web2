@@ -101,4 +101,11 @@ public class SolicitacaoController {
     public ResponseEntity<Solicitacao> finalizar(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
         return ResponseEntity.ok(service.finalizar(id, principal.id()));
     }
+
+    @GetMapping
+    public ResponseEntity<List<Solicitacao>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
+    }
+
+
 }
