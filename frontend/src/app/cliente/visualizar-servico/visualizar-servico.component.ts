@@ -31,21 +31,35 @@ export class VisualizarServicoComponent implements OnInit {
   solicitacao: Solicitacao | undefined;
   historicoOrdenado: HistoricoSolicitacao[] = [];
 
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) return;
 
     const id = Number(idParam);
+    this.carregarDados(id);
+  }
+   
+  carregarDados(id: number): void {
+    this.solicitacaoService.buscarPorId(id).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao = solicitacao;
+        if (this.solicitacao) {
+          this.buscarHistoricoReal(this.solicitacao.id!);
+        }
+      }, //TODO: TROCAR POR MODAL DE ERRO
+      error: (err) => console.error('Erro ao buscar solicitação:', err)
+    });
+  }
 
-    this.solicitacaoService.buscarPorId(id).subscribe((solicitacao) => {
-      this.solicitacao = solicitacao;
-
-      //TODO: Ajustar historicoService para que se comunique com a API e traga os dados reais
-      if (this.solicitacao) {
-        this.historicoOrdenado = this.historicoService.listarPorSolicitacao(
-          this.solicitacao.id!,
+  buscarHistoricoReal(solicitacaoId: number): void {
+    this.historicoService.listarPorSolicitacao(solicitacaoId).subscribe({
+      next: (historico) => {
+        this.historicoOrdenado = historico.sort((a, b) => 
+          new Date(b.dataHora!).getTime() - new Date(a.dataHora!).getTime()
         );
-      }
+      }, //TODO: TROCAR POR MODAL DE ERRO
+      error: (err) => console.error('Erro ao buscar histórico real:', err)
     });
   }
 
@@ -117,25 +131,16 @@ export class VisualizarServicoComponent implements OnInit {
   }
 
   resgatarServico(): void {
-    if (!this.solicitacao) return;
+    if (!this.solicitacao || !this.solicitacao.id) return;
 
-    this.historicoService.inserir({
-      dataHora: new Date().toISOString(),
-      estadoAnterior: SolicitacaoENUM.REJEITADA,
-      estadoNovo: SolicitacaoENUM.APROVADA,
-      solicitacaoId: this.solicitacao.id!,
-      observacao: 'Serviço resgatado pelo cliente.',
-    });
-
-    this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
-
-    this.solicitacaoService.resgatar(this.solicitacao.id!).subscribe({
+    this.solicitacaoService.resgatar(this.solicitacao.id).subscribe({
       next: () => {
-        this.historicoOrdenado = this.historicoService.listarPorSolicitacao(
-          this.solicitacao!.id!,
-        );
+        this.carregarDados(this.solicitacao!.id!);
       },
-      //TODO: Ajustar para que mostre um modal de erro
+      error: (err) => {
+        console.error('Erro ao resgatar serviço:', err);
+        // TODO: Ajustar para que mostre um modal de erro
+      }
     });
   }
 
@@ -164,6 +169,7 @@ export class VisualizarServicoComponent implements OnInit {
       this.solicitacao.estadoAtual as SolicitacaoENUM,
     );
   }
+
 
   voltar(): void {
     this.router.navigate(['/cliente']);

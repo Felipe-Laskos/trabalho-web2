@@ -1,6 +1,7 @@
 package com.web.equipe5.manutencaoequipamentos.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class HistoricoSolicitacao {
     private String observacao;
 
     @ManyToOne
+    @JsonIgnore 
     @JoinColumn(name = "solicitacao_id")
     private Solicitacao solicitacao;
 

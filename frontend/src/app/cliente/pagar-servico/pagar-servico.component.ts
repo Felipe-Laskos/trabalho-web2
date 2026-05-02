@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
-import { HistoricoService } from '../../core/services/historico.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
@@ -29,7 +28,6 @@ import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.
 })
 export class PagarServicoComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
-  private historicoService = inject(HistoricoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private aviso = inject(MatSnackBar);
@@ -62,19 +60,11 @@ export class PagarServicoComponent implements OnInit {
     }
   }
 
-  finalizarPagamento(): void {
-    if (this.solicitacao) {
-      this.historicoService.inserir({
-        dataHora: new Date().toISOString(),
-        estadoAnterior: this.solicitacao.estadoAtual,
-        estadoNovo: SolicitacaoENUM.PAGA,
-        solicitacaoId: this.solicitacao.id!,
-        observacao: `Pagamento realizado. Valor: R$ ${this.solicitacao.valorOrcado?.toFixed(2)}`,
-      });
-      this.solicitacao.estadoAtual = SolicitacaoENUM.PAGA;
-      this.solicitacao.dataHoraPagamento = new Date().toISOString();
+    finalizarPagamento(): void {
+    if (this.solicitacao && this.solicitacao.id) {
+      const idSeguro = this.solicitacao.id;
 
-      this.solicitacaoService.pagar(this.solicitacao.id!).subscribe({ 
+      this.solicitacaoService.pagar(this.solicitacao.id).subscribe({ 
         next: () => {
           this.exibirModalConfirmacao = false;
 
@@ -82,8 +72,7 @@ export class PagarServicoComponent implements OnInit {
             duration: 3000,
             verticalPosition: 'top',
           });
-
-          this.router.navigate(['/cliente']);
+          this.router.navigate(['/cliente/visualizar-servico', idSeguro]); 
         },
         error: () => {
           this.aviso.open('Erro ao finalizar pagamento!', 'OK', {
