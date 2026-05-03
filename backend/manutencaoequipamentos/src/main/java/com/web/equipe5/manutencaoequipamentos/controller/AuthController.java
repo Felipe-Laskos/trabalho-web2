@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.web.equipe5.manutencaoequipamentos.dto.request.LoginRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.LoginResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.service.AuthService;

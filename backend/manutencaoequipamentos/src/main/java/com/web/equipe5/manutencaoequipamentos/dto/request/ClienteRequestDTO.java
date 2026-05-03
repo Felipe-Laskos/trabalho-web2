@@ -1,4 +1,4 @@
-package com.web.equipe5.manutencaoequipamentos.dto;
+package com.web.equipe5.manutencaoequipamentos.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,10 +18,6 @@ public record ClienteRequestDTO(
         @Email(message = "O formato do e-mail é inválido.")
         String email,
 
-        @NotBlank(message = "A senha é obrigatória.")
-        @Size(min = 4, message = "A senha deve ter no mínimo 4 caracteres.")
-        String senha,
-        
         @Pattern(regexp = "\\d{10,11}", message = "O telefone deve ter entre 10 a 11 dígitos numéricos.")
         String telefone
 ) {}
