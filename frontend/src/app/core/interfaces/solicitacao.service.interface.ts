@@ -11,7 +11,7 @@ export interface ISolicitacaoService {
   rejeitar(id: number, motivo: string): Observable<Solicitacao>;
   resgatar(id: number): Observable<Solicitacao>;
   pagar(id: number): Observable<Solicitacao>;
-  redirecionar(id: number, idFuncionarioDestino: number): Observable<Solicitacao>;
+  redirecionar(id: number, idFuncionarioLogado: number, idFuncionarioDestino: number): Observable<Solicitacao>;
   efetuarManutencao(
     id: number,
     dto: { descricaoManutencao: string; orientacoesCliente: string }

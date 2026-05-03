@@ -50,4 +50,17 @@ public class GlobalExceptionHandler {
         var erro = new ErrorResponse(500, "Erro interno", "Ocorreu um erro");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
+    //[Jess - Entrega da Semana] -  interceptador para capturar os erros das anotações '@Valid' e retornar uma lista clara de qual campo falhou
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
 }
