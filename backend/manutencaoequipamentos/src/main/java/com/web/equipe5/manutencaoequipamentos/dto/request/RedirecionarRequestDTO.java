@@ -1,4 +1,4 @@
-package com.web.equipe5.manutencaoequipamentos.dto;
+package com.web.equipe5.manutencaoequipamentos.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 
