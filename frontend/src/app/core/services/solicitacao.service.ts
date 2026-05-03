@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface';
 import { Solicitacao } from '../models/solicitacao.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
+import { SolicitacaoENUM } from '../models/solicitacaoENUM.model';
 
 @Injectable({
   providedIn: 'root',
@@ -83,17 +84,17 @@ export class SolicitacaoService implements ISolicitacaoService {
     );
   }
 
-  listarPorEstado(estado: string): Observable<Solicitacao[]> {
-  const params = new HttpParams().set('estadoAtual', estado);
+  listarPorEstado(estado: SolicitacaoENUM): Observable<Solicitacao[]> {
+    const params = new HttpParams().set('estadoAtual', estado);
 
-  return this.http.get<Solicitacao[]>(
-    `${this.base}/estado`,
-    {
-      ...defaultHttpOptions,
-      params
-    }
-  );
-}
+    return this.http.get<Solicitacao[]>(
+      `${this.base}/estado`,
+      {
+        ...defaultHttpOptions,
+        params
+      }
+    );
+  }
 
   orcar(id: number, valor: number): Observable<Solicitacao> {
     return this.http.patch<Solicitacao>(

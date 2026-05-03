@@ -102,13 +102,18 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   carregarSolicitacoes(): void {
     this.solicitacaoService.listarTodos().subscribe({
       next: (dados) => {
-          console.log(dados);
-
         this.solicitacoes = dados;
         this.aplicarFiltros();
       },
       error: (erro) => {
-        console.error('Erro ao buscar solicitações:', erro);
+        this.dialog.open(ModalGenericoComponent, {
+          data: {
+            titulo: 'Erro',
+            mensagem: erro?.error?.message || 'Não foi possível carregar as solicitações.',
+            textoConfirmar: 'OK',
+            textoCancelar: ''
+          }
+        });
       }
     });
   }
@@ -150,18 +155,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((confirmado) => {
           if (confirmado && item) {
-            const funcionarioLogado = this.funcionarioService.buscarPorEmail(
-              this.authService.getEmail(),
-            );
 
-            this.historicoService.inserir({
-              dataHora: new Date().toISOString(),
-              estadoAnterior: item.estadoAtual,
-              estadoNovo: SolicitacaoENUM.FINALIZADA,
-              solicitacaoId: item.id!,
-              funcionario: funcionarioLogado,
-              observacao: 'Solicitação finalizada pelo funcionário.',
-            });
 
             this.solicitacaoService.finalizar(item.id!).subscribe({
               next: (solicitacaoAtualizada) => {
@@ -190,9 +184,13 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     let lista = [...this.solicitacoes];
     const hoje = new Date();
 
-    lista = lista.filter((s) => {
+  lista = lista.filter((s) => {
+    if (s.estadoAtual === SolicitacaoENUM.REDIRECIONADA) {
       return s.funcionarioResponsavel?.id === funcionarioLogadoId;
-    });
+    }
+
+  return true;
+});
 
     if (this.filtro === 'HOJE') {
       lista = lista.filter((s) => {

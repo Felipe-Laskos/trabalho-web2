@@ -36,24 +36,28 @@ export class EfetuarOrcamentoComponent implements OnInit {
   nomeFuncionario: string = '';
   valorDigitado: string = '';
 
-ngOnInit(): void {
-  const id = Number(this.route.snapshot.paramMap.get('id'));
-
-  console.log('ID recebido:', id);
+  
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
     this.solicitacaoService.buscarPorId(id).subscribe({
       next: (solicitacao) => {
-        console.log('DADOS RECEBIDOS DO BACKEND:', solicitacao);
-
         this.solicitacao = solicitacao;
       },
-      error: (erro) => {
-        console.error('Erro ao buscar solicitação:', erro);
+      error: () => {
+        this.dialog.open(ModalGenericoComponent, {
+          data: {
+            titulo: 'Erro',
+            mensagem: 'Não foi possível carregar a solicitação.',
+            textoConfirmar: 'OK',
+            textoCancelar: ''
+          }
+        });
       }
     });
 
-  this.nomeFuncionario = this.authService.getNome();
-}
+    this.nomeFuncionario = this.authService.getNome();
+  }
 
   valorValido(): boolean {
     const v = parseFloat(this.valorDigitado);
@@ -86,18 +90,6 @@ ngOnInit(): void {
       return;
     }
 
-    const emailLogado = this.authService.getEmail();
-    const funcionarioLogado = this.funcionarioService.buscarPorEmail(emailLogado);
-
-    this.historicoService.inserir({
-      dataHora: new Date().toISOString(),
-      estadoAnterior: this.solicitacao.estadoAtual,
-      estadoNovo: SolicitacaoENUM.ORCADA,
-      solicitacaoId: this.solicitacao.id!,
-      funcionario: funcionarioLogado,
-      observacao: `Orçamento de R$ ${this.valorOrcamento.toFixed(2)} registrado.`
-    });
-
     this.solicitacaoService.orcar(
       this.solicitacao.id!,
       this.valorOrcamento
@@ -124,8 +116,15 @@ ngOnInit(): void {
         });
       },
       error: (erro) => {
-        console.error('Erro ao registrar orçamento', erro);
+        this.dialog.open(ModalGenericoComponent, {
+          data: {
+            titulo: 'Erro',
+            mensagem: erro?.error?.message || 'Não foi possível registrar o orçamento.',
+            textoConfirmar: 'OK',
+            textoCancelar: ''
+          }
+        });
       }
     });
-  }
+    }
 }

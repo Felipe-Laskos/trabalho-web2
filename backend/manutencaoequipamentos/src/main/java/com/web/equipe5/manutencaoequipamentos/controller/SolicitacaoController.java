@@ -4,13 +4,17 @@ import com.web.equipe5.manutencaoequipamentos.dto.RedirecionarRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.request.EfetuarManutencaoRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.request.OrcarRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.request.SolicitacaoCreateRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.response.SolicitacaoResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
 import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.service.SolicitacaoService;
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
+import com.web.equipe5.manutencaoequipamentos.mapper.SolicitacaoMapper;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 
@@ -103,9 +107,19 @@ public class SolicitacaoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Solicitacao>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarTodos(
+        @AuthenticationPrincipal AuthenticatedPrincipal principal
+    ) {
+        if (principal == null) {
+        throw new AccessDeniedException("Funcionário não autenticado");
     }
 
+        List<SolicitacaoResponseDTO> solicitacoes = service.listarTodos()
+            .stream()
+            .map(SolicitacaoMapper::toDTO)            
+            .toList();
+
+        return ResponseEntity.ok(solicitacoes);
+    }
 
 }
