@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { Funcionario } from '../../core/models/funcionario.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
@@ -89,7 +88,15 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
   redirecionarManutencao(): void {
     if (!this.solicitacao || !this.funcionarioSelecionadoId) {
-      alert('Selecione um funcionário para redirecionar.');
+      this.dialog.open(ModalGenericoComponent, {
+        data: {
+          tipo: 'confirmacao',
+          titulo: 'Atenção',
+          mensagem: 'Selecione um funcionário para redirecionar.',
+          textoConfirmar: 'Ok',
+          textoCancelar: ''
+        } as ModalDados
+      });
       return;
     }
 
