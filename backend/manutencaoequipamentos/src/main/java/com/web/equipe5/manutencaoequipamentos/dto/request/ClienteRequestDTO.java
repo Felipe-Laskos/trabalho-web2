@@ -18,6 +18,11 @@ public record ClienteRequestDTO(
         @Email(message = "O formato do e-mail é inválido.")
         String email,
 
+        @NotBlank(message = "O telefone é obrigatório.")
         @Pattern(regexp = "\\d{10,11}", message = "O telefone deve ter entre 10 a 11 dígitos numéricos.")
-        String telefone
+        String telefone,
+
+        @NotNull(message = "O endereço é obrigatório.")
+        @Valid
+        EnderecoResponseDTO endereco
 ) {}
