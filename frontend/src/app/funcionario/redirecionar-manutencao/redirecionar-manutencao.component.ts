@@ -52,8 +52,21 @@ export class RedirecionarManutencaoComponent implements OnInit {
       next: (res) => {
         this.solicitacao = res;
       },
-      error: (erro) => {
-        console.error('Solicitação não encontrada no banco', erro);
+      error: () => {
+        // Alterado para modal de erro
+        const erroRef = this.dialog.open(ModalGenericoComponent, {
+          data: {
+            tipo: 'confirmacao',
+            titulo: 'Erro',
+            mensagem: 'Não foi possível carregar a solicitação.',
+            textoConfirmar: 'OK',
+            textoCancelar: ''
+          } as ModalDados
+        });
+
+        erroRef.afterClosed().subscribe(() => {
+          this.router.navigate(['/funcionario']);
+        });
       }
     });
 
@@ -95,17 +108,9 @@ export class RedirecionarManutencaoComponent implements OnInit {
     dialogRef.afterClosed().subscribe(confirmou => {
       if (!confirmou) return;
 
-      const emailLogado = this.authService.getEmail();
-      const funcionarioOrigem = this.funcionarioService.buscarPorEmail(emailLogado);
-
-      if (!funcionarioOrigem || !funcionarioOrigem.id) {
-        alert('Erro: Funcionário logado não encontrado.');
-        return;
-      }
-       // [Jess- Entrega da Semana] - Agora está consumindo da API
+      // Ajustado para consumir da API usando a assinatura ajustada
       this.solicitacaoService.redirecionar(
         this.solicitacao!.id!, 
-        funcionarioOrigem.id, 
         this.funcionarioSelecionadoId!
       ).subscribe({
         next: (solicitacaoAtualizada) => {

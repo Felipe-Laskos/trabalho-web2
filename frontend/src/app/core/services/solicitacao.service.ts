@@ -56,17 +56,13 @@ export class SolicitacaoService implements ISolicitacaoService {
     return this.http.get<Solicitacao[]>(`${this.base}/cliente/${clienteId}`, defaultHttpOptions);
   }
 
-  redirecionar(id: number, idFuncionarioLogado: number, idFuncionarioDestino: number): Observable<Solicitacao> {
+  redirecionar(id: number, idFuncionarioDestino: number): Observable<Solicitacao> {
     const payload = { idFuncionarioDestino };
     
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('X-Funcionario-Id', idFuncionarioLogado.toString());
-
     return this.http.patch<Solicitacao>(
-      `${this.base}/${id}/redirecionar`,
+      `${this.base}/${id}/redirecionar`, 
       payload, 
-      { headers }
+      defaultHttpOptions
     );
   }
 
