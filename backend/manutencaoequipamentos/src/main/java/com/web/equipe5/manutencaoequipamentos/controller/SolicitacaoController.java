@@ -4,6 +4,7 @@ import com.web.equipe5.manutencaoequipamentos.dto.RedirecionarRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.request.EfetuarManutencaoRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.request.OrcarRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.request.SolicitacaoCreateRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.response.SolicitacaoResponseDTO; 
 import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
 import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.service.SolicitacaoService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -25,80 +27,91 @@ public class SolicitacaoController {
     }
 
     @PatchMapping("/{id}/aprovar")
-    public ResponseEntity<Solicitacao> aprovar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.aprovar(id));
+    public ResponseEntity<SolicitacaoResponseDTO> aprovar(@PathVariable Long id) {
+        Solicitacao s = service.aprovar(id);
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/rejeitar")
-    public ResponseEntity<Solicitacao> rejeitar(@PathVariable Long id, @RequestParam String motivoRejeicao) {
-        return ResponseEntity.ok(service.rejeitar(id, motivoRejeicao));
+    public ResponseEntity<SolicitacaoResponseDTO> rejeitar(@PathVariable Long id, @RequestParam String motivoRejeicao) {
+        Solicitacao s = service.rejeitar(id, motivoRejeicao);
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/resgatar")
-    public ResponseEntity<Solicitacao> resgatar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.resgatar(id));
+    public ResponseEntity<SolicitacaoResponseDTO> resgatar(@PathVariable Long id) {
+        Solicitacao s = service.resgatar(id);
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/pagar")
-    public ResponseEntity<Solicitacao> pagar(@PathVariable Long id) {
-        return ResponseEntity.ok(service.pagar(id));
+    public ResponseEntity<SolicitacaoResponseDTO> pagar(@PathVariable Long id) {
+        Solicitacao s = service.pagar(id);
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<Solicitacao>> listarPorCliente(@PathVariable Long clienteId) {
-        return ResponseEntity.ok(service.listarPorCliente(clienteId));
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarPorCliente(@PathVariable Long clienteId) {
+        List<SolicitacaoResponseDTO> dtos = service.listarPorCliente(clienteId).stream()
+            .map(SolicitacaoResponseDTO::new)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/estado")
-    public ResponseEntity<List<Solicitacao>> listarPorEstado(@RequestParam EstadoSolicitacao estadoAtual) {
-        return ResponseEntity.ok(service.listarPorEstado(estadoAtual));
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarPorEstado(@RequestParam EstadoSolicitacao estadoAtual) {
+        List<SolicitacaoResponseDTO> dtos = service.listarPorEstado(estadoAtual).stream()
+            .map(SolicitacaoResponseDTO::new)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        return ResponseEntity.ok(service.buscarPorIdECliente(id, principal));
+    public ResponseEntity<SolicitacaoResponseDTO> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        Solicitacao s = service.buscarPorIdECliente(id, principal);
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/redirecionar")
-    public ResponseEntity<Solicitacao> redirecionar(
+    public ResponseEntity<SolicitacaoResponseDTO> redirecionar(
             @PathVariable Long id,
             @RequestBody RedirecionarRequestDTO dto,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        return ResponseEntity.ok(
-            service.redirecionar(id, principal, dto.idFuncionarioDestino())
-        );
+        Solicitacao s = service.redirecionar(id, principal, dto.idFuncionarioDestino());
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PostMapping
-    public ResponseEntity<Solicitacao> criar(
+    public ResponseEntity<SolicitacaoResponseDTO> criar(
             @RequestBody SolicitacaoCreateRequestDTO request,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
 
-        return ResponseEntity.ok(service.criar(request, principal.id()));
+        Solicitacao s = service.criar(request, principal.id());
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/orcar")
-    public ResponseEntity<Solicitacao> orcar(
+    public ResponseEntity<SolicitacaoResponseDTO> orcar(
             @PathVariable Long id,
             @RequestBody OrcarRequestDTO request,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-
-        return ResponseEntity.ok(
-            service.orcar(id, request.valor(), principal.id())
-        );
+        Solicitacao s = service.orcar(id, request.valor(), principal.id());    
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/efetuar-manutencao")
-    public ResponseEntity<Solicitacao> efetuarManutencao(
+    public ResponseEntity<SolicitacaoResponseDTO> efetuarManutencao(
             @PathVariable Long id,
             @RequestBody EfetuarManutencaoRequestDTO dto,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
         Long funcionarioId = principal.id();
-        return ResponseEntity.ok(service.efetuarManutencao(id, dto, funcionarioId));
+        Solicitacao s = service.efetuarManutencao(id, dto, funcionarioId);
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/finalizar")
-    public ResponseEntity<Solicitacao> finalizar(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        return ResponseEntity.ok(service.finalizar(id, principal.id()));
+    public ResponseEntity<SolicitacaoResponseDTO> finalizar(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        Solicitacao s = service.finalizar(id, principal.id());
+        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 }

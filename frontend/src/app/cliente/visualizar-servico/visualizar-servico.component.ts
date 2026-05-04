@@ -55,9 +55,7 @@ export class VisualizarServicoComponent implements OnInit {
   buscarHistoricoReal(solicitacaoId: number): void {
     this.historicoService.listarPorSolicitacao(solicitacaoId).subscribe({
       next: (historico) => {
-        this.historicoOrdenado = historico.sort((a, b) => 
-          new Date(b.dataHora!).getTime() - new Date(a.dataHora!).getTime()
-        );
+        this.historicoOrdenado = historico;
       }, //TODO: TROCAR POR MODAL DE ERRO
       error: (err) => console.error('Erro ao buscar histórico real:', err)
     });
