@@ -1,12 +1,13 @@
+import { Observable } from 'rxjs/internal/Observable';
 import { Funcionario } from '../models/funcionario.model';
 
 export interface IFuncionarioService {
-  listarTodos(): Funcionario[];
-  buscarPorId(id: number): Funcionario | undefined;
-  buscarPorEmail(email: string): Funcionario | undefined;
-  buscarPorCpf(cpf: string): Funcionario | undefined;
-  listarAtivos(): Funcionario[];
-  inserir(funcionario: Funcionario): void;
-  atualizar(funcionario: Funcionario): void;
-  remover(id: number): void;
+  listarTodos(): Observable<Funcionario[]>;
+  buscarPorId(id: number): Observable<Funcionario | undefined>;
+  buscarPorEmail(email: string): Observable<Funcionario | undefined>;
+  buscarPorCpf(cpf: string): Observable<Funcionario | undefined>;
+  listarAtivos(): Observable<Funcionario[]>;
+  inserir(funcionario: Funcionario): Observable<Funcionario>;
+  atualizar(funcionario: Funcionario): Observable<Funcionario>;
+  remover(id: number): Observable<Funcionario>;
 }

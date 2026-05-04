@@ -18,8 +18,17 @@ public class CategoriaEquipamentoService {
         this.repository = repository;
     } 
 
+    public List<CategoriaEquipamento> listarTodas() {
+        return repository.findAll();
+    }
+
     public List<CategoriaEquipamento> listarAtivas() {
         return repository.findByAtivoTrue();
+    }
+
+    public CategoriaEquipamento buscarPorId(Long id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com ID: " + id));
     }
 
     public CategoriaEquipamento salvar(CategoriaEquipamento categoria) {

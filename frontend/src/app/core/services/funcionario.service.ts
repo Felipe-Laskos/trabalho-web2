@@ -1,72 +1,127 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Funcionario } from '../models/funcionario.model';
-import { mockFuncionario } from '../mocks/funcionario.mock';
 import { IFuncionarioService } from '../interfaces/funcionario.service.interface';
-
-const LS_CHAVE = "funcionarios";
+import { Observable } from 'rxjs/internal/Observable';
+import { catchError } from 'rxjs/internal/operators/catchError';
+import { map } from 'rxjs/internal/operators/map';
+import { API_URL, defaultHttpOptions } from '../config/http.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FuncionarioService implements IFuncionarioService {
+  private apiUrl = `${API_URL}/funcionarios`;
 
-  constructor(private http: HttpClient) {
-    if (!localStorage[LS_CHAVE]) {
-      localStorage[LS_CHAVE] = JSON.stringify(mockFuncionario);
-    }
-  }
+  constructor(private http: HttpClient) {}
 
-  listarTodos(): Funcionario[] {
-    const funcionarios = localStorage[LS_CHAVE];
-    return funcionarios ? JSON.parse(funcionarios) : [];
-  }
-
-  buscarPorId(id: number): Funcionario | undefined {
-    const funcionarios = this.listarTodos();
-    return funcionarios.find(f => f.id === id);
-  }
-
-  buscarPorEmail(email: string): Funcionario | undefined {
-    const funcionarios = this.listarTodos();
-    return funcionarios.find(f => f.email === email);
-  }
-
-  buscarPorCpf(cpf: string): Funcionario | undefined {
-    const cpfLimpo = cpf.replace(/\D/g, '');
-    return this.listarTodos().find(f =>
-      f.cpf.replace(/\D/g, '') === cpfLimpo
+  listarTodos(): Observable<Funcionario[]> {
+    return this.http.get<Funcionario[]>(
+      this.apiUrl,
+      defaultHttpOptions
+    ).pipe(
+      map(response => response),
+      catchError(error => {
+        console.error('Erro ao listar funcionários:', error);
+        throw error;
+      })
     );
   }
 
-  inserir(funcionario: Funcionario): void {
-    const funcionarios = this.listarTodos();
-    const maiorId = funcionarios.length > 0 ? Math.max(...funcionarios.map(f => f.id || 0)) : 0;
-    funcionario.id = maiorId + 1;
-    funcionarios.push(funcionario);
-    localStorage[LS_CHAVE] = JSON.stringify(funcionarios);
+  buscarPorId(id: number): Observable<Funcionario> {
+  return this.http.get<Funcionario>(
+    `${this.apiUrl}/${id}`,
+    defaultHttpOptions
+  ).pipe(
+    catchError(error => {
+      console.error(`Erro ao buscar funcionário com ID ${id}:`, error);
+      throw error;
+    })
+  );
+}
+
+  buscarPorEmail(email: string): Observable<Funcionario> {
+    return this.http.get<Funcionario>(
+      `${this.apiUrl}/email/${email}`,
+      defaultHttpOptions
+    ).pipe(
+      catchError(error => {
+        console.error(`Erro ao buscar funcionário com email ${email}:`, error);
+        throw error;
+      })
+    );
   }
 
-  atualizar(funcionario: Funcionario): void {
-    const funcionarios = this.listarTodos();
-    funcionarios.forEach((obj, index, objs) => {
-      if (funcionario.id === obj.id) {
-        objs[index] = funcionario;
-      }
-    });
-    localStorage[LS_CHAVE] = JSON.stringify(funcionarios);
+  buscarPorCpf(cpf: string): Observable<Funcionario> {
+    const cpfLimpo = cpf.replace(/\D/g, '');
+    return this.http.get<Funcionario>(
+      `${this.apiUrl}/cpf/${cpfLimpo}`,
+      defaultHttpOptions
+    ).pipe(
+      catchError(error => {
+        console.error(`Erro ao buscar funcionário com CPF ${cpfLimpo}:`, error);
+        throw error;
+      })
+    );
+  }
+    
+  inserir(funcionario: Funcionario): Observable<Funcionario> {
+    return this.http.post<Funcionario>(
+      this.apiUrl,
+      funcionario,
+      defaultHttpOptions    
+    ).pipe(
+      map(response => {
+        console.log('Funcionário inserido com sucesso:', response);
+        return response;
+      }),
+      catchError(error => {
+        console.error('Erro ao inserir funcionário:', error);
+        throw error;
+      })
+    );
   }
 
-  listarAtivos(): Funcionario[] {
-    return this.listarTodos().filter(f => f.ativo === true);
+  atualizar(funcionario: Funcionario): Observable<Funcionario> {
+    return this.http.patch<Funcionario>(
+      `${this.apiUrl}/${funcionario.id}`,
+      funcionario,
+      defaultHttpOptions
+    ).pipe(
+      map(response => {
+        console.log('Funcionário atualizado com sucesso:', response);
+        return response;
+      }),
+      catchError(error => {
+        console.error('Erro ao atualizar funcionário:', error);
+        throw error;
+      })
+    );
   }
 
-  remover(id: number): void {
-    const funcionarios = this.listarTodos();
-    const funcionario = funcionarios.find(f => f.id === id);
-    if (funcionario) {
-      funcionario.ativo = false;
-      localStorage[LS_CHAVE] = JSON.stringify(funcionarios);
-    }
-  }
+  listarAtivos(): Observable<Funcionario[]> {
+      return this.http.get<Funcionario[]>(
+        `${this.apiUrl}/ativos`,
+        defaultHttpOptions
+      ).pipe(
+      map(funcionarios => funcionarios.filter(f => f.ativo)),
+      catchError(error => {
+        console.error('Erro ao listar funcionários ativos:', error);
+        throw error;
+      })
+    );
+  } 
+
+  remover(id: number): Observable<Funcionario> {
+    return this.http.patch<Funcionario>(
+        `${this.apiUrl}/${id}`,
+        { ativo: false },
+        defaultHttpOptions
+    ).pipe(
+        catchError(error => {
+            console.error('Erro ao remover funcionário:', error);
+            throw error;
+        })
+    );
+}
 }

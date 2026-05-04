@@ -9,5 +9,6 @@ import java.util.List;
 public interface CategoriaRepository extends JpaRepository<CategoriaEquipamento, Long> {
 
     List<CategoriaEquipamento> findByAtivoTrue();
+    List<CategoriaEquipamento> findAll();
 
 }
