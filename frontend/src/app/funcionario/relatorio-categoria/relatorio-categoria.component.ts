@@ -85,14 +85,14 @@ export class RelatorioCategoriasComponent implements OnInit {
 
         if (this.categoria) {
           pagas = pagas.filter((s: Solicitacao) => 
-            s.categoria?.nome.toLowerCase().includes(this.categoria.toLowerCase())
+            s.categoriaEquipamento?.nome.toLowerCase().includes(this.categoria.toLowerCase())
           );
         }
         
         const agrupado: Record<string, { quantidade: number; total: number }> = {};
 
         pagas.forEach((s: Solicitacao) => {
-          const nomeCategoria = s.categoria?.nome || 'Sem Categoria';
+          const nomeCategoria = s.categoriaEquipamento?.nome || 'Sem Categoria';
 
           if (!agrupado[nomeCategoria]) {
             agrupado[nomeCategoria] = { quantidade: 0, total: 0 };

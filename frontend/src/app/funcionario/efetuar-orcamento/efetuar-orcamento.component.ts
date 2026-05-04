@@ -36,15 +36,26 @@ export class EfetuarOrcamentoComponent implements OnInit {
   nomeFuncionario: string = '';
   valorDigitado: string = '';
 
+  
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    
+
     this.solicitacaoService.buscarPorId(id).subscribe({
       next: (solicitacao) => {
         this.solicitacao = solicitacao;
+      },
+      error: () => {
+        this.dialog.open(ModalGenericoComponent, {
+          data: {
+            titulo: 'Erro',
+            mensagem: 'Não foi possível carregar a solicitação.',
+            textoConfirmar: 'OK',
+            textoCancelar: ''
+          }
+        });
       }
     });
-    
+
     this.nomeFuncionario = this.authService.getNome();
   }
 
@@ -79,39 +90,41 @@ export class EfetuarOrcamentoComponent implements OnInit {
       return;
     }
 
-    const emailLogado = this.authService.getEmail();
-    const funcionarioLogado = this.funcionarioService.buscarPorEmail(emailLogado);
+    this.solicitacaoService.orcar(
+      this.solicitacao.id!,
+      this.valorOrcamento
+    ).subscribe({
+      next: (solicitacaoAtualizada) => {
+        this.solicitacao = solicitacaoAtualizada;
 
-    this.historicoService.inserir({
-      dataHora: new Date().toISOString(),
-      estadoAnterior: this.solicitacao.estadoAtual,
-      estadoNovo: SolicitacaoENUM.ORCADA,
-      solicitacaoId: this.solicitacao.id!,
-      funcionario: funcionarioLogado,
-      observacao: `Orçamento de R$ ${this.valorOrcamento.toFixed(2)} registrado.`
-    });
+        const nomeFuncionarioOrcamento =
+          this.solicitacao?.funcionarioOrcamento ||
+          this.solicitacao?.funcionarioResponsavel?.nome ||
+          'Não informado';
 
-    this.solicitacao.funcionarioOrcamento = this.authService.getNome();
-    this.solicitacao.dataHoraOrcamento = new Date().toISOString();
-    this.solicitacao.valorOrcado = this.valorOrcamento;
-    this.solicitacao.estadoAtual = SolicitacaoENUM.ORCADA;
-    this.solicitacao.funcionarioResponsavel = funcionarioLogado;
-
-    this.solicitacaoService.atualizar(this.solicitacao).subscribe({
-      next: () => {
         const dialogRef = this.dialog.open(ModalGenericoComponent, {
           data: {
             tipo: 'confirmacao',
             titulo: 'Orçamento Registrado',
-            mensagem: `Funcionário: ${this.solicitacao?.funcionarioOrcamento} - Data/Hora: ${this.formatarData(new Date(this.solicitacao!.dataHoraOrcamento!))}`,
+            mensagem: `Funcionário: ${nomeFuncionarioOrcamento} - Data/Hora: ${this.formatarData(new Date(this.solicitacao!.dataHoraOrcamento!))}`,
             textoConfirmar: 'OK'
-      }
-    });
+          }
+        });
 
         dialogRef.afterClosed().subscribe(() => {
           this.router.navigate(['/funcionario']);
         });
+      },
+      error: (erro) => {
+        this.dialog.open(ModalGenericoComponent, {
+          data: {
+            titulo: 'Erro',
+            mensagem: erro?.error?.message || 'Não foi possível registrar o orçamento.',
+            textoConfirmar: 'OK',
+            textoCancelar: ''
+          }
+        });
       }
     });
-  }
+    }
 }

@@ -32,6 +32,10 @@ public class FuncionarioService {
         this.hashService = hashService;
         this.emailService = emailService;
     }
+
+    public List<Funcionario> listarTodos() {
+        return repository.findAll();
+    }
     
     public List<Funcionario> listarAtivos() {
         return repository.findByAtivoTrue();
@@ -89,7 +93,7 @@ public class FuncionarioService {
         Funcionario funcionario = FuncionarioMapper.toEntity(requisicao);
         funcionario.setSenha(hashHex);
         funcionario.setSalt(saltHex);
-
+        
         Funcionario salvo = repository.save(funcionario);
         emailService.enviarSenhaAutocadastro(salvo.getEmail(), salvo.getNome(), senhaBruta);
 

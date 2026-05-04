@@ -19,7 +19,7 @@ export interface Solicitacao {
   dataHoraFinalizacao?: string;
   ativo?: boolean;
   cliente?: Cliente;
-  categoria: CategoriaEquipamento;
+  categoriaEquipamento: CategoriaEquipamento;
   funcionarioResponsavel?: Funcionario;
   historico?: HistoricoSolicitacao[];
 }

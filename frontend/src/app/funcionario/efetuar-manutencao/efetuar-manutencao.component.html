@@ -8,7 +8,7 @@
     <div class="timestamp-acesso"> Manutenção realizada em: {{ dataHoraAcesso | date: 'dd/MM/yyyy HH:mm' }} </div>
     <p class="status-badge" id="p1" [ngClass]="obterCorDoBadge (solicitacao.estadoAtual) "> <strong>Status:</strong> {{ solicitacao.estadoAtual }}</p>
     <p><strong>ID:</strong> # {{ solicitacao.id }}</p>
-    <p><strong>Categoria:</strong> {{ solicitacao.categoria.nome }}</p>
+    <p><strong>Categoria:</strong> {{ solicitacao.categoriaEquipamento.nome }}</p>
     <p><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
     <p><strong>Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
     <p><strong>Data de entrada:</strong> {{ solicitacao.dataHoraCriacao | date: 'dd/MM/yyyy HH:mm' }}</p>

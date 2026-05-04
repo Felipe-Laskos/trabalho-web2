@@ -141,6 +141,10 @@ public class SolicitacaoService {
         return repository.findByEstadoAtual(estado);
     }
 
+    public List<Solicitacao> listarTodos() {
+        return repository.findAllByOrderByDataHoraCriacaoAsc();
+    }
+
     public Solicitacao buscarPorId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação " + id + " não encontrada"));
@@ -208,6 +212,13 @@ public class SolicitacaoService {
         solicitacao.setDataHoraCriacao(LocalDateTime.now());
         solicitacao.setAtivo(true);
 
+        historicoService.registrar(
+            solicitacao,
+            null,
+            EstadoSolicitacao.ABERTA,
+            null
+        );
+
         return repository.save(solicitacao);
     }
 
@@ -222,12 +233,22 @@ public class SolicitacaoService {
         Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setValorOrcado(valor);
         s.setFuncionarioResponsavel(funcionario);
+        s.setFuncionarioOrcamento(funcionario.getNome());
         s.setEstadoAtual(EstadoSolicitacao.ORCADA);
         s.setDataHoraOrcamento(LocalDateTime.now());
 
-        return repository.save(s);
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.ORCADA,
+            null
+        );
+
+    return repository.save(s);
     }
 
     public Solicitacao efetuarManutencao(Long id, EfetuarManutencaoRequestDTO dto, Long funcionarioId) {
@@ -245,11 +266,20 @@ public class SolicitacaoService {
         Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setDescricaoManutencao(dto.descricaoManutencao());
         s.setOrientacoesCliente(dto.orientacoesCliente());
         s.setFuncionarioResponsavel(funcionario);
         s.setDataHoraManutencao(LocalDateTime.now());
         s.setEstadoAtual(EstadoSolicitacao.ARRUMADA);
+
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.ARRUMADA,
+            null
+        );
 
         return repository.save(s);
     }
@@ -258,14 +288,21 @@ public class SolicitacaoService {
         Solicitacao s = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.PAGA) {
-            throw new BusinessRuleException("Só é possível finalizar solicitações PAGAS");
-        }
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
+        s.setFuncionarioResponsavel(funcionario);
         s.setEstadoAtual(EstadoSolicitacao.FINALIZADA);
         s.setDataHoraFinalizacao(LocalDateTime.now());
 
-        // TODO: Usar HistoricoService para registrar que o funcionário finalizou a solicitação
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.FINALIZADA,
+            null
+        );
 
         return repository.save(s);
     }
