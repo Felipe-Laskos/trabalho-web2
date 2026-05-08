@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,11 +67,15 @@ public class SolicitacaoController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/estado") 
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarPorEstado(@RequestParam EstadoSolicitacao estadoAtual) {
-        List<SolicitacaoResponseDTO> dtos = service.listarPorEstado(estadoAtual).stream()
-            .map(SolicitacaoResponseDTO::new)
-            .collect(Collectors.toList());
+
+    @GetMapping("/estado")
+    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarPorEstado(
+            @RequestParam EstadoSolicitacao estadoAtual,
+            Pageable pageable) {
+
+        Page<SolicitacaoResponseDTO> dtos = service
+                .listarPorEstado(estadoAtual, pageable)
+                .map(SolicitacaoResponseDTO::new);
         return ResponseEntity.ok(dtos);
     }
 
@@ -122,18 +128,19 @@ public class SolicitacaoController {
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
-    @GetMapping 
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarTodos(
-        @AuthenticationPrincipal AuthenticatedPrincipal principal
+
+    @GetMapping
+    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarTodos(
+            @AuthenticationPrincipal AuthenticatedPrincipal principal,
+            Pageable pageable
     ) {
         if (principal == null) {
-        throw new AccessDeniedException("Funcionário não autenticado");
-    }
+            throw new AccessDeniedException("Funcionário não autenticado");
+        }
 
-        List<SolicitacaoResponseDTO> solicitacoes = service.listarTodos()
-            .stream()
-            .map(SolicitacaoMapper::toDTO)            
-            .toList();
+        Page<SolicitacaoResponseDTO> solicitacoes = service
+                .listarTodos(pageable)
+                .map(SolicitacaoMapper::toDTO);
 
         return ResponseEntity.ok(solicitacoes);
     }
