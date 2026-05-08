@@ -22,7 +22,7 @@ public class HistoricoController {
         this.historicoService = historicoService;
     }
 
-    @GetMapping("/{id}/historico")
+    @GetMapping("/{id}/historico") 
     public ResponseEntity<List<HistoricoSolicitacaoResponseDTO>> historico(@PathVariable Long id) {
         List<HistoricoSolicitacaoResponseDTO> historicoDTOs = historicoService.listarPorSolicitacao(id)
             .stream().map(HistoricoSolicitacaoResponseDTO::new).collect(Collectors.toList());
