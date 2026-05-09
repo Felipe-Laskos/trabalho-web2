@@ -30,3 +30,13 @@ body {
   padding: 0;
   font-family: "inter", sans-serif;
 }
+
+.snack-sucesso {
+  --mdc-snackbar-container-color: #2e7d32;
+  --mdc-snackbar-label-text-color: white;
+}
+
+.snack-erro {
+  --mdc-snackbar-container-color: #c62828;
+  --mdc-snackbar-label-text-color: white;
+}

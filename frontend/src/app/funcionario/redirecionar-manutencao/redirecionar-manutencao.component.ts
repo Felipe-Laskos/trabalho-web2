@@ -52,7 +52,6 @@ export class RedirecionarManutencaoComponent implements OnInit {
         this.solicitacao = res;
       },
       error: () => {
-        // Alterado para modal de erro
         const erroRef = this.dialog.open(ModalGenericoComponent, {
           data: {
             tipo: 'confirmacao',
@@ -114,8 +113,6 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmou => {
       if (!confirmou) return;
-
-      // Ajustado para consumir da API usando a assinatura ajustada
       this.solicitacaoService.redirecionar(
         this.solicitacao!.id!, 
         this.funcionarioSelecionadoId!
