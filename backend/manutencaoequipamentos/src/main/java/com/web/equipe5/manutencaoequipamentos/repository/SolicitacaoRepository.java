@@ -19,7 +19,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     Page<Solicitacao> findByEstadoAtual(EstadoSolicitacao estadoAtual, Pageable pageable);
     Page<Solicitacao> findAllByOrderByDataHoraCriacaoAsc(Pageable pageable);
     @Query(value = "SELECT CAST(s.data_hora_pagamento AS DATE) as data, SUM(s.valor_orcado) as total " +
-                   "FROM tb_solicitacao s " +
+                   "FROM solicitacoes s " +
                    "WHERE s.estado_atual IN ('PAGA', 'FINALIZADA') " +
                    "AND s.data_hora_pagamento >= :inicio AND s.data_hora_pagamento <= :fim " +
                    "GROUP BY CAST(s.data_hora_pagamento AS DATE) " +
