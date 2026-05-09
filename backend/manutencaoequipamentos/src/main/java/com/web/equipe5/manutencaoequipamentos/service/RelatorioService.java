@@ -1,6 +1,7 @@
 package com.web.equipe5.manutencaoequipamentos.service;
 
 import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorDiaProjection;
+import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorCategoriaProjection;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -23,5 +24,9 @@ public class RelatorioService {
         LocalDateTime fimDia = fim.atTime(LocalTime.MAX);
 
         return solicitacaoRepository.findReceitasAgrupadasPorDia(inicioDia, fimDia);
+    }
+
+    public List<ReceitaPorCategoriaProjection> gerarRelatorioCategorias() {
+        return solicitacaoRepository.findReceitasAgrupadasPorCategoria();
     }
 }

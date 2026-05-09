@@ -14,6 +14,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @RestController
 @RequestMapping("/api/funcionarios")
 public class FuncionarioController {
@@ -25,12 +28,10 @@ public class FuncionarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FuncionarioResponseDTO>> listar() {
-        List<Funcionario> lista = service.listarTodos();
-        List<FuncionarioResponseDTO> response = lista.stream()
-            .map(FuncionarioMapper::toDTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Page<FuncionarioResponseDTO>> listar(Pageable pageable) {
+        Page<Funcionario> lista = service.listarTodos(pageable);
+        Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/ativos")
@@ -39,25 +40,25 @@ public class FuncionarioController {
         List<FuncionarioResponseDTO> response = lista.stream()
             .map(FuncionarioMapper::toDTO)
             .collect(Collectors.toList());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<FuncionarioResponseDTO> buscarPorId(@PathVariable Long id) {
         Funcionario fun = service.buscarPorId(id);  
-        return ResponseEntity.ok(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
     }
     
     @GetMapping("/email/{email}")
     public ResponseEntity<FuncionarioResponseDTO> buscarPorEmail(@PathVariable String email) {
         Funcionario fun = service.buscarPorEmail(email);  
-        return ResponseEntity.ok(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
     }
 
     @GetMapping("/cpf/{cpf}")
     public ResponseEntity<FuncionarioResponseDTO> buscarPorCpf(@PathVariable String cpf) {
         Funcionario fun = service.buscarPorCpf(cpf); 
-        return ResponseEntity.ok(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
     }
 
     @PostMapping
@@ -71,7 +72,7 @@ public class FuncionarioController {
             @PathVariable Long id, 
             @RequestBody Map<String, Object> campos) {
         Funcionario funcionarioAtualizado = service.atualizar(id, campos);
-        return ResponseEntity.ok(FuncionarioMapper.toDTO(funcionarioAtualizado));
+        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(funcionarioAtualizado));
     }
 
     @DeleteMapping("/{id}")
@@ -79,6 +80,6 @@ public class FuncionarioController {
         @PathVariable Long id, 
         @RequestHeader("funcionario-id") Long idFuncionarioLogado) {
         Funcionario fun = service.deletar(id, idFuncionarioLogado);  
-        return ResponseEntity.ok(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
     }
 }
