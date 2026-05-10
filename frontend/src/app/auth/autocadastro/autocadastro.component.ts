@@ -13,6 +13,7 @@ import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-v
 import { ModalGenericoComponent } from "../../shared/modal-generico/modal-generico.component";
 import { ClienteService } from '../../core/services/cliente.service';
 import { ClienteRequest } from '../../core/dto/request/cliente-request.model';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-autocadastro',
@@ -50,6 +51,7 @@ export class AutocadastroComponent {
   enviando = false;
 
   private clienteService = inject(ClienteService);
+  private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
 
   constructor(public router: Router, private http: HttpClient) {}
@@ -108,7 +110,7 @@ export class AutocadastroComponent {
 
     if (!this.usuario.nome || !this.usuario.cpf || !this.usuario.email ||
         !this.usuario.telefone || !this.usuario.cep) {
-      alert('Preencha todos os campos obrigatórios!');
+      this.notificationService.exibirAviso('Preencha todos os campos obrigatórios!');
       return;
     }
 
@@ -116,7 +118,7 @@ export class AutocadastroComponent {
     const erroCpf = ValidarCpf()(controleCpf);
 
     if (erroCpf !== null) {
-      alert('CPF Inválido!');
+      this.notificationService.exibirAviso('CPF inválido.');
       return;
     }
 
@@ -153,7 +155,7 @@ export class AutocadastroComponent {
       },
       error: (err: Error) => {
         this.enviando = false;
-        alert(err.message);
+        this.notificationService.exibirAviso('Erro ao realizar cadastro. Por favor, tente novamente.');
       }
     });
   }

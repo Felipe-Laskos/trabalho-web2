@@ -11,6 +11,8 @@ import com.web.equipe5.manutencaoequipamentos.dto.request.ClienteRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.ClienteResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.service.ClienteService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
@@ -21,7 +23,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteResponseDTO> autocadastrar(@RequestBody ClienteRequestDTO requisicao) {
+    public ResponseEntity<ClienteResponseDTO> autocadastrar(@Valid @RequestBody ClienteRequestDTO requisicao) {
         ClienteResponseDTO response = clienteService.autocadastrar(requisicao);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

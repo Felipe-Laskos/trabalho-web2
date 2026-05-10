@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { first, firstValueFrom } from 'rxjs'; 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpErrorResponse } from '@angular/common/http';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { Funcionario } from '../../core/models/funcionario.model';
 import { Cliente } from '../../core/models/cliente.model';
@@ -14,6 +14,7 @@ import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancel
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-mostrar-orcamento',
@@ -36,11 +37,14 @@ export class MostrarOrcamentoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private notificationService = inject(NotificationService);
   
   solicitacao: Solicitacao | undefined;
   cliente: Cliente | undefined;
   funcionario: Funcionario | undefined;
   dataHoraAcesso: Date = new Date();
+
+  carregamento = false;
 
   exibirModal: boolean = false;
   estadoModal:
@@ -59,8 +63,10 @@ export class MostrarOrcamentoComponent implements OnInit {
     const id = Number(idParam);
 
     try {
+      this.carregamento = true;
+
       this.solicitacao = await firstValueFrom(
-        this.solicitacaoService.buscarPorId(id),
+      this.solicitacaoService.buscarPorId(id),
       );
 
       if (this.solicitacao) {
@@ -87,7 +93,9 @@ export class MostrarOrcamentoComponent implements OnInit {
         this.funcionario = this.solicitacao.funcionarioResponsavel;
       }
     } catch (erro) {
-      //TODO: Adicionar alert customizado 
+      this.notificationService.exibirErro(erro as HttpErrorResponse); 
+    } finally {
+      this.carregamento = false;
     }
   }
 
@@ -101,6 +109,7 @@ export class MostrarOrcamentoComponent implements OnInit {
   }
 
   async confirmarAprovacao(): Promise<void> {
+    this.carregamento = true;
     if (this.solicitacao && this.solicitacao.id) {
       try {
         await firstValueFrom(
@@ -109,8 +118,11 @@ export class MostrarOrcamentoComponent implements OnInit {
 
         this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
         this.estadoModal = 'sucesso';
+        this.notificationService.exibirSucesso('Serviço aprovado com sucesso!');
       } catch (erro) {
-        //TODO: Adicionar alert customizado
+        this.notificationService.exibirErro(erro as HttpErrorResponse);
+      } finally {
+        this.carregamento = false;
       }
     }
   }
@@ -130,6 +142,7 @@ export class MostrarOrcamentoComponent implements OnInit {
   }
 
   async finalizarRejeicao(): Promise<void> {
+    this.carregamento = true;
     if (this.solicitacao && this.solicitacao.id) {
       try {
         await firstValueFrom(
@@ -141,9 +154,12 @@ export class MostrarOrcamentoComponent implements OnInit {
 
         this.solicitacao.estadoAtual = SolicitacaoENUM.REJEITADA;
         this.solicitacao.motivoRejeicao = this.motivoRejeicao;
-        this.estadoModal = 'sucessoRejeicao';
+        this.estadoModal = 'sucessoRejeicao'; 
+        this.notificationService.exibirSucesso('Serviço rejeitado com sucesso!');
       } catch (erro) {
-        //TODO: Adicionar alert customizado
+        this.notificationService.exibirErro(erro as HttpErrorResponse);
+      } finally {
+        this.carregamento = false;
       }
     }
   }

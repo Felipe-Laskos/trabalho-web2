@@ -10,6 +10,7 @@ import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-v
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-pagar-servico',
@@ -31,6 +32,7 @@ export class PagarServicoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private aviso = inject(MatSnackBar);
+  private notificationService = inject(NotificationService);
 
   solicitacao: Solicitacao | undefined;
   dataHoraAcesso: Date = new Date();
@@ -52,11 +54,10 @@ export class PagarServicoComponent implements OnInit {
     if (this.solicitacao?.estadoAtual === SolicitacaoENUM.ARRUMADA) {
       this.exibirModalConfirmacao = true;
     } else {
-      this.aviso.open(
-        'Esta solicitação não está pronta para pagamento!',
-        'OK',
-        { duration: 3000, verticalPosition: 'top' },
-      );
+      this.aviso.open('O serviço ainda não está pronto para pagamento.', 'OK', {
+        duration: 3000,
+        verticalPosition: 'top',
+      });
     }
   }
 
@@ -74,11 +75,8 @@ export class PagarServicoComponent implements OnInit {
           });
           this.router.navigate(['/cliente/visualizar-servico', idSeguro]); 
         },
-        error: () => {
-          this.aviso.open('Erro ao finalizar pagamento!', 'OK', {
-            duration: 3000,
-            verticalPosition: 'top',
-          });
+        error: (err) => {
+          this.notificationService.exibirErro(err);
         },
       });
     }

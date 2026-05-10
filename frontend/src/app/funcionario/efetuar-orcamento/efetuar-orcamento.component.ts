@@ -10,9 +10,9 @@ import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { HistoricoService } from '../../core/services/historico.service';
 import { FuncionarioService } from '../../core/services/funcionario.service';
 import { Solicitacao } from '../../core/models/solicitacao.model';
-import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/modal-generico.component';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-efetuar-orcamento',
@@ -30,7 +30,8 @@ export class EfetuarOrcamentoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private dialog = inject(MatDialog);
-
+  private notificationService = inject(NotificationService);
+  
   solicitacao?: Solicitacao;
   valorOrcamento: number = 0;
   nomeFuncionario: string = '';

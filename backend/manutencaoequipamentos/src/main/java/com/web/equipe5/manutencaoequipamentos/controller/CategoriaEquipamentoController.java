@@ -5,6 +5,8 @@ import com.web.equipe5.manutencaoequipamentos.mapper.CategoriaEquipamentoMapper;
 import com.web.equipe5.manutencaoequipamentos.model.CategoriaEquipamento;
 import com.web.equipe5.manutencaoequipamentos.service.CategoriaEquipamentoService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +54,7 @@ public class CategoriaEquipamentoController {
     
     @PostMapping
     public ResponseEntity<CategoriaEquipamentoResponseDTO> criar(
-        @RequestBody CategoriaEquipamento requisicao) {
+        @Valid @RequestBody CategoriaEquipamento requisicao) {
         CategoriaEquipamento novaCategoria = service.salvar(requisicao);
         return ResponseEntity.status(201).body(CategoriaEquipamentoMapper.toDTO(novaCategoria));
     }
@@ -60,7 +62,7 @@ public class CategoriaEquipamentoController {
     @PatchMapping("/{id}")
     public ResponseEntity<CategoriaEquipamentoResponseDTO> atualizar(
             @PathVariable Long id, 
-            @RequestBody Map<String, Object> campos) {
+            @Valid @RequestBody Map<String, Object> campos) {
         CategoriaEquipamento categoriaAtualizada = service.atualizar(id, campos);
         return ResponseEntity.ok(CategoriaEquipamentoMapper.toDTO(categoriaAtualizada));
     }

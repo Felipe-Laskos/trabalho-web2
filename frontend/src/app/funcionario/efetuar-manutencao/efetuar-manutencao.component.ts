@@ -19,6 +19,7 @@ import { BotaoComponent } from '../../shared/botao/botao.component';
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-efetuar-manutencao',
@@ -44,6 +45,7 @@ export class EfetuarManutencaoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private aviso = inject(MatSnackBar);
+  private notificationService = inject(NotificationService);
 
   solicitacao?: Solicitacao;
   mostrarFormulario = false;
@@ -60,8 +62,8 @@ export class EfetuarManutencaoComponent implements OnInit {
     | 'sucessoRejeicao' = 'confirmacao';
 
   form = new FormGroup({
-    descricao: new FormControl('', [Validators.required]),
-    orientacoes: new FormControl('', [Validators.required]),
+    descricao: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]),
+    orientacoes: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]),
   });
 
   ngOnInit(): void {
@@ -84,11 +86,8 @@ export class EfetuarManutencaoComponent implements OnInit {
           this.router.navigate(['/funcionario/visualizar-solicitacoes']);
         }
       },
-      error: () => {
-        this.aviso.open('Erro ao carregar solicitação.', 'OK', {
-          duration: 3000,
-        });
-
+      error: (err) => {
+        this.notificationService.exibirErro(err);
         this.router.navigate(['/funcionario/visualizar-solicitacoes']);
       },
     });
@@ -146,8 +145,8 @@ export class EfetuarManutencaoComponent implements OnInit {
           this.router.navigate(['/funcionario/visualizar-solicitacoes']);
         }, 2500);
       },
-      error: () => {
-        this.aviso.open('Erro ao salvar manutenção.', 'OK', { duration: 3000 });
+      error: (err) => {
+        this.notificationService.exibirErro(err);
       },
     });
   }
@@ -160,7 +159,7 @@ export class EfetuarManutencaoComponent implements OnInit {
         this.solicitacao.id,
       ]);
     } else {
-      alert('Nenhuma solicitação encontrada para redirecionar!');
+      this.notificationService.exibirAviso('Nenhuma solicitação encontrada para redirecionar!');
     }
   }
 
