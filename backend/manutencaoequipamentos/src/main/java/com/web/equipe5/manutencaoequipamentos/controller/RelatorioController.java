@@ -1,15 +1,16 @@
 package com.web.equipe5.manutencaoequipamentos.controller;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.web.equipe5.manutencaoequipamentos.dto.request.RelatorioPeriodoRequest;
 import com.web.equipe5.manutencaoequipamentos.service.RelatorioService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/relatorios")
@@ -23,16 +24,10 @@ public class RelatorioController {
 
     @GetMapping("/receitas-periodo")
     public ResponseEntity<byte[]> gerarPdf(
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate inicio,
-
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate fim
+        @Valid @ModelAttribute RelatorioPeriodoRequest request
     ) throws IOException {
 
-        byte[] pdf = service.gerarPdf(inicio, fim);
+        byte[] pdf = service.gerarPdf(request.inicio(), request.fim());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
