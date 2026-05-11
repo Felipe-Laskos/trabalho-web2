@@ -20,7 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 @Service
@@ -140,8 +142,11 @@ public class SolicitacaoService {
         return repository.findByClienteId(clienteId);
     }
 
-    public List<Solicitacao> listarPorEstado(EstadoSolicitacao estado) {
-        return repository.findByEstadoAtual(estado);
+    public Page<Solicitacao> listarPorEstado(EstadoSolicitacao estado, Pageable pageable) {
+        return repository.findByEstadoAtual(estado, pageable);
+    }
+    public Page<Solicitacao> listarTodos(Pageable pageable) {
+        return repository.findAllByOrderByDataHoraCriacaoAsc(pageable);
     }
 
     public Solicitacao buscarPorId(Long id) {
@@ -211,7 +216,16 @@ public class SolicitacaoService {
         solicitacao.setDataHoraCriacao(LocalDateTime.now());
         solicitacao.setAtivo(true);
 
-        return repository.save(solicitacao);
+        Solicitacao solicitacaoSalva = repository.save(solicitacao);
+
+        historicoService.registrar(
+            solicitacaoSalva,
+            null,
+            EstadoSolicitacao.ABERTA,
+            null
+        );
+
+        return solicitacaoSalva;
     }
 
     public Solicitacao orcar(Long id, Double valor, Long funcionarioId) {
@@ -225,12 +239,22 @@ public class SolicitacaoService {
         Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setValorOrcado(valor);
         s.setFuncionarioResponsavel(funcionario);
+        s.setFuncionarioOrcamento(funcionario.getNome());
         s.setEstadoAtual(EstadoSolicitacao.ORCADA);
         s.setDataHoraOrcamento(LocalDateTime.now());
 
-        return repository.save(s);
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.ORCADA,
+            null
+        );
+
+    return repository.save(s);
     }
 
     public Solicitacao efetuarManutencao(Long id, EfetuarManutencaoRequestDTO dto, Long funcionarioId) {
@@ -248,11 +272,20 @@ public class SolicitacaoService {
         Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
         s.setDescricaoManutencao(dto.descricaoManutencao());
         s.setOrientacoesCliente(dto.orientacoesCliente());
         s.setFuncionarioResponsavel(funcionario);
         s.setDataHoraManutencao(LocalDateTime.now());
         s.setEstadoAtual(EstadoSolicitacao.ARRUMADA);
+
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.ARRUMADA,
+            null
+        );
 
         return repository.save(s);
     }
@@ -261,14 +294,21 @@ public class SolicitacaoService {
         Solicitacao s = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.PAGA) {
-            throw new BusinessRuleException("Só é possível finalizar solicitações PAGAS");
-        }
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
+        EstadoSolicitacao anterior = s.getEstadoAtual();
+
+        s.setFuncionarioResponsavel(funcionario);
         s.setEstadoAtual(EstadoSolicitacao.FINALIZADA);
         s.setDataHoraFinalizacao(LocalDateTime.now());
 
-        // TODO: Usar HistoricoService para registrar que o funcionário finalizou a solicitação
+        historicoService.registrar(
+            s,
+            anterior,
+            EstadoSolicitacao.FINALIZADA,
+            null
+        );
 
         return repository.save(s);
     }
@@ -286,8 +326,6 @@ public class SolicitacaoService {
             LocalDateTime fim = dataFim.atTime(LocalTime.MAX);
             return solicitacaoRepository.findByDataHoraCriacaoBetween(inicio, fim, pageable);
         }
-        
-        // Se for "TODAS" ou se os parâmetros de data do período vierem nulos
         return solicitacaoRepository.findAll(pageable);
     }
 
