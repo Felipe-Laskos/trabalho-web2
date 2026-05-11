@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.web.equipe5.manutencaoequipamentos.model.HistoricoSolicitacao;
 import com.web.equipe5.manutencaoequipamentos.service.HistoricoService;
-import com.web.equipe5.manutencaoequipamentos.dto.response.HistoricoSolicitacaoResponseDTO;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -23,8 +22,7 @@ public class HistoricoController {
     }
 
     @GetMapping("/{id}/historico")
-    public ResponseEntity<Page<HistoricoSolicitacaoResponseDTO>> historico(@PathVariable Long id, Pageable pageable) {
-        Page<HistoricoSolicitacaoResponseDTO> historicoDTOs = historicoService.listarPorSolicitacao(id, pageable).map(HistoricoSolicitacaoResponseDTO::new);
-        return ResponseEntity.ok(historicoDTOs);
+    public ResponseEntity<List<HistoricoSolicitacao>> historico(@PathVariable Long id) {
+        return ResponseEntity.ok(historicoService.listarPorSolicitacao(id));
     }
 }

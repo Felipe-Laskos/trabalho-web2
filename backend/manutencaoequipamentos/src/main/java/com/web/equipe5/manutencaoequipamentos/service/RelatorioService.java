@@ -8,7 +8,6 @@ import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorDiaProjection;
 import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorCategoriaProjection;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
 import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -39,7 +38,7 @@ public class RelatorioService {
         return solicitacaoRepository.findReceitasAgrupadasPorCategoria();
     }
     
-    public byte[] gerarPdf(LocalDate inicio, LocalDate fim) throws IOException {
+    public byte[] gerarRelatorioReceitasPdf(LocalDate inicio, LocalDate fim) throws IOException {
 
         List<ReceitaPorDiaProjection> dados =
                 gerarRelatorioReceitas(inicio, fim);

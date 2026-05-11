@@ -1,9 +1,3 @@
-<div class="estado-carregamento" *ngIf="carregamento && !solicitacao" style="text-align: center; padding: 60px; color: #666;">
-  <mat-icon style="animation: spin 1s linear infinite; font-size: 40px; height: 40px; width: 40px;">autorenew</mat-icon>
-  <h2>Buscando detalhes...</h2>
-  <p>Aguarde enquanto carregamos as informações da solicitação.</p>
-</div>
-
 <div class="visualizar__container" *ngIf="solicitacao">
   <app-card-visualizacao>
     <div class="visualizar__header">
@@ -44,8 +38,8 @@
           </div>
           <div class="visualizar__info_box">
             <p class="visualizar__info_destaque">{{ solicitacao.descricaoEquipamento }}</p>
-            <p class="visualizar__info_sub" *ngIf="solicitacao.categoriaEquipamento">
-              Categoria: {{ solicitacao.categoriaEquipamento.nome }}
+            <p class="visualizar__info_sub" *ngIf="solicitacao.categoria">
+              Categoria: {{ solicitacao.categoria.nome }}
             </p>
           </div>
         </div>
@@ -129,11 +123,10 @@
 
     <div class="visualizar__footer" *ngIf="temAcao()">
       <app-botao
-        [texto]="carregamento ? 'Carregando...' : obterTextoBotaoAcao()"
+        [texto]="obterTextoBotaoAcao()"
         icone="arrow_forward"
         cor="primary"
-        (clicou)="navegarParaAcao()"
-        [desabilitado]="carregamento">
+        (clicou)="navegarParaAcao()">
       </app-botao>
     </div>
   </app-card-visualizacao>

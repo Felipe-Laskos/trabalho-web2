@@ -10,7 +10,6 @@ export interface IAuthService {
   getToken(): string | null;
   getNome(): string;
   getEmail(): string;
-  getId(): number | undefined;
   getPerfil(): PerfilENUM | null;
   isCliente(): boolean;
   isFuncionario(): boolean;

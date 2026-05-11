@@ -12,6 +12,7 @@ public class FuncionarioMapper {
         f.setNome(dto.nome());
         f.setCpf(dto.cpf());
         f.setEmail(dto.email());
+        f.setSenha(dto.senha());
         f.setCargo(dto.cargo());
         f.setDataNascimento(dto.dataNascimento());
 

@@ -7,13 +7,11 @@ import com.web.equipe5.manutencaoequipamentos.dto.request.SolicitacaoCreateReque
 import com.web.equipe5.manutencaoequipamentos.dto.response.SolicitacaoResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.service.SolicitacaoService;
-
 import jakarta.validation.Valid;
-
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
-import com.web.equipe5.manutencaoequipamentos.mapper.SolicitacaoMapper;
-import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
-
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +19,16 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -79,10 +84,9 @@ public class SolicitacaoController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/{id}") 
-    public ResponseEntity<SolicitacaoResponseDTO> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        Solicitacao s = service.buscarPorIdECliente(id, principal);
-        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
+    @GetMapping("/{id}")
+    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        return ResponseEntity.ok(service.buscarPorIdECliente(id, principal));
     }
 
     @PatchMapping("/{id}/redirecionar")
@@ -122,26 +126,15 @@ public class SolicitacaoController {
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
-    @PatchMapping("/{id}/finalizar")
-    public ResponseEntity<SolicitacaoResponseDTO> finalizar(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        Solicitacao s = service.finalizar(id, principal.id());
-        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
-    }
-
-
-    @GetMapping
-    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarTodos(
-            @AuthenticationPrincipal AuthenticatedPrincipal principal,
-            Pageable pageable
-    ) {
-        if (principal == null) {
-            throw new AccessDeniedException("Funcionário não autenticado");
-        }
-
-        Page<SolicitacaoResponseDTO> solicitacoes = service
-                .listarTodos(pageable)
-                .map(SolicitacaoMapper::toDTO);
-
-        return ResponseEntity.ok(solicitacoes);
+    // Endpoint de paginação dos filtros
+    @GetMapping("/filtros")
+    public ResponseEntity<Page<Solicitacao>> listarComFiltros(
+            @RequestParam(defaultValue = "TODAS") String filtro,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @PageableDefault(size = 4, sort = "dataHoraCriacao", direction = Sort.Direction.DESC) Pageable pageable) {
+        
+        Page<Solicitacao> page = service.listarComFiltros(filtro, dataInicio, dataFim, pageable);
+        return ResponseEntity.ok(page);
     }
 }

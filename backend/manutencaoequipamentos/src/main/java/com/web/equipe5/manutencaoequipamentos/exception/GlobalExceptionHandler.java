@@ -1,5 +1,5 @@
 package com.web.equipe5.manutencaoequipamentos.exception;
-
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -7,9 +7,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.validation.FieldError;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -41,21 +41,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenerico(Exception ex) {
         var erro = new ErrorResponse(500, "Erro interno", "Ocorreu um erro");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
-    }
-    //[Jess - Entrega da Semana] -  interceptador para capturar os erros das anotações '@Valid' e retornar uma lista de qual/quais campos falhou/falharam
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> fieldErrors = new HashMap<>();
-        
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            fieldErrors.put(error.getField(), error.getDefaultMessage());
-        });
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Erro de Validação",
-                "Um ou mais campos estão inválidos. Por favor, verifique os detalhes.",
-                fieldErrors
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }

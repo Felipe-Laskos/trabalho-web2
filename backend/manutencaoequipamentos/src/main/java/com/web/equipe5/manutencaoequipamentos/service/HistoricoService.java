@@ -7,9 +7,7 @@ import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 @Service
 public class HistoricoService {
@@ -37,7 +35,7 @@ public class HistoricoService {
         repository.save(h);
     }
 
-    public Page<HistoricoSolicitacao> listarPorSolicitacao(Long id, Pageable pageable) {
-        return repository.findBySolicitacaoIdOrderByDataHoraAsc(id, pageable);
+    public List<HistoricoSolicitacao> listarPorSolicitacao(Long id) {
+        return repository.findBySolicitacaoIdOrderByDataHoraAsc(id);
     }
 }

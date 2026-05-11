@@ -17,8 +17,6 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @Service
 public class FuncionarioService {
@@ -33,10 +31,6 @@ public class FuncionarioService {
         this.repository = repository;
         this.hashService = hashService;
         this.emailService = emailService;
-    }
-
-    public Page<Funcionario> listarTodos(Pageable pageable) {
-        return repository.findAll(pageable);
     }
     
     public List<Funcionario> listarAtivos() {
@@ -95,7 +89,7 @@ public class FuncionarioService {
         Funcionario funcionario = FuncionarioMapper.toEntity(requisicao);
         funcionario.setSenha(hashHex);
         funcionario.setSalt(saltHex);
-        
+
         Funcionario salvo = repository.save(funcionario);
         emailService.enviarSenhaAutocadastro(salvo.getEmail(), salvo.getNome(), senhaBruta);
 

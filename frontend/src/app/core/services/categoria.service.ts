@@ -1,93 +1,60 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CategoriaEquipamento } from '../models/categoria.model';
+import { mockCategoria } from '../mocks/categoria.mock';
 import { ICategoriaService } from '../interfaces/categoria.service.interface';
-import { API_URL, defaultHttpOptions } from '../config/http.config';
-import { Observable } from 'rxjs/internal/Observable';
-import { catchError, map } from 'rxjs';
+
+const LS_CHAVE = "categorias";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoriaService implements ICategoriaService {
-  private apiUrl = `${API_URL}/categorias`;
 
-  constructor(private http: HttpClient) {}
-
-  listarTodos(): Observable<CategoriaEquipamento[]> {
-    return this.http.get<CategoriaEquipamento[]>(
-      this.apiUrl,
-      defaultHttpOptions
-    ).pipe(
-      map(response => response),
-      catchError(error => {
-        console.error('Erro ao listar categorias:', error);
-        throw error;
-      })
-    );
+  constructor(private http: HttpClient) {
+    if (!localStorage[LS_CHAVE]) {
+      localStorage[LS_CHAVE] = JSON.stringify(mockCategoria);
+    }
   }
 
-  listarAtivas(): Observable<CategoriaEquipamento[]> {
-    return this.http.get<CategoriaEquipamento[]>(
-      `${this.apiUrl}/ativas`,
-      defaultHttpOptions
-    ).pipe(
-      catchError(error => {
-        console.error('Erro ao listar categorias ativas:', error);
-        throw error;
-      })
-    );
+  listarTodos(): CategoriaEquipamento[] {
+    const categorias = localStorage[LS_CHAVE];
+    return categorias ? JSON.parse(categorias) : [];
   }
 
-  buscarPorId(id: number): Observable<CategoriaEquipamento | undefined> {
-    return this.http.get<CategoriaEquipamento>(
-    `${this.apiUrl}/${id}`,
-    defaultHttpOptions
-  ).pipe(
-    catchError(error => {
-      console.error(`Erro ao buscar categoria ${id}:`, error);
-      throw error;
-    })
-  );
-}
-
-  inserir(categoria: CategoriaEquipamento): Observable<CategoriaEquipamento> {
-    return this.http.post<CategoriaEquipamento>(
-      this.apiUrl,
-      categoria,
-      defaultHttpOptions    
-    ).pipe(
-      map(response => response),
-      catchError(error => {
-        console.error('Erro ao inserir categoria:', error);
-        throw error;
-      })
-    );
+  listarAtivas(): CategoriaEquipamento[] {
+    return this.listarTodos().filter(c => c.ativo === true);
   }
 
-  atualizar(categoria: CategoriaEquipamento): Observable<CategoriaEquipamento> {
-    return this.http.patch<CategoriaEquipamento>(
-      `${this.apiUrl}/${categoria.id}`,
-      categoria,
-      defaultHttpOptions
-    ).pipe(
-      map(response => response),
-      catchError(error => {
-        console.error('Erro ao atualizar categoria:', error);
-        throw error;
-      })
-    );
+  buscarPorId(id: number): CategoriaEquipamento | undefined {
+    const categorias = this.listarTodos();
+    return categorias.find(c => c.id === id);
   }
 
-  remover(id: number): Observable<CategoriaEquipamento> {
-    return this.http.delete<CategoriaEquipamento>(
-      `${this.apiUrl}/${id}`,
-      defaultHttpOptions
-    ).pipe(
-      catchError(error => {
-        console.error('Erro ao remover categoria:', error);
-        throw error;
-      })
-    );
+  inserir(categoria: CategoriaEquipamento): void {
+    const categorias = this.listarTodos();
+    const maiorId = categorias.length > 0 ? Math.max(...categorias.map(c => c.id || 0)) : 0;
+    categoria.id = maiorId + 1;
+    categorias.push(categoria);
+    localStorage[LS_CHAVE] = JSON.stringify(categorias);
+  }
+
+  atualizar(categoria: CategoriaEquipamento): void {
+    const categorias = this.listarTodos();
+    categorias.forEach((obj, index, objs) => {
+      if (categoria.id === obj.id) {
+        objs[index] = categoria;
+      }
+    });
+    localStorage[LS_CHAVE] = JSON.stringify(categorias);
+  }
+
+  remover(id: number): void {
+    const categorias = this.listarTodos();
+    const categoria = categorias.find(c => Number(c.id) === Number(id));
+    if (categoria) {
+      categoria.ativo = false;
+      localStorage[LS_CHAVE] = JSON.stringify(categorias);
+    }
   }
 }

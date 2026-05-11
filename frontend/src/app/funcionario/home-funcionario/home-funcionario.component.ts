@@ -8,7 +8,6 @@ import { TabelaComponent, ColunaTabela, AcaoTabela } from '../../shared/tabela/t
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { AuthService } from '../../core/services/auth.service';
-import { NotificationService } from '../../core/services/notification.service';
 
 
 @Component({
@@ -23,7 +22,6 @@ export class HomeFuncionarioComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private authService = inject(AuthService);
   private router = inject(Router);
-  private notificationService = inject(NotificationService);
 
   nomeFuncionario: string = '';
   solicitacoesAbertas: Solicitacao[] = [];
@@ -54,12 +52,15 @@ export class HomeFuncionarioComponent implements OnInit {
   }
   
   private carregarSolicitacoes(): void {
-        this.solicitacaoService.listarPorEstado(SolicitacaoENUM.ABERTA).subscribe({      next: (lista) => {
+    this.solicitacaoService.listarTodos().subscribe({
+      next: (lista) => {
         this.solicitacoesAbertas = lista
+      .filter(s => s.estadoAtual === SolicitacaoENUM.ABERTA)
       .sort((a, b) => new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime());
       },
-      error: (err) => {
-      this.notificationService.exibirErro(err);
+      //Trocar para abrir um modal de erro 
+      error: (erro) => {
+      console.error('Erro ao carregar solicitações', erro);
       }
     });
   }

@@ -12,8 +12,13 @@ import { TextAreaComponent } from '../../shared/text-area/text-area.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 import { CardVisualizacaoComponent } from "../../shared/card-visualizacao/card-visualizacao.component";
+import { Solicitacao } from '../../core/models/solicitacao.model';
+import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
+import { HistoricoService } from '../../core/services/historico.service';
 import { CategoriaService } from '../../core/services/categoria.service';
+import { ClienteService } from '../../core/services/cliente.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-solicitar-manutencao',
@@ -37,7 +42,10 @@ import { CategoriaService } from '../../core/services/categoria.service';
 export class SolicitarManutencaoComponent implements OnInit {
 
   private solicitacaoService = inject(SolicitacaoService);
+  private historicoService = inject(HistoricoService);
   private categoriaService = inject(CategoriaService);
+  private clienteService = inject(ClienteService);
+  private authService = inject(AuthService);
   private dialog = inject(MatDialog);
 
   categoriasLista: OpcaoCombo[] = [];
@@ -53,17 +61,10 @@ export class SolicitarManutencaoComponent implements OnInit {
   constructor(public router: Router, private aviso: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.categoriaService.listarAtivas().subscribe({
-      next: categorias => {
-        this.categoriasLista = categorias.map(c => ({
-          value: c.id!,
-          viewValue: c.nome
-        }));
-      },
-      error: () => {
-        this.aviso.open('Erro ao carregar categorias.', 'OK', { duration: 3000 });
-      }
-    });
+    this.categoriasLista = this.categoriaService.listarAtivas().map(c => ({
+      value: c.id!,
+      viewValue: c.nome
+    }));
   }
 
   solicitarManutencao(): void {
@@ -84,21 +85,37 @@ export class SolicitarManutencaoComponent implements OnInit {
       return;
     }
 
-    const novaSolicitacao = {
+    const emailLogado = this.authService.getEmail();
+    const clienteLogado = this.clienteService.buscarPorEmail(emailLogado);
+    const categoriaSelecionada = this.categoriaService.buscarPorId(Number(this.solicitacao.categoriaId));
+    
+    if (!categoriaSelecionada) {
+      this.aviso.open('Categoria inválida.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    const novaSolicitacao: Solicitacao = {
       descricaoEquipamento: this.solicitacao.modelo,
       descricaoDefeito: this.solicitacao.descricaoDefeito,
-      categoriaId: Number(this.solicitacao.categoriaId)
+      estadoAtual: SolicitacaoENUM.ABERTA,
+      dataHoraCriacao: new Date().toISOString(),
+      ativo: true,
+      cliente: clienteLogado,
+      categoria: categoriaSelecionada,
+      historico: []
     };
 
-    this.solicitacaoService.inserir(novaSolicitacao).subscribe({
-      next: () => {
-        this.aviso.open('Solicitação enviada com sucesso!', 'OK', { duration: 4000, verticalPosition: 'top' });
-        this.router.navigate(['/cliente']);
-      },
-      error: () => {
-        this.aviso.open('Erro ao enviar solicitação.', 'OK', { duration: 3000 });
-      }
+    this.solicitacaoService.inserir(novaSolicitacao);
+
+    this.historicoService.inserir({
+      dataHora: new Date().toISOString(),
+      estadoNovo: SolicitacaoENUM.ABERTA,
+      solicitacaoId: novaSolicitacao.id!,
+      observacao: 'Solicitação criada pelo cliente.'
     });
+
+    this.aviso.open('Solicitação enviada com sucesso!', 'OK', { duration: 4000, verticalPosition: 'top' });
+    this.router.navigate(['/cliente']);
   }
 
   confirmarCancelamento(): void {

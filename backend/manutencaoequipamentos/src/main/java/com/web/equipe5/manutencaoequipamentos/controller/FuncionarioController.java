@@ -5,20 +5,12 @@ import com.web.equipe5.manutencaoequipamentos.dto.response.FuncionarioResponseDT
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.service.FuncionarioService;
 
-import jakarta.validation.Valid;
-
-import com.web.equipe5.manutencaoequipamentos.mapper.FuncionarioMapper;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map; 
-import java.util.stream.Collectors;
 import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/funcionarios")
@@ -31,58 +23,48 @@ public class FuncionarioController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<FuncionarioResponseDTO>> listar(Pageable pageable) {
-        Page<Funcionario> lista = service.listarTodos(pageable);
-        Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @GetMapping("/ativos")
-    public ResponseEntity<List<FuncionarioResponseDTO>> listarAtivos() {
+    public ResponseEntity<List<Funcionario>> listar() {
         List<Funcionario> lista = service.listarAtivos();
-        List<FuncionarioResponseDTO> response = lista.stream()
-            .map(FuncionarioMapper::toDTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FuncionarioResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Funcionario> buscarPorId(@PathVariable Long id) {
         Funcionario fun = service.buscarPorId(id);  
-        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.ok(fun);
     }
     
     @GetMapping("/email/{email}")
-    public ResponseEntity<FuncionarioResponseDTO> buscarPorEmail(@PathVariable String email) {
+    public ResponseEntity<Funcionario> buscarPorEmail(@PathVariable String email) {
         Funcionario fun = service.buscarPorEmail(email);  
-        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.ok(fun);
     }
 
     @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<FuncionarioResponseDTO> buscarPorCpf(@PathVariable String cpf) {
+    public ResponseEntity<Funcionario> buscarPorCpf(@PathVariable String cpf) {
         Funcionario fun = service.buscarPorCpf(cpf); 
-        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.ok(fun);
     }
 
     @PostMapping
-    public ResponseEntity<FuncionarioResponseDTO> criar(@Valid @RequestBody FuncionarioRequestDTO requisicao) {
+    public ResponseEntity<FuncionarioResponseDTO> criar(@RequestBody FuncionarioRequestDTO requisicao) {
         FuncionarioResponseDTO novoFuncionario = service.salvar(requisicao);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoFuncionario);
     }
     
     @PatchMapping("/{id}")  
-    public ResponseEntity<FuncionarioResponseDTO> atualizarParcial(
+    public ResponseEntity<Funcionario> atualizarParcial(
             @PathVariable Long id, 
-            @Valid @RequestBody Map<String, Object> campos) {
+            @RequestBody Map<String, Object> campos) {
         Funcionario funcionarioAtualizado = service.atualizar(id, campos);
-        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(funcionarioAtualizado));
+        return ResponseEntity.ok(funcionarioAtualizado);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<FuncionarioResponseDTO> deletar(
-        @PathVariable Long id, 
+    public ResponseEntity<Funcionario> deletar(
+        @PathVariable Long id,
         @RequestHeader("funcionario-id") Long idFuncionarioLogado) {
         Funcionario fun = service.deletar(id, idFuncionarioLogado);  
-        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
+        return ResponseEntity.ok(fun);
     }
 }

@@ -5,12 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
+import { HistoricoService } from '../../core/services/historico.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
-import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-pagar-servico',
@@ -29,10 +29,10 @@ import { NotificationService } from '../../core/services/notification.service';
 })
 export class PagarServicoComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
+  private historicoService = inject(HistoricoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private aviso = inject(MatSnackBar);
-  private notificationService = inject(NotificationService);
 
   solicitacao: Solicitacao | undefined;
   dataHoraAcesso: Date = new Date();
@@ -54,18 +54,27 @@ export class PagarServicoComponent implements OnInit {
     if (this.solicitacao?.estadoAtual === SolicitacaoENUM.ARRUMADA) {
       this.exibirModalConfirmacao = true;
     } else {
-      this.aviso.open('O serviço ainda não está pronto para pagamento.', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top',
-      });
+      this.aviso.open(
+        'Esta solicitação não está pronta para pagamento!',
+        'OK',
+        { duration: 3000, verticalPosition: 'top' },
+      );
     }
   }
 
-    finalizarPagamento(): void {
-    if (this.solicitacao && this.solicitacao.id) {
-      const idSeguro = this.solicitacao.id;
+  finalizarPagamento(): void {
+    if (this.solicitacao) {
+      this.historicoService.inserir({
+        dataHora: new Date().toISOString(),
+        estadoAnterior: this.solicitacao.estadoAtual,
+        estadoNovo: SolicitacaoENUM.PAGA,
+        solicitacaoId: this.solicitacao.id!,
+        observacao: `Pagamento realizado. Valor: R$ ${this.solicitacao.valorOrcado?.toFixed(2)}`,
+      });
+      this.solicitacao.estadoAtual = SolicitacaoENUM.PAGA;
+      this.solicitacao.dataHoraPagamento = new Date().toISOString();
 
-      this.solicitacaoService.pagar(this.solicitacao.id).subscribe({ 
+      this.solicitacaoService.pagar(this.solicitacao.id!).subscribe({ 
         next: () => {
           this.exibirModalConfirmacao = false;
 
@@ -73,10 +82,14 @@ export class PagarServicoComponent implements OnInit {
             duration: 3000,
             verticalPosition: 'top',
           });
-          this.router.navigate(['/cliente/visualizar-servico', idSeguro]); 
+
+          this.router.navigate(['/cliente']);
         },
-        error: (err) => {
-          this.notificationService.exibirErro(err);
+        error: () => {
+          this.aviso.open('Erro ao finalizar pagamento!', 'OK', {
+            duration: 3000,
+            verticalPosition: 'top',
+          });
         },
       });
     }

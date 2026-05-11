@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { Funcionario } from '../../core/models/funcionario.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
@@ -52,6 +53,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
         this.solicitacao = res;
       },
       error: () => {
+        // Alterado para modal de erro
         const erroRef = this.dialog.open(ModalGenericoComponent, {
           data: {
             tipo: 'confirmacao',
@@ -68,30 +70,17 @@ export class RedirecionarManutencaoComponent implements OnInit {
       }
     });
 
+    this.funcionarios = this.funcionarioService.listarAtivos();
+
     const emailLogado = this.authService.getEmail();
+    const funcionarioLogado = this.funcionarioService.buscarPorEmail(emailLogado);
 
-    this.funcionarioService.listarAtivos().subscribe({
-      next: funcionarios => {
-        this.funcionarios = funcionarios;
-
-        this.funcionarioService.buscarPorEmail(emailLogado).subscribe({
-          next: funcionarioLogado => {
-            this.opcoesCombo = this.funcionarios
-              .filter(f => f.id !== funcionarioLogado?.id)
-              .map(f => ({
-                value: f.id!,
-                viewValue: f.nome
-              }));
-          },
-          error: () => {
-            this.opcoesCombo = this.funcionarios.map(f => ({
-              value: f.id!,
-              viewValue: f.nome
-            }));
-          }
-        });
-      }
-    });
+    this.opcoesCombo = this.funcionarios
+      .filter(f => f.id !== funcionarioLogado?.id)
+      .map(f => ({
+        value: f.id!,
+        viewValue: f.nome
+      }));
   }
 
   onFuncionarioSelecionado(valor: string | number): void {
@@ -100,15 +89,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
   redirecionarManutencao(): void {
     if (!this.solicitacao || !this.funcionarioSelecionadoId) {
-      this.dialog.open(ModalGenericoComponent, {
-        data: {
-          tipo: 'confirmacao',
-          titulo: 'Atenção',
-          mensagem: 'Selecione um funcionário para redirecionar.',
-          textoConfirmar: 'Ok',
-          textoCancelar: ''
-        } as ModalDados
-      });
+      alert('Selecione um funcionário para redirecionar.');
       return;
     }
 
@@ -126,6 +107,8 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmou => {
       if (!confirmou) return;
+
+      // Ajustado para consumir da API usando a assinatura ajustada
       this.solicitacaoService.redirecionar(
         this.solicitacao!.id!, 
         this.funcionarioSelecionadoId!

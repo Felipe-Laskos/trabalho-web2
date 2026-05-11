@@ -9,7 +9,6 @@ import { BotaoComponent } from '../../shared/botao/botao.component';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { HistoricoService } from '../../core/services/historico.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
-import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-visualizar-servico',
@@ -28,45 +27,24 @@ export class VisualizarServicoComponent implements OnInit {
   private router = inject(Router);
   private solicitacaoService = inject(SolicitacaoService);
   private historicoService = inject(HistoricoService);
-  private notificationService = inject(NotificationService);
 
   solicitacao: Solicitacao | undefined;
   historicoOrdenado: HistoricoSolicitacao[] = [];
-  carregamento = false;
-
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) return;
 
     const id = Number(idParam);
-    this.carregarDados(id);
-  }
-   
-  carregarDados(id: number): void {
-    this.carregamento = true;
-    this.solicitacaoService.buscarPorId(id).subscribe({
-      next: (solicitacao) => {
-        this.solicitacao = solicitacao;
-        if (this.solicitacao) {
-          this.buscarHistoricoReal(this.solicitacao.id!);
-        }
-        this.carregamento = false;
-      }, 
-      error: (err) => {
-        this.notificationService.exibirErro(err);
-        this.carregamento = false;
-      }
-    });
-  }
 
-  buscarHistoricoReal(solicitacaoId: number): void {
-    this.historicoService.listarPorSolicitacao(solicitacaoId).subscribe({
-      next: (historico) => {
-        this.historicoOrdenado = historico;
-      }, 
-      error: (err) => { 
-        this.notificationService.exibirErro(err);
+    this.solicitacaoService.buscarPorId(id).subscribe((solicitacao) => {
+      this.solicitacao = solicitacao;
+
+      //TODO: Ajustar historicoService para que se comunique com a API e traga os dados reais
+      if (this.solicitacao) {
+        this.historicoOrdenado = this.historicoService.listarPorSolicitacao(
+          this.solicitacao.id!,
+        );
       }
     });
   }
@@ -139,18 +117,25 @@ export class VisualizarServicoComponent implements OnInit {
   }
 
   resgatarServico(): void {
-    if (!this.solicitacao || !this.solicitacao.id) return;
-    this.carregamento = true;
+    if (!this.solicitacao) return;
 
-    this.solicitacaoService.resgatar(this.solicitacao.id).subscribe({
+    this.historicoService.inserir({
+      dataHora: new Date().toISOString(),
+      estadoAnterior: SolicitacaoENUM.REJEITADA,
+      estadoNovo: SolicitacaoENUM.APROVADA,
+      solicitacaoId: this.solicitacao.id!,
+      observacao: 'Serviço resgatado pelo cliente.',
+    });
+
+    this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
+
+    this.solicitacaoService.resgatar(this.solicitacao.id!).subscribe({
       next: () => {
-        this.notificationService.exibirSucesso('Serviço resgatado com sucesso!');
-        this.carregarDados(this.solicitacao!.id!);
+        this.historicoOrdenado = this.historicoService.listarPorSolicitacao(
+          this.solicitacao!.id!,
+        );
       },
-      error: (err) => {
-        this.notificationService.exibirErro(err);
-        this.carregamento = false;
-      }
+      //TODO: Ajustar para que mostre um modal de erro
     });
   }
 
@@ -179,7 +164,6 @@ export class VisualizarServicoComponent implements OnInit {
       this.solicitacao.estadoAtual as SolicitacaoENUM,
     );
   }
-
 
   voltar(): void {
     this.router.navigate(['/cliente']);

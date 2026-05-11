@@ -10,7 +10,6 @@ import { TabelaComponent, ColunaTabela } from '../../shared/tabela/tabela.compon
 import { CardInfoComponent } from '../../shared/card-info/card-info.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { MatIcon } from '@angular/material/icon';
-import { NotificationService } from '../../core/services/notification.service';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -39,7 +38,6 @@ export interface ReceitaDia {
 export class RelatorioCategoriasComponent implements OnInit {
 
   private solicitacaoService = inject(SolicitacaoService);
-  private notificationService = inject(NotificationService);
 
   categoria: string = '';
   receitasPorCategoria: any[] = [];
@@ -75,6 +73,8 @@ export class RelatorioCategoriasComponent implements OnInit {
   this.paginaAtual = 1;
   
 
+  //ALTEREI A PARTIR DAQUI - TODO O CÓDIGO DE FILTRAGEM, AGRUPAMENTO E TRANSFORMAÇÃO FICOU DENTRO DO "next" DA INSCRIÇÃO DO SERVICE E ACEITA OBSERVABLE
+
   this.solicitacaoService.listarTodos().subscribe({
       next: (solicitacoes: Solicitacao[]) => {
         
@@ -85,14 +85,14 @@ export class RelatorioCategoriasComponent implements OnInit {
 
         if (this.categoria) {
           pagas = pagas.filter((s: Solicitacao) => 
-            s.categoriaEquipamento?.nome.toLowerCase().includes(this.categoria.toLowerCase())
+            s.categoria?.nome.toLowerCase().includes(this.categoria.toLowerCase())
           );
         }
         
         const agrupado: Record<string, { quantidade: number; total: number }> = {};
 
         pagas.forEach((s: Solicitacao) => {
-          const nomeCategoria = s.categoriaEquipamento?.nome || 'Sem Categoria';
+          const nomeCategoria = s.categoria?.nome || 'Sem Categoria';
 
           if (!agrupado[nomeCategoria]) {
             agrupado[nomeCategoria] = { quantidade: 0, total: 0 };
@@ -114,7 +114,7 @@ export class RelatorioCategoriasComponent implements OnInit {
         this.quantidadeTotal = this.receitasPorCategoria.reduce((acc, r) => acc + r.quantidade, 0);
       },
       error: (err) => {
-        this.notificationService.exibirErro(err);
+        console.error('Erro ao carregar relatório de categorias:', err);
       }
     });
   }

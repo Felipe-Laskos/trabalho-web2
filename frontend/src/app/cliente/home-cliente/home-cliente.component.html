@@ -26,13 +26,6 @@
       </app-botao-aprovar>
     </div>
 
-    <div class="estado-carregamento" *ngIf="carregamento" style="text-align: center; padding: 40px; color: #666;">
-      <mat-icon style="animation: spin 1s linear infinite;">autorenew</mat-icon>
-      <p>Carregando solicitações...</p>
-    </div>
-
-    <ng-container *ngIf="!carregamento">
-
     <app-tabela 
       [dados]="dadosExibidos" 
       [colunas]="colunasTabela"
@@ -53,6 +46,5 @@
         (paginaChange)="aoMudarPagina($event)">
       </app-paginacao>
     </div>
-    </ng-container>
   </app-card-visualizacao>
 </div>

@@ -1,24 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { HistoricoSolicitacao } from '../models/historico.model';
-import { API_URL, defaultHttpOptions } from '../config/http.config';
+import { mockHistoricoSolicitacao } from '../mocks/historico.mock';
 import { IHistoricoService } from '../interfaces/historico.service.interface';
+
+const LS_CHAVE = "historicos";
 
 @Injectable({
   providedIn: 'root'
 })
 export class HistoricoService implements IHistoricoService {
-  private base = `${API_URL}/historicos`; 
 
-  constructor(private http: HttpClient) { }
- 
-  //TODO: remover esta função: histórico só é exposto na hora de visualizar solicitação (via listarPorSolicitacao)
-  listarTodos(): Observable<HistoricoSolicitacao[]> {
-    return this.http.get<HistoricoSolicitacao[]>(`${this.base}/historico`, defaultHttpOptions);
+  constructor(private http: HttpClient) {
+    if (!localStorage[LS_CHAVE]) {
+      localStorage[LS_CHAVE] = JSON.stringify(mockHistoricoSolicitacao);
+    }
   }
 
-  listarPorSolicitacao(solicitacaoId: number): Observable<HistoricoSolicitacao[]> {
-   return this.http.get<HistoricoSolicitacao[]>(`${API_URL}/solicitacoes/${solicitacaoId}/historico`, defaultHttpOptions);
+  listarTodos(): HistoricoSolicitacao[] {
+    const historicos = localStorage[LS_CHAVE];
+    return historicos ? JSON.parse(historicos) : [];
+  }
+
+  listarPorSolicitacao(solicitacaoId: number): HistoricoSolicitacao[] {
+    return this.listarTodos()
+      .filter(h => h.solicitacaoId === solicitacaoId)
+      .sort((a, b) => new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime());
+  }
+
+  inserir(historico: HistoricoSolicitacao): void {
+    const historicos = this.listarTodos();
+    historico.id = new Date().getTime();
+    historicos.push(historico);
+    localStorage[LS_CHAVE] = JSON.stringify(historicos);
   }
 }

@@ -10,9 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 @Service
 public class CategoriaEquipamentoService {
     private final CategoriaRepository repository;
@@ -21,17 +18,8 @@ public class CategoriaEquipamentoService {
         this.repository = repository;
     } 
 
-    public Page<CategoriaEquipamento> listarTodas(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
     public List<CategoriaEquipamento> listarAtivas() {
         return repository.findByAtivoTrue();
-    }
-
-    public CategoriaEquipamento buscarPorId(Long id) {
-        return repository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com ID: " + id));
     }
 
     public CategoriaEquipamento salvar(CategoriaEquipamento categoria) {

@@ -18,7 +18,9 @@ import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-v
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
+import { HistoricoService } from '../../core/services/historico.service';
 import { AuthService } from '../../core/services/auth.service';
+import { FuncionarioService } from '../../core/services/funcionario.service';
 
 @Component({
   selector: 'app-visualizar-solicitacoes',
@@ -36,7 +38,9 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class VisualizarSolicitacoesComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
+  private historicoService = inject(HistoricoService);
   private authService = inject(AuthService);
+  private funcionarioService = inject(FuncionarioService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
@@ -72,19 +76,19 @@ export class VisualizarSolicitacoesComponent implements OnInit {
       nome: 'Efetuar Orçamento',
       acao: 'orcamento',
       cor: 'primary',
-      estados: [SolicitacaoENUM.ABERTA],
+      estados: ['ABERTA'],
     },
     {
       nome: 'Efetuar Manutenção',
       acao: 'manutencao',
       cor: 'accent',
-      estados: [SolicitacaoENUM.APROVADA, SolicitacaoENUM.REDIRECIONADA],
+      estados: ['APROVADA', 'REDIRECIONADA'],
     },
     {
       nome: 'Finalizar Solicitação',
       acao: 'finalizar',
       cor: 'warn',
-      estados: [SolicitacaoENUM.PAGA],
+      estados: ['PAGA'],
     },
   ];
 
@@ -93,28 +97,24 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarSolicitacoes();
+    this.aplicarFiltros();
   }
 
-  carregarSolicitacoes(): void {
+  private carregarSolicitacoes(): void {
     this.solicitacaoService.listarTodos().subscribe({
-      next: (dados) => {
-        this.solicitacoes = dados;
-        this.aplicarFiltros();
+      next: (dadosQueChegaram) => {
+        this.solicitacoes = dadosQueChegaram;
       },
       error: (erro) => {
-        this.dialog.open(ModalGenericoComponent, {
-          data: {
-            titulo: 'Erro',
-            mensagem: erro?.error?.message || 'Não foi possível carregar as solicitações.',
-            textoConfirmar: 'OK',
-            textoCancelar: ''
-          }
-        });
-      }
+        console.error('Erro ao buscar a lista de solicitações:', erro);
+      },
     });
   }
+
   getFuncionarioLogadoId(): number | undefined {
-    return this.authService.getId();
+    const email = this.authService.getEmail();
+    const funcionario = this.funcionarioService.buscarPorEmail(email);
+    return funcionario?.id;
   }
 
   onAcaoTabela(event: any) {
@@ -145,19 +145,29 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((confirmado) => {
           if (confirmado && item) {
+            const funcionarioLogado = this.funcionarioService.buscarPorEmail(
+              this.authService.getEmail(),
+            );
 
-
-            this.solicitacaoService.finalizar(item.id!).subscribe({
-              next: (solicitacaoAtualizada) => {
-                item.estadoAtual = solicitacaoAtualizada.estadoAtual;
-                item.dataHoraFinalizacao = solicitacaoAtualizada.dataHoraFinalizacao;
-                item.funcionarioResponsavel = solicitacaoAtualizada.funcionarioResponsavel;
-                this.carregarSolicitacoes();
-              },
-              error: (erro) => {
-                console.error('Erro ao finalizar solicitação', erro);
-              }
+            this.historicoService.inserir({
+              dataHora: new Date().toISOString(),
+              estadoAnterior: item.estadoAtual,
+              estadoNovo: SolicitacaoENUM.FINALIZADA,
+              solicitacaoId: item.id!,
+              funcionario: funcionarioLogado,
+              observacao: 'Solicitação finalizada pelo funcionário.',
             });
+
+            item.estadoAtual = SolicitacaoENUM.FINALIZADA;
+            item.dataHoraFinalizacao = new Date().toISOString();
+            item.funcionarioResponsavel = {
+              id: funcionarioLogado?.id,
+              nome: this.authService.getNome(),
+            };
+
+            this.solicitacaoService.atualizar(item);
+            this.carregarSolicitacoes();
+            this.aplicarFiltros();
           }
         });
         break;
@@ -166,6 +176,12 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   onFiltroChange(valor: string | number) {
     this.filtro = valor as 'TODAS' | 'HOJE' | 'PERIODO';
+
+    if (this.filtro !== 'PERIODO') {
+      this.dataInicio = undefined;
+      this.dataFim = undefined;
+    }
+
     this.aplicarFiltros();
   }
 
@@ -174,13 +190,12 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     let lista = [...this.solicitacoes];
     const hoje = new Date();
 
-  lista = lista.filter((s) => {
-    if (s.estadoAtual === SolicitacaoENUM.REDIRECIONADA) {
-      return s.funcionarioResponsavel?.id === funcionarioLogadoId;
-    }
-
-  return true;
-});
+    lista = lista.filter((s) => {
+      if (s.estadoAtual === 'REDIRECIONADA') {
+        return s.funcionarioResponsavel?.id === funcionarioLogadoId;
+      }
+      return true;
+    });
 
     if (this.filtro === 'HOJE') {
       lista = lista.filter((s) => {
