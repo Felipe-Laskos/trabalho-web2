@@ -118,13 +118,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     });
   }
   getFuncionarioLogadoId(): number | undefined {
-    const id = this.authService.getId();
-    if (id) {
-      return id;
-    }
-    const email = this.authService.getEmail();
-    const funcionario = this.funcionarioService.buscarPorEmail(email);
-    return funcionario?.id;
+    return this.authService.getId();
   }
 
   onAcaoTabela(event: any) {

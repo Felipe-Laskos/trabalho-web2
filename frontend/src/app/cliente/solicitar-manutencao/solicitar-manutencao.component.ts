@@ -61,10 +61,17 @@ export class SolicitarManutencaoComponent implements OnInit {
   constructor(public router: Router, private aviso: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.categoriasLista = this.categoriaService.listarAtivas().map(c => ({
-      value: c.id!,
-      viewValue: c.nome
-    }));
+    this.categoriaService.listarAtivas().subscribe({
+      next: categorias => {
+        this.categoriasLista = categorias.map(c => ({
+          value: c.id!,
+          viewValue: c.nome
+        }));
+      },
+      error: () => {
+        this.aviso.open('Erro ao carregar categorias.', 'OK', { duration: 3000 });
+      }
+    });
   }
 
   solicitarManutencao(): void {
@@ -87,35 +94,48 @@ export class SolicitarManutencaoComponent implements OnInit {
 
     const emailLogado = this.authService.getEmail();
     const clienteLogado = this.clienteService.buscarPorEmail(emailLogado);
-    const categoriaSelecionada = this.categoriaService.buscarPorId(Number(this.solicitacao.categoriaId));
-    
-    if (!categoriaSelecionada) {
-      this.aviso.open('Categoria inválida.', 'OK', { duration: 3000 });
-      return;
-    }
 
-    const novaSolicitacao: Solicitacao = {
-      descricaoEquipamento: this.solicitacao.modelo,
-      descricaoDefeito: this.solicitacao.descricaoDefeito,
-      estadoAtual: SolicitacaoENUM.ABERTA,
-      dataHoraCriacao: new Date().toISOString(),
-      ativo: true,
-      cliente: clienteLogado,
-      categoriaEquipamento: categoriaSelecionada,
-      historico: []
-    };
+    this.categoriaService.buscarPorId(Number(this.solicitacao.categoriaId)).subscribe({
+      next: categoriaSelecionada => {
+        if (!categoriaSelecionada) {
+          this.aviso.open('Categoria inválida.', 'OK', { duration: 3000 });
+          return;
+        }
 
-    this.solicitacaoService.inserir(novaSolicitacao);
+        const novaSolicitacao: Solicitacao = {
+          descricaoEquipamento: this.solicitacao.modelo,
+          descricaoDefeito: this.solicitacao.descricaoDefeito,
+          estadoAtual: SolicitacaoENUM.ABERTA,
+          dataHoraCriacao: new Date().toISOString(),
+          ativo: true,
+          cliente: clienteLogado,
+          categoriaEquipamento: categoriaSelecionada,
+          historico: []
+        };
 
-    this.historicoService.inserir({
-      dataHora: new Date().toISOString(),
-      estadoNovo: SolicitacaoENUM.ABERTA,
-      solicitacaoId: novaSolicitacao.id!,
-      observacao: 'Solicitação criada pelo cliente.'
+        this.solicitacaoService.inserir(novaSolicitacao).subscribe({
+          next: solicitacaoCriada => {
+            if (solicitacaoCriada.id) {
+              this.historicoService.inserir({
+                dataHora: new Date().toISOString(),
+                estadoNovo: SolicitacaoENUM.ABERTA,
+                solicitacaoId: solicitacaoCriada.id,
+                observacao: 'Solicitação criada pelo cliente.'
+              }).subscribe();
+            }
+
+            this.aviso.open('Solicitação enviada com sucesso!', 'OK', { duration: 4000, verticalPosition: 'top' });
+            this.router.navigate(['/cliente']);
+          },
+          error: () => {
+            this.aviso.open('Erro ao enviar solicitação.', 'OK', { duration: 3000 });
+          }
+        });
+      },
+      error: () => {
+        this.aviso.open('Categoria inválida.', 'OK', { duration: 3000 });
+      }
     });
-
-    this.aviso.open('Solicitação enviada com sucesso!', 'OK', { duration: 4000, verticalPosition: 'top' });
-    this.router.navigate(['/cliente']);
   }
 
   confirmarCancelamento(): void {

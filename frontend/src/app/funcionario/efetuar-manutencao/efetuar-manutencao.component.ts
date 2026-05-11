@@ -100,8 +100,10 @@ export class EfetuarManutencaoComponent implements OnInit {
 
   confirmarManutencao(): void {
     const dados = this.form.value;
+    const descricao = dados.descricao;
+    const orientacoes = dados.orientacoes;
 
-    if (!dados.descricao || !dados.orientacoes) {
+    if (!descricao || !orientacoes) {
       this.aviso.open('Preencha todos os campos!', 'OK', {
         duration: 3000,
         verticalPosition: 'top',
@@ -112,42 +114,46 @@ export class EfetuarManutencaoComponent implements OnInit {
     if (!this.solicitacao) return;
 
     const emailLogado = this.authService.getEmail();
-    const funcionarioLogado =
-      this.funcionarioService.buscarPorEmail(emailLogado);
+    this.funcionarioService.buscarPorEmail(emailLogado).subscribe({
+      next: funcionarioLogado => {
+        this.historicoService.inserir({
+          dataHora: new Date().toISOString(),
+          estadoAnterior: this.solicitacao!.estadoAtual,
+          estadoNovo: SolicitacaoENUM.ARRUMADA,
+          solicitacaoId: this.solicitacao!.id!,
+          funcionario: funcionarioLogado,
+          observacao: `Manutenção realizada. Descrição: ${descricao}`,
+        }).subscribe();
 
-    this.historicoService.inserir({
-      dataHora: new Date().toISOString(),
-      estadoAnterior: this.solicitacao.estadoAtual,
-      estadoNovo: SolicitacaoENUM.ARRUMADA,
-      solicitacaoId: this.solicitacao.id!,
-      funcionario: funcionarioLogado,
-      observacao: `Manutenção realizada. Descrição: ${dados.descricao}`,
-    });
+        this.solicitacao!.estadoAtual = SolicitacaoENUM.ARRUMADA;
+        this.solicitacao!.descricaoManutencao = descricao;
+        this.solicitacao!.orientacoesCliente = orientacoes;
+        this.solicitacao!.funcionarioResponsavel = funcionarioLogado;
 
-    this.solicitacao.estadoAtual = SolicitacaoENUM.ARRUMADA;
-    this.solicitacao.descricaoManutencao = dados.descricao;
-    this.solicitacao.orientacoesCliente = dados.orientacoes;
-    this.solicitacao.funcionarioResponsavel = funcionarioLogado;
+        this.solicitacaoService.efetuarManutencao(this.solicitacao!.id!, {
+          descricaoManutencao: descricao,
+          orientacoesCliente: orientacoes,
+        }).subscribe({
+          next: () => {
+            this.form.reset();
+            this.exibirModal = false;
+            this.estadoModal = 'confirmacao';
+            this.mostrarFormulario = false;
+            this.exibirToastSucesso = true;
 
-    this.solicitacaoService.efetuarManutencao(this.solicitacao.id!, {
-      descricaoManutencao: dados.descricao,
-      orientacoesCliente: dados.orientacoes,
-    }).subscribe({
-      next: () => {
-        this.form.reset();
-        this.exibirModal = false;
-        this.estadoModal = 'confirmacao';
-        this.mostrarFormulario = false;
-        this.exibirToastSucesso = true;
-
-        setTimeout(() => {
-          this.exibirToastSucesso = false;
-          this.router.navigate(['/funcionario/visualizar-solicitacoes']);
-        }, 2500);
+            setTimeout(() => {
+              this.exibirToastSucesso = false;
+              this.router.navigate(['/funcionario/visualizar-solicitacoes']);
+            }, 2500);
+          },
+          error: (err) => {
+            this.notificationService.exibirErro(err);
+          },
+        });
       },
       error: (err) => {
         this.notificationService.exibirErro(err);
-      },
+      }
     });
   }
 
