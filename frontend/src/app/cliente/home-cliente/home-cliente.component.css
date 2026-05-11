@@ -101,3 +101,132 @@
     align-items: stretch;
   }
 }
+
+.card-resumo {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card-resumo-titulo {
+  color: #24808f;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-resumo-valor {
+  color: #0d47a1;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.painel-info-cliente {
+  background-color: #f5fafa;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border-left: 4px solid #24808f;
+}
+
+.painel-info-cliente-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.painel-info-cliente-acao {
+  background: transparent;
+  border: 1px solid #24808f;
+  color: #24808f;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.painel-info-cliente-acao:hover {
+  background-color: #24808f;
+  color: #ffffff;
+}
+
+.lista-acoes-rapidas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lista-acoes-rapidas-item {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.lista-acoes-rapidas-item:hover {
+  border-color: #0d47a1;
+}
+
+.botao-flutuante-novo {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #24808f;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(36, 128, 143, 0.4);
+}
+
+.botao-flutuante-novo:hover {
+  background-color: #1a5e69;
+}
+
+.selo-prioridade {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.selo-prioridade-alta {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.selo-prioridade-baixa {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.mensagem-vazia-custom {
+  background-color: #fafafa;
+  border: 2px dashed #cccccc;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  color: #888888;
+  font-size: 14px;
+  margin: 30px 0;
+}
