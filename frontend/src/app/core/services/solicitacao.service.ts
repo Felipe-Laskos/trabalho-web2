@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface';
-import { Solicitacao } from '../models/solicitacao.model';
+import { Solicitacao, SolicitacaoCreateRequest } from '../models/solicitacao.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { SolicitacaoENUM } from '../models/solicitacaoENUM.model';
 
@@ -22,7 +22,7 @@ export class SolicitacaoService implements ISolicitacaoService {
     return this.http.get<Solicitacao>(`${this.base}/${id}`, defaultHttpOptions);
   }
 
-  inserir(solicitacao: Solicitacao): Observable<Solicitacao> {
+  inserir(solicitacao: SolicitacaoCreateRequest): Observable<Solicitacao> {
     return this.http.post<Solicitacao>(this.base, solicitacao, defaultHttpOptions);
   }
 

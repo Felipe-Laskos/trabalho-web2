@@ -18,9 +18,7 @@ import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-v
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
-import { HistoricoService } from '../../core/services/historico.service';
 import { AuthService } from '../../core/services/auth.service';
-import { FuncionarioService } from '../../core/services/funcionario.service';
 
 @Component({
   selector: 'app-visualizar-solicitacoes',
@@ -38,9 +36,7 @@ import { FuncionarioService } from '../../core/services/funcionario.service';
 })
 export class VisualizarSolicitacoesComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
-  private historicoService = inject(HistoricoService);
   private authService = inject(AuthService);
-  private funcionarioService = inject(FuncionarioService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
 

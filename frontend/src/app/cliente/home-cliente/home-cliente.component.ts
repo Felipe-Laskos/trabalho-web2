@@ -11,7 +11,6 @@ import { TabelaComponent, AcaoTabela, EventoAcao, ColunaTabela } from "../../sha
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
-import { HistoricoService } from '../../core/services/historico.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 
@@ -33,7 +32,6 @@ import { NotificationService } from '../../core/services/notification.service';
 })
 export class HomeClienteComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
-  private historicoService = inject(HistoricoService);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
 
@@ -138,15 +136,6 @@ export class HomeClienteComponent implements OnInit {
 
   resgatar(item: Solicitacao) {
     if (confirm(`Deseja resgatar a solicitação do equipamento: ${item.descricaoEquipamento}?`)) {
-      this.historicoService.inserir({
-        dataHora: new Date().toISOString(),
-        estadoAnterior: item.estadoAtual,
-        estadoNovo: SolicitacaoENUM.APROVADA,
-        solicitacaoId: item.id!,
-        observacao: 'Solicitação resgatada pelo cliente.'
-      });
-      item.estadoAtual = SolicitacaoENUM.APROVADA;
-
       this.carregamento = true;
 
       this.solicitacaoService.resgatar(item.id!).subscribe({
