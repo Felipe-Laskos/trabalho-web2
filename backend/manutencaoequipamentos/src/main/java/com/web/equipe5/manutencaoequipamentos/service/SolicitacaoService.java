@@ -16,8 +16,11 @@ import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalTime;
 
 
 @Service
@@ -268,6 +271,24 @@ public class SolicitacaoService {
         // TODO: Usar HistoricoService para registrar que o funcionário finalizou a solicitação
 
         return repository.save(s);
+    }
+
+    //Adicionando Paginação de Filtros
+    public Page<Solicitacao> listarComFiltros(String filtro, LocalDate dataInicio, LocalDate dataFim, Pageable pageable) {
+        
+        if ("HOJE".equalsIgnoreCase(filtro)) {
+            LocalDateTime inicioHoje = LocalDate.now().atStartOfDay();
+            LocalDateTime fimHoje = LocalDate.now().atTime(LocalTime.MAX);
+            return solicitacaoRepository.findByDataHoraCriacaoBetween(inicioHoje, fimHoje, pageable);
+        } 
+        else if ("PERIODO".equalsIgnoreCase(filtro) && dataInicio != null && dataFim != null) {
+            LocalDateTime inicio = dataInicio.atStartOfDay();
+            LocalDateTime fim = dataFim.atTime(LocalTime.MAX);
+            return solicitacaoRepository.findByDataHoraCriacaoBetween(inicio, fim, pageable);
+        }
+        
+        // Se for "TODAS" ou se os parâmetros de data do período vierem nulos
+        return solicitacaoRepository.findAll(pageable);
     }
 
 }

@@ -1,8 +1,13 @@
 import { Observable } from "rxjs";
 import { Solicitacao } from "../models/solicitacao.model";
+import { Page } from "../dto/page.dto";
 
 export interface ISolicitacaoService {
-  listarTodos(): Observable<Solicitacao[]>;
+  
+  // Atualizado para receber parâmetros de página e retornar Page<> em vez de array puro
+  listarTodos(page?: number, size?: number): Observable<Page<Solicitacao>>;
+  // Novo endpoint filtros com paginação
+  listarComFiltros(filtro: string, dataInicio?: string, dataFim?: string, page?: number, size?: number): Observable<Page<Solicitacao>>;
   buscarPorId(id: number): Observable<Solicitacao>;
   inserir(solicitacao: Solicitacao): Observable<Solicitacao>;
   atualizar(solicitacao: Solicitacao): Observable<Solicitacao>;

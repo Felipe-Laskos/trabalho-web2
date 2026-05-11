@@ -1,11 +1,13 @@
 package com.web.equipe5.manutencaoequipamentos.repository;
 
 import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
-
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
+import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorDiaProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> {
 
@@ -22,4 +24,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     List<ReceitaPorDiaProjection> findReceitasAgrupadasPorDia(
             @Param("inicio") LocalDateTime inicio, 
             @Param("fim") LocalDateTime fim);
+
+    //Endpoint de Filtros adicionando paginação
+    Page<Solicitacao> findByDataHoraCriacaoBetween(LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
 }
