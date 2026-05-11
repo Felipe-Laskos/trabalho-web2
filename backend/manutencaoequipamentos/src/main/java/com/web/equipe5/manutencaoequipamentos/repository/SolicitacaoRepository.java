@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> {
 
-    List<Solicitacao> findByClienteId(Long clienteId);
+    Page<Solicitacao> findByClienteId(Long clienteId, Pageable pageable);
 
     Page<Solicitacao> findByEstadoAtual(EstadoSolicitacao estadoAtual, Pageable pageable);
     Page<Solicitacao> findAllByOrderByDataHoraCriacaoAsc(Pageable pageable);

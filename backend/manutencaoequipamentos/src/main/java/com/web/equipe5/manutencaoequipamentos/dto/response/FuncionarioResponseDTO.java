@@ -9,7 +9,8 @@ public record FuncionarioResponseDTO(
     String cpf,
     String email,
     LocalDate dataNascimento,
-    String cargo
+    String cargo,
+    Boolean ativo
 ) {
     public FuncionarioResponseDTO(Funcionario f) {
         this(
@@ -18,8 +19,8 @@ public record FuncionarioResponseDTO(
             f.getCpf(),
             f.getEmail() != null ? f.getEmail() : null,
             f.getDataNascimento(),
-            f.getCargo() != null ? f.getCargo() : null
+            f.getCargo() != null ? f.getCargo() : null,
+            f.getAtivo()
         );
     }
-} 
-        
+}

@@ -1,5 +1,7 @@
 package com.web.equipe5.manutencaoequipamentos.controller;
 
+import com.web.equipe5.manutencaoequipamentos.dto.request.CategoriaEquipamentoRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.request.CategoriaEquipamentoUpdateRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.CategoriaEquipamentoResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.mapper.CategoriaEquipamentoMapper;
 import com.web.equipe5.manutencaoequipamentos.model.CategoriaEquipamento;
@@ -9,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.List;
 import jakarta.validation.Valid;
@@ -52,7 +53,7 @@ public class CategoriaEquipamentoController {
     
     @PostMapping
     public ResponseEntity<CategoriaEquipamentoResponseDTO> criar(
-        @Valid @RequestBody CategoriaEquipamento requisicao) {
+        @Valid @RequestBody CategoriaEquipamentoRequestDTO requisicao) {
         CategoriaEquipamento novaCategoria = service.salvar(requisicao);
         return ResponseEntity.status(HttpStatus.CREATED).body(CategoriaEquipamentoMapper.toDTO(novaCategoria));
     }
@@ -60,8 +61,8 @@ public class CategoriaEquipamentoController {
     @PatchMapping("/{id}")
     public ResponseEntity<CategoriaEquipamentoResponseDTO> atualizar(
             @PathVariable Long id, 
-            @Valid @RequestBody Map<String, Object> campos) {
-        CategoriaEquipamento categoriaAtualizada = service.atualizar(id, campos);
+            @Valid @RequestBody CategoriaEquipamentoUpdateRequestDTO requisicao) {
+        CategoriaEquipamento categoriaAtualizada = service.atualizar(id, requisicao);
         return ResponseEntity.status(HttpStatus.OK).body(CategoriaEquipamentoMapper.toDTO(categoriaAtualizada));
     }
 
