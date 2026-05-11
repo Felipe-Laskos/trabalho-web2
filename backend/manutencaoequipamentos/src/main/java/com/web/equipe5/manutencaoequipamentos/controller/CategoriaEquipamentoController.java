@@ -52,7 +52,7 @@ public class CategoriaEquipamentoController {
     
     @PostMapping
     public ResponseEntity<CategoriaEquipamentoResponseDTO> criar(
-        @RequestBody CategoriaEquipamento requisicao) {
+        @Valid @RequestBody CategoriaEquipamento requisicao) {
         CategoriaEquipamento novaCategoria = service.salvar(requisicao);
         return ResponseEntity.status(HttpStatus.CREATED).body(CategoriaEquipamentoMapper.toDTO(novaCategoria));
     }
@@ -60,7 +60,7 @@ public class CategoriaEquipamentoController {
     @PatchMapping("/{id}")
     public ResponseEntity<CategoriaEquipamentoResponseDTO> atualizar(
             @PathVariable Long id, 
-            @RequestBody Map<String, Object> campos) {
+            @Valid @RequestBody Map<String, Object> campos) {
         CategoriaEquipamento categoriaAtualizada = service.atualizar(id, campos);
         return ResponseEntity.status(HttpStatus.OK).body(CategoriaEquipamentoMapper.toDTO(categoriaAtualizada));
     }

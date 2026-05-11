@@ -46,7 +46,11 @@ export class CrudCategoriaComponent implements OnInit {
   }
 
   private carregarDados(): void {
-    this.dados = this.categoriaService.listarTodos();
+    this.categoriaService.listarTodos().subscribe({
+      next: categorias => {
+        this.dados = categorias;
+      }
+    });
   }
 
   selecionarPagina(pagina: number): void {
@@ -106,8 +110,7 @@ export class CrudCategoriaComponent implements OnInit {
           ...result,
           ativo: true
         };
-        this.categoriaService.inserir(nova);
-        this.carregarDados();
+        this.categoriaService.inserir(nova).subscribe(() => this.carregarDados());
       }
     });
   }
@@ -133,9 +136,10 @@ export class CrudCategoriaComponent implements OnInit {
           ...result,
           ativo: true
         };
-        this.categoriaService.atualizar(atualizada);
-        this.carregarDados();
-        this.categoriaSelecionada = undefined;
+        this.categoriaService.atualizar(atualizada).subscribe(() => {
+          this.carregarDados();
+          this.categoriaSelecionada = undefined;
+        });
       }
     });
   }
@@ -157,9 +161,10 @@ export class CrudCategoriaComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        this.categoriaService.remover(categoria.id!);
-        this.carregarDados();
-        this.categoriaSelecionada = undefined;
+        this.categoriaService.remover(categoria.id!).subscribe(() => {
+          this.carregarDados();
+          this.categoriaSelecionada = undefined;
+        });
       }
     });
   }

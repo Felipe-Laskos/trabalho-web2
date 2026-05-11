@@ -4,6 +4,9 @@ import com.web.equipe5.manutencaoequipamentos.dto.request.FuncionarioRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.FuncionarioResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.service.FuncionarioService;
+
+import jakarta.validation.Valid;
+
 import com.web.equipe5.manutencaoequipamentos.mapper.FuncionarioMapper;
 
 import org.springframework.http.HttpStatus;
@@ -62,7 +65,7 @@ public class FuncionarioController {
     }
 
     @PostMapping
-    public ResponseEntity<FuncionarioResponseDTO> criar(@RequestBody FuncionarioRequestDTO requisicao) {
+    public ResponseEntity<FuncionarioResponseDTO> criar(@Valid @RequestBody FuncionarioRequestDTO requisicao) {
         FuncionarioResponseDTO novoFuncionario = service.salvar(requisicao);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoFuncionario);
     }
@@ -70,7 +73,7 @@ public class FuncionarioController {
     @PatchMapping("/{id}")  
     public ResponseEntity<FuncionarioResponseDTO> atualizarParcial(
             @PathVariable Long id, 
-            @RequestBody Map<String, Object> campos) {
+            @Valid @RequestBody Map<String, Object> campos) {
         Funcionario funcionarioAtualizado = service.atualizar(id, campos);
         return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(funcionarioAtualizado));
     }

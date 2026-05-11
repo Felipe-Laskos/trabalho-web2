@@ -59,7 +59,11 @@ export class CrudFuncionariosComponent implements OnInit {
   }
 
   private carregarDados(): void {
-    this.dados = this.funcionarioService.listarTodos();
+    this.funcionarioService.listarTodos().subscribe({
+      next: funcionarios => {
+        this.dados = funcionarios;
+      }
+    });
   }
 
   selecionarPagina(pagina: number): void {
@@ -163,8 +167,7 @@ export class CrudFuncionariosComponent implements OnInit {
           ...result,
           ativo: true
         };
-        this.funcionarioService.inserir(novo);
-        this.carregarDados();
+        this.funcionarioService.inserir(novo).subscribe(() => this.carregarDados());
       }
     });
   }
@@ -218,9 +221,10 @@ export class CrudFuncionariosComponent implements OnInit {
           ...result,
           ativo: true
         };
-        this.funcionarioService.atualizar(atualizado);
-        this.carregarDados();
-        this.funcionarioSelecionado = undefined;
+        this.funcionarioService.atualizar(atualizado).subscribe(() => {
+          this.carregarDados();
+          this.funcionarioSelecionado = undefined;
+        });
       }
     });
   }
@@ -255,9 +259,10 @@ export class CrudFuncionariosComponent implements OnInit {
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
         funcionario.ativo = false;
-        this.funcionarioService.atualizar(funcionario);
-        this.carregarDados();
-        this.funcionarioSelecionado = undefined;
+        this.funcionarioService.atualizar(funcionario).subscribe(() => {
+          this.carregarDados();
+          this.funcionarioSelecionado = undefined;
+        });
       }
     });
   }

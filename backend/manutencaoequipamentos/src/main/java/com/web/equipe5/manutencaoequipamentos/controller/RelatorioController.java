@@ -15,6 +15,9 @@ import java.io.IOException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import com.web.equipe5.manutencaoequipamentos.dto.request.RelatorioPeriodoRequest;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/relatorios")
@@ -49,6 +52,20 @@ public class RelatorioController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=RelatorioCategoria.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+    @GetMapping("/receitas-periodo")
+    public ResponseEntity<byte[]> gerarPdf(
+        @Valid @ModelAttribute RelatorioPeriodoRequest request
+    ) throws IOException {
+
+        byte[] pdf = service.gerarPdf(request.inicio(), request.fim());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=relatorio.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }

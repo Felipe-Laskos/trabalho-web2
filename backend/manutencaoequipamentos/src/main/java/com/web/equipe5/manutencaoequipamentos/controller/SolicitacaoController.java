@@ -5,16 +5,22 @@ import com.web.equipe5.manutencaoequipamentos.dto.request.RedirecionarRequestDTO
 import com.web.equipe5.manutencaoequipamentos.dto.request.OrcarRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.request.SolicitacaoCreateRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.SolicitacaoResponseDTO;
-import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
 import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.service.SolicitacaoService;
+
+import jakarta.validation.Valid;
+
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import com.web.equipe5.manutencaoequipamentos.mapper.SolicitacaoMapper;
+import com.web.equipe5.manutencaoequipamentos.model.Solicitacao;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +35,7 @@ public class SolicitacaoController {
         this.service = service;
     }
 
-    @PatchMapping("/{id}/aprovar")
+    @PatchMapping("/{id}/aprovar") 
     public ResponseEntity<SolicitacaoResponseDTO> aprovar(@PathVariable Long id) {
         Solicitacao s = service.aprovar(id);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
@@ -53,7 +59,7 @@ public class SolicitacaoController {
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
-    @GetMapping("/cliente/{clienteId}")
+    @GetMapping("/cliente/{clienteId}") 
     public ResponseEntity<List<SolicitacaoResponseDTO>> listarPorCliente(@PathVariable Long clienteId) {
         List<SolicitacaoResponseDTO> dtos = service.listarPorCliente(clienteId).stream()
             .map(SolicitacaoResponseDTO::new)
@@ -61,15 +67,19 @@ public class SolicitacaoController {
         return ResponseEntity.ok(dtos);
     }
 
+
     @GetMapping("/estado")
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarPorEstado(@RequestParam EstadoSolicitacao estadoAtual) {
-        List<SolicitacaoResponseDTO> dtos = service.listarPorEstado(estadoAtual).stream()
-            .map(SolicitacaoResponseDTO::new)
-            .collect(Collectors.toList());
+    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarPorEstado(
+            @RequestParam EstadoSolicitacao estadoAtual,
+            Pageable pageable) {
+
+        Page<SolicitacaoResponseDTO> dtos = service
+                .listarPorEstado(estadoAtual, pageable)
+                .map(SolicitacaoResponseDTO::new);
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") 
     public ResponseEntity<SolicitacaoResponseDTO> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
         Solicitacao s = service.buscarPorIdECliente(id, principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
@@ -78,34 +88,34 @@ public class SolicitacaoController {
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<SolicitacaoResponseDTO> redirecionar(
             @PathVariable Long id,
-            @RequestBody RedirecionarRequestDTO dto,
+            @Valid @RequestBody RedirecionarRequestDTO dto,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
         Solicitacao s = service.redirecionar(id, principal, dto.idFuncionarioDestino());
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
-    @PostMapping
+    @PostMapping 
     public ResponseEntity<SolicitacaoResponseDTO> criar(
-            @RequestBody SolicitacaoCreateRequestDTO request,
+            @Valid @RequestBody SolicitacaoCreateRequestDTO request,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
 
         Solicitacao s = service.criar(request, principal.id());
-        return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/orcar")
     public ResponseEntity<SolicitacaoResponseDTO> orcar(
             @PathVariable Long id,
-            @RequestBody OrcarRequestDTO request,
+            @Valid @RequestBody OrcarRequestDTO request,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        Solicitacao s = service.orcar(id, request.valor(), principal.id());    
+        Solicitacao s = service.orcar(id, request.valor(), principal.id());
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/efetuar-manutencao")
     public ResponseEntity<SolicitacaoResponseDTO> efetuarManutencao(
             @PathVariable Long id,
-            @RequestBody EfetuarManutencaoRequestDTO dto,
+            @Valid @RequestBody EfetuarManutencaoRequestDTO dto,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
         Long funcionarioId = principal.id();
         Solicitacao s = service.efetuarManutencao(id, dto, funcionarioId);
@@ -118,20 +128,20 @@ public class SolicitacaoController {
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
+
     @GetMapping
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarTodos(
-        @AuthenticationPrincipal AuthenticatedPrincipal principal
+    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarTodos(
+            @AuthenticationPrincipal AuthenticatedPrincipal principal,
+            Pageable pageable
     ) {
         if (principal == null) {
-        throw new AccessDeniedException("Funcionário não autenticado");
-    }
+            throw new AccessDeniedException("Funcionário não autenticado");
+        }
 
-        List<SolicitacaoResponseDTO> solicitacoes = service.listarTodos()
-            .stream()
-            .map(SolicitacaoMapper::toDTO)            
-            .toList();
+        Page<SolicitacaoResponseDTO> solicitacoes = service
+                .listarTodos(pageable)
+                .map(SolicitacaoMapper::toDTO);
 
         return ResponseEntity.ok(solicitacoes);
     }
-
 }

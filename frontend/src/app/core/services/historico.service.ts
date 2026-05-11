@@ -21,9 +21,4 @@ export class HistoricoService implements IHistoricoService {
   listarPorSolicitacao(solicitacaoId: number): Observable<HistoricoSolicitacao[]> {
    return this.http.get<HistoricoSolicitacao[]>(`${API_URL}/solicitacoes/${solicitacaoId}/historico`, defaultHttpOptions);
   }
-
-  //TODO remover esta função: histórico só é persistido na hora de criar/movimentar uma solicitação via backend
-  inserir(historico: HistoricoSolicitacao): Observable<HistoricoSolicitacao> {
-    return this.http.post<HistoricoSolicitacao>(`${this.base}/historico`, historico, defaultHttpOptions);
-  }
-  }
+}

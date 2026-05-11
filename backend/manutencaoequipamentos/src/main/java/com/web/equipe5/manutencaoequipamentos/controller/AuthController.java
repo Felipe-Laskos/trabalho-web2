@@ -9,6 +9,8 @@ import com.web.equipe5.manutencaoequipamentos.dto.request.LoginRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.LoginResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.service.AuthService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -19,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO requisicao) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO requisicao) {
         return ResponseEntity.ok(authService.login(requisicao));
     }
 }

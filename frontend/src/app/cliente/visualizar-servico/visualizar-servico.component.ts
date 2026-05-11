@@ -9,6 +9,7 @@ import { BotaoComponent } from '../../shared/botao/botao.component';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { HistoricoService } from '../../core/services/historico.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-visualizar-servico',
@@ -27,9 +28,11 @@ export class VisualizarServicoComponent implements OnInit {
   private router = inject(Router);
   private solicitacaoService = inject(SolicitacaoService);
   private historicoService = inject(HistoricoService);
+  private notificationService = inject(NotificationService);
 
   solicitacao: Solicitacao | undefined;
   historicoOrdenado: HistoricoSolicitacao[] = [];
+  carregamento = false;
 
 
   ngOnInit(): void {
@@ -41,14 +44,19 @@ export class VisualizarServicoComponent implements OnInit {
   }
    
   carregarDados(id: number): void {
+    this.carregamento = true;
     this.solicitacaoService.buscarPorId(id).subscribe({
       next: (solicitacao) => {
         this.solicitacao = solicitacao;
         if (this.solicitacao) {
           this.buscarHistoricoReal(this.solicitacao.id!);
         }
-      }, //TODO: TROCAR POR MODAL DE ERRO
-      error: (err) => console.error('Erro ao buscar solicitação:', err)
+        this.carregamento = false;
+      }, 
+      error: (err) => {
+        this.notificationService.exibirErro(err);
+        this.carregamento = false;
+      }
     });
   }
 
@@ -56,8 +64,10 @@ export class VisualizarServicoComponent implements OnInit {
     this.historicoService.listarPorSolicitacao(solicitacaoId).subscribe({
       next: (historico) => {
         this.historicoOrdenado = historico;
-      }, //TODO: TROCAR POR MODAL DE ERRO
-      error: (err) => console.error('Erro ao buscar histórico real:', err)
+      }, 
+      error: (err) => { 
+        this.notificationService.exibirErro(err);
+      }
     });
   }
 
@@ -130,14 +140,16 @@ export class VisualizarServicoComponent implements OnInit {
 
   resgatarServico(): void {
     if (!this.solicitacao || !this.solicitacao.id) return;
+    this.carregamento = true;
 
     this.solicitacaoService.resgatar(this.solicitacao.id).subscribe({
       next: () => {
+        this.notificationService.exibirSucesso('Serviço resgatado com sucesso!');
         this.carregarDados(this.solicitacao!.id!);
       },
       error: (err) => {
-        console.error('Erro ao resgatar serviço:', err);
-        // TODO: Ajustar para que mostre um modal de erro
+        this.notificationService.exibirErro(err);
+        this.carregamento = false;
       }
     });
   }

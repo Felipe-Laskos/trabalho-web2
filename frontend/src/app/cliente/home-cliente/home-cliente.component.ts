@@ -11,8 +11,8 @@ import { TabelaComponent, AcaoTabela, EventoAcao, ColunaTabela } from "../../sha
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
-import { HistoricoService } from '../../core/services/historico.service';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-home-cliente',
@@ -32,14 +32,16 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class HomeClienteComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
-  private historicoService = inject(HistoricoService);
   private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
 
   nomeUsuario: string = 'Cliente';
   listaSolicitacoes: Solicitacao[] = [];
   dadosFiltrados: Solicitacao[] = [];
   dadosExibidos: Solicitacao[] = [];
   idPedidoPendente: string | number = '00000';
+
+  carregamento = false;
   
   colunasTabela: ColunaTabela[] = [
   { campo: 'id', titulo: 'Ordem', tipo: 'texto' },
@@ -59,7 +61,7 @@ export class HomeClienteComponent implements OnInit {
   paginaAtual: number = 1;
   itensPorPagina: number = 5;
 
-  constructor(public router: Router, private aviso: MatSnackBar) {}
+  constructor(public router: Router) {}
 
   ngOnInit(): void {
     this.carregarDadosIniciais();
@@ -70,6 +72,8 @@ export class HomeClienteComponent implements OnInit {
   private carregarDadosIniciais(): void {
     this.nomeUsuario = this.authService.getNome() || 'Cliente';
     const emailLogado = this.authService.getEmail();
+
+    this.carregamento = true;
 
     this.solicitacaoService.listarTodos().subscribe({ //TODO: Trocar por listarPorCliente(clienteId) apontando para GET /api/solicitacoes/cliente/{clienteId}: JESS
     next: (lista) => {
@@ -83,12 +87,12 @@ export class HomeClienteComponent implements OnInit {
       this.dadosFiltrados = this.listaSolicitacoes;
       this.identificarUltimoPedidoEmAnalise();
       this.atualizarPaginacao();
+
+      this.carregamento = false;
     },
-    error: () => { //TODO: Trocar por modal de erro: JESS
-      this.aviso.open('Erro ao carregar solicitações.', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top'
-      });
+    error: (err) => { 
+      this.notificationService.exibirErro(err);
+      this.carregamento = false;
     }
   });
 }
@@ -129,30 +133,21 @@ export class HomeClienteComponent implements OnInit {
   }
 
   aprovar(item: Solicitacao) { this.router.navigate(['/cliente/mostrar-orcamento', item.id]); }
+
   resgatar(item: Solicitacao) {
     if (confirm(`Deseja resgatar a solicitação do equipamento: ${item.descricaoEquipamento}?`)) {
-      this.historicoService.inserir({
-        dataHora: new Date().toISOString(),
-        estadoAnterior: item.estadoAtual,
-        estadoNovo: SolicitacaoENUM.APROVADA,
-        solicitacaoId: item.id!,
-        observacao: 'Solicitação resgatada pelo cliente.'
-      });
-      item.estadoAtual = SolicitacaoENUM.APROVADA;
+      this.carregamento = true;
 
       this.solicitacaoService.resgatar(item.id!).subscribe({
       next: () => {
         this.carregarDadosIniciais();
 
-        this.aviso.open('Solicitação resgatada! Estado alterado para APROVADA.','OK',
-          { duration: 3000, verticalPosition: 'top'}
-        );
+        this.notificationService.exibirSucesso('Serviço resgatado com sucesso!')
+        this.carregamento = false;
       },
-      error: () => { //TODO: Trocar por modal de erro: JESS
-        this.aviso.open('Erro ao resgatar solicitação.', 'OK', {
-          duration: 3000,
-          verticalPosition: 'top'
-        });
+      error: (err) => { 
+        this.notificationService.exibirErro(err);
+        this.carregamento = false;
       }
     });
   }

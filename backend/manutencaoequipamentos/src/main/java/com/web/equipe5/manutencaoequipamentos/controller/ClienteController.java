@@ -24,7 +24,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteResponseDTO> autocadastrar(@RequestBody ClienteRequestDTO requisicao) {
+    public ResponseEntity<ClienteResponseDTO> autocadastrar(@Valid @RequestBody ClienteRequestDTO requisicao) {
         ClienteResponseDTO response = clienteService.autocadastrar(requisicao);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

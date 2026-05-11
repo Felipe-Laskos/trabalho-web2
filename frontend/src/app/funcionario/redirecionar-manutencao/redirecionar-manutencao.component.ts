@@ -52,7 +52,6 @@ export class RedirecionarManutencaoComponent implements OnInit {
         this.solicitacao = res;
       },
       error: () => {
-        // Alterado para modal de erro
         const erroRef = this.dialog.open(ModalGenericoComponent, {
           data: {
             tipo: 'confirmacao',
@@ -69,17 +68,30 @@ export class RedirecionarManutencaoComponent implements OnInit {
       }
     });
 
-    this.funcionarios = this.funcionarioService.listarAtivos();
-
     const emailLogado = this.authService.getEmail();
-    const funcionarioLogado = this.funcionarioService.buscarPorEmail(emailLogado);
 
-    this.opcoesCombo = this.funcionarios
-      .filter(f => f.id !== funcionarioLogado?.id)
-      .map(f => ({
-        value: f.id!,
-        viewValue: f.nome
-      }));
+    this.funcionarioService.listarAtivos().subscribe({
+      next: funcionarios => {
+        this.funcionarios = funcionarios;
+
+        this.funcionarioService.buscarPorEmail(emailLogado).subscribe({
+          next: funcionarioLogado => {
+            this.opcoesCombo = this.funcionarios
+              .filter(f => f.id !== funcionarioLogado?.id)
+              .map(f => ({
+                value: f.id!,
+                viewValue: f.nome
+              }));
+          },
+          error: () => {
+            this.opcoesCombo = this.funcionarios.map(f => ({
+              value: f.id!,
+              viewValue: f.nome
+            }));
+          }
+        });
+      }
+    });
   }
 
   onFuncionarioSelecionado(valor: string | number): void {
@@ -114,8 +126,6 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmou => {
       if (!confirmou) return;
-
-      // Ajustado para consumir da API usando a assinatura ajustada
       this.solicitacaoService.redirecionar(
         this.solicitacao!.id!, 
         this.funcionarioSelecionadoId!

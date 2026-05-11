@@ -18,6 +18,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 @Service
@@ -137,12 +139,11 @@ public class SolicitacaoService {
         return repository.findByClienteId(clienteId);
     }
 
-    public List<Solicitacao> listarPorEstado(EstadoSolicitacao estado) {
-        return repository.findByEstadoAtual(estado);
+    public Page<Solicitacao> listarPorEstado(EstadoSolicitacao estado, Pageable pageable) {
+        return repository.findByEstadoAtual(estado, pageable);
     }
-
-    public List<Solicitacao> listarTodos() {
-        return repository.findAllByOrderByDataHoraCriacaoAsc();
+    public Page<Solicitacao> listarTodos(Pageable pageable) {
+        return repository.findAllByOrderByDataHoraCriacaoAsc(pageable);
     }
 
     public Solicitacao buscarPorId(Long id) {
@@ -212,14 +213,16 @@ public class SolicitacaoService {
         solicitacao.setDataHoraCriacao(LocalDateTime.now());
         solicitacao.setAtivo(true);
 
+        Solicitacao solicitacaoSalva = repository.save(solicitacao);
+
         historicoService.registrar(
-            solicitacao,
+            solicitacaoSalva,
             null,
             EstadoSolicitacao.ABERTA,
             null
         );
 
-        return repository.save(solicitacao);
+        return solicitacaoSalva;
     }
 
     public Solicitacao orcar(Long id, Double valor, Long funcionarioId) {
