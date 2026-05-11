@@ -7,13 +7,14 @@ import com.web.equipe5.manutencaoequipamentos.dto.response.ClienteResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 import com.web.equipe5.manutencaoequipamentos.mapper.ClienteMapper;
+import com.web.equipe5.manutencaoequipamentos.mapper.EnderecoMapper;
 import com.web.equipe5.manutencaoequipamentos.model.Cliente;
 import com.web.equipe5.manutencaoequipamentos.repository.ClienteRepository;
+import com.web.equipe5.manutencaoequipamentos.dto.ClientePatchDTO;
 
 import jakarta.transaction.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ClienteService {
@@ -116,46 +117,46 @@ public class ClienteService {
         return ClienteMapper.toDTO(salvo);
     }
 
-    public Cliente atualizar(Long id, Map<String, Object> campos) {
+    public Cliente atualizar(Long id, ClientePatchDTO patchDTO) {
         Cliente clienteExistente = clienteRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + id));
         
-        campos.forEach((campo, valor) -> {
-            if (valor != null) {
-                switch (campo) {
-                case "nome":
-                    clienteExistente.setNome((String) valor);
-                    break;
-                case "email":
-                    String novoEmail = (String) valor;
-                    
-                    if (clienteRepository.existsByEmail(novoEmail)) {
-                        Cliente clienteComEsteEmail = clienteRepository.findByEmail(novoEmail).get();
-                        
-                        if (!clienteComEsteEmail.getId().equals(clienteExistente.getId())) {
-                            throw new BusinessRuleException("Email já está em uso por outro cliente: " + novoEmail);
-                        }
-                    }
-                    clienteExistente.setEmail((String) valor);  
-                    break;
-                case "ativo":
-                    clienteExistente.setAtivo((Boolean) valor);
-                    break;
-                case "cpf":  
-                    throw new BusinessRuleException("Não é permitido alterar o CPF!");
-                case "senha":
-                    String novaSenha = (String) valor;
-                    String novoSalt = hashService.gerarSaltHex();
-                    String novoHash = hashService.sha256Hex(novaSenha, novoSalt);
-
-                    clienteExistente.setSalt(novoSalt);
-                    clienteExistente.setSenha(novoHash);
-                    break;
-                default:
-                    throw new BusinessRuleException("Campo desconhecido" + campo);
+        if (patchDTO.nome() != null) {
+            clienteExistente.setNome(patchDTO.nome());
+        }
+        if (patchDTO.email() != null) {
+            String novoEmail = patchDTO.email();
+            if (clienteRepository.existsByEmail(novoEmail)) {
+                Cliente clienteComEsteEmail = clienteRepository.findByEmail(novoEmail).get();
+                if (!clienteComEsteEmail.getId().equals(clienteExistente.getId())) {
+                    throw new BusinessRuleException("Email já está em uso por outro cliente: " + novoEmail);
                 }
             }
-        });
+            clienteExistente.setEmail(novoEmail);
+        }
+        if (patchDTO.ativo() != null) {
+            clienteExistente.setAtivo(patchDTO.ativo());
+        }
+
+        if (patchDTO.senha() != null) {
+            String novaSenha = patchDTO.senha();
+            String novoSalt = hashService.gerarSaltHex();
+            String novoHash = hashService.sha256Hex(novaSenha, novoSalt);
+
+            clienteExistente.setSalt(novoSalt);
+            clienteExistente.setSenha(novoHash);
+        }
+
+        if (patchDTO.telefone() != null) {
+            clienteExistente.setTelefone(patchDTO.telefone());
+        }
+
+        if (patchDTO.endereco() != null) {
+            clienteExistente.setEndereco(
+                EnderecoMapper.toEntity(patchDTO.endereco())
+            );
+        }
+
         return clienteRepository.save(clienteExistente);
     }
 

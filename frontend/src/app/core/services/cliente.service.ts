@@ -6,8 +6,7 @@ import { IClienteService } from '../interfaces/cliente.service.interface';
 import { ClienteRequest } from '../dto/request/cliente-request.model';
 import { ClienteResponse } from '../dto/response/cliente-response.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
-
-const LS_CHAVE = "clientes";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ const LS_CHAVE = "clientes";
 export class ClienteService implements IClienteService {
   private apiUrl = `${API_URL}/clientes`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
 
   autocadastrar(requisicao: ClienteRequest): Observable<ClienteResponse> {
     return this.http.post<ClienteResponse>(this.apiUrl, requisicao, defaultHttpOptions);
@@ -77,7 +76,13 @@ export class ClienteService implements IClienteService {
       cliente, 
       defaultHttpOptions).pipe(
         map(response => {
-          console.log('Cliente inserido com sucesso:', response);
+            this.snackBar.open(
+          'Cliente inserido com sucesso!',
+          'Fechar',
+          {
+            duration: 3000
+          }
+        );
           return response;
         }),
         catchError(error => {
@@ -94,7 +99,13 @@ export class ClienteService implements IClienteService {
       defaultHttpOptions
     ).pipe(
       map(response => {
-        console.log('Cliente atualizado com sucesso:', response);
+        this.snackBar.open(
+          'Cliente atualizado com sucesso!',
+          'Fechar',
+          {
+            duration: 3000
+          }
+        );
         return response;
       }),
       catchError(error => {

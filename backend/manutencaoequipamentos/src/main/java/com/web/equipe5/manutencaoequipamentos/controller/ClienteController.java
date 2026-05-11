@@ -8,11 +8,16 @@ import com.web.equipe5.manutencaoequipamentos.mapper.ClienteMapper;
 import com.web.equipe5.manutencaoequipamentos.dto.request.ClienteRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.ClienteResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.service.ClienteService;
+import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter;
+import com.web.equipe5.manutencaoequipamentos.dto.ClientePatchDTO;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
-import java.util.Map; 
 import java.util.stream.Collectors;
 import java.util.List;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -74,15 +79,16 @@ public class ClienteController {
     @PatchMapping("/{id}")  
     public ResponseEntity<ClienteResponseDTO> atualizarParcial(
             @PathVariable Long id, 
-            @RequestBody Map<String, Object> campos) {
-        Cliente clienteAtualizado = clienteService.atualizar(id, campos);
+            @RequestBody ClientePatchDTO patchDTO) {
+        Cliente clienteAtualizado = clienteService.atualizar(id, patchDTO);
         return ResponseEntity.status(HttpStatus.OK).body(ClienteMapper.toDTO(clienteAtualizado));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ClienteResponseDTO> deletar(
         @PathVariable Long id, 
-        @RequestHeader("cliente-id") Long idFuncionarioLogado) {
+        @AuthenticationPrincipal JwtAuthenticationFilter.AuthenticatedPrincipal usuarioLogado) {
+        Long idFuncionarioLogado = usuarioLogado.id();
         Cliente cliente = clienteService.deletar(id, idFuncionarioLogado);  
         return ResponseEntity.status(HttpStatus.OK).body(ClienteMapper.toDTO(cliente));
     }

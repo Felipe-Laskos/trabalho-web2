@@ -56,12 +56,12 @@ public class RelatorioController {
                 .body(pdf);
     }
 
-    @GetMapping("/receitas-periodo")
+    @GetMapping("/receitas-periodo/pdf")
     public ResponseEntity<byte[]> gerarPdf(
         @Valid @ModelAttribute RelatorioPeriodoRequest request
     ) throws IOException {
 
-        byte[] pdf = service.gerarPdf(request.inicio(), request.fim());
+        byte[] pdf = relatorioService.gerarPdf(request.inicio(), request.fim());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,

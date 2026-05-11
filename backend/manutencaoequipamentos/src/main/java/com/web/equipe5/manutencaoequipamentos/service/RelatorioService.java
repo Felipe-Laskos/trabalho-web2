@@ -37,6 +37,8 @@ public class RelatorioService {
 
     public List<ReceitaPorCategoriaProjection> gerarRelatorioCategorias() {
         return solicitacaoRepository.findReceitasAgrupadasPorCategoria();
+    }
+    
     public byte[] gerarPdf(LocalDate inicio, LocalDate fim) throws IOException {
 
         List<ReceitaPorDiaProjection> dados =
