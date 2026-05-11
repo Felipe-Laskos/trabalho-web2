@@ -2,6 +2,7 @@ package com.web.equipe5.manutencaoequipamentos.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record SolicitacaoRequestDTO(
@@ -15,8 +16,10 @@ public record SolicitacaoRequestDTO(
     String descricaoDefeito,
 
     @NotNull(message = "O cliente é obrigatório.")
+    @Positive(message = "O cliente deve ser maior que zero.")
     Long clienteId,
-    
+
     @NotNull(message = "A categoria é obrigatória.")
+    @Positive(message = "A categoria deve ser maior que zero.")
     Long categoriaId
 ) {}

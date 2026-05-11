@@ -1,6 +1,7 @@
 package com.web.equipe5.manutencaoequipamentos.service;
 
 import com.web.equipe5.manutencaoequipamentos.dto.request.FuncionarioRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.request.FuncionarioUpdateRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.FuncionarioResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.mapper.FuncionarioMapper;
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
@@ -9,10 +10,6 @@ import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
-import java.time.format.DateTimeParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -102,64 +99,47 @@ public class FuncionarioService {
         return FuncionarioMapper.toDTO(salvo);
     }
 
-    public Funcionario atualizar(Long id, Map<String, Object> campos) {
+    public Funcionario atualizar(Long id, FuncionarioUpdateRequestDTO requisicao) {
         Funcionario funcionarioExistente = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Funcionario não encontrada com ID: " + id));
-        
-        campos.forEach((campo, valor) -> {
-            if (valor != null) {
-                switch (campo) {
-                case "nome":
-                    funcionarioExistente.setNome((String) valor);
-                    break;
-                case "email":
-                    String novoEmail = (String) valor;
-                    
-                    if (repository.existsByEmail(novoEmail)) {
-                        Funcionario funcionarioComEsteEmail = repository.findByEmail(novoEmail).get();
-                        
-                        if (!funcionarioComEsteEmail.getId().equals(funcionarioExistente.getId())) {
-                            throw new BusinessRuleException("Email já está em uso por outro funcionário: " + novoEmail);
-                        }
-                    }
-                    funcionarioExistente.setEmail((String) valor);  
-                    break;
-                case "cargo":
-                    funcionarioExistente.setCargo((String) valor);
-                    break;
-                case "ativo":
-                    funcionarioExistente.setAtivo((Boolean) valor);
-                    break;
-                case "cpf":  
-                    throw new BusinessRuleException("Não é permitido alterar o CPF!");
-                case "senha":
-                    String novaSenha = (String) valor;
-                    String novoSalt = hashService.gerarSaltHex();
-                    String novoHash = hashService.sha256Hex(novaSenha, novoSalt);
 
-                    funcionarioExistente.setSalt(novoSalt);
-                    funcionarioExistente.setSenha(novoHash);
-                    break;
-                case "dataNascimento": 
-                    if (valor instanceof String) {
-                            // formato YYY-MM-dd (ISO)
-                            String dataStr = (String) valor;
-                            try {
-                                funcionarioExistente.setDataNascimento(LocalDate.parse(dataStr));
-                            } catch (DateTimeParseException e) {
-                                // aqui pega formato brasileiro dd-MM-YYYY
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                                funcionarioExistente.setDataNascimento(LocalDate.parse(dataStr, formatter));
-                            }
-                    } else if (valor instanceof LocalDate) {
-                        funcionarioExistente.setDataNascimento((LocalDate) valor);
-                    }
-                    break;
-                default:
-                    throw new BusinessRuleException("Campo desconhecido" + campo);
+        if (requisicao.nome() != null) {
+            funcionarioExistente.setNome(requisicao.nome());
+        }
+
+        if (requisicao.email() != null) {
+            String novoEmail = requisicao.email();
+
+            if (repository.existsByEmail(novoEmail)) {
+                Funcionario funcionarioComEsteEmail = repository.findByEmail(novoEmail).get();
+
+                if (!funcionarioComEsteEmail.getId().equals(funcionarioExistente.getId())) {
+                    throw new BusinessRuleException("Email já está em uso por outro funcionário: " + novoEmail);
                 }
             }
-        });
+            funcionarioExistente.setEmail(novoEmail);
+        }
+
+        if (requisicao.cargo() != null) {
+            funcionarioExistente.setCargo(requisicao.cargo());
+        }
+
+        if (requisicao.ativo() != null) {
+            funcionarioExistente.setAtivo(requisicao.ativo());
+        }
+
+        if (requisicao.senha() != null) {
+            String novoSalt = hashService.gerarSaltHex();
+            String novoHash = hashService.sha256Hex(requisicao.senha(), novoSalt);
+
+            funcionarioExistente.setSalt(novoSalt);
+            funcionarioExistente.setSenha(novoHash);
+        }
+
+        if (requisicao.dataNascimento() != null) {
+            funcionarioExistente.setDataNascimento(requisicao.dataNascimento());
+        }
+
         return repository.save(funcionarioExistente);
     }
 

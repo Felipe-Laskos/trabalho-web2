@@ -27,7 +27,8 @@ public class FuncionarioMapper {
             f.getCpf(),
             f.getEmail(),
             f.getDataNascimento(),
-            f.getCargo()
+            f.getCargo(),
+            f.getAtivo()
         );
     }
 }

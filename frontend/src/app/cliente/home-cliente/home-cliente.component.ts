@@ -71,14 +71,18 @@ export class HomeClienteComponent implements OnInit {
 
   private carregarDadosIniciais(): void {
     this.nomeUsuario = this.authService.getNome() || 'Cliente';
-    const emailLogado = this.authService.getEmail();
+    const clienteId = this.authService.getId();
+
+    if (!clienteId) {
+      this.notificationService.exibirAviso('Cliente não autenticado.');
+      return;
+    }
 
     this.carregamento = true;
 
-    this.solicitacaoService.listarTodos().subscribe({ //TODO: Trocar por listarPorCliente(clienteId) apontando para GET /api/solicitacoes/cliente/{clienteId}: JESS
+    this.solicitacaoService.listarPorCliente(clienteId).subscribe({
     next: (lista) => {
       this.listaSolicitacoes = lista
-        .filter(s => s.cliente?.email === emailLogado)
         .sort((a, b) =>
           new Date(a.dataHoraCriacao).getTime() -
           new Date(b.dataHoraCriacao).getTime()
