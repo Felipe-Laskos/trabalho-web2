@@ -68,17 +68,30 @@ export class RedirecionarManutencaoComponent implements OnInit {
       }
     });
 
-    this.funcionarios = this.funcionarioService.listarAtivos();
-
     const emailLogado = this.authService.getEmail();
-    const funcionarioLogado = this.funcionarioService.buscarPorEmail(emailLogado);
 
-    this.opcoesCombo = this.funcionarios
-      .filter(f => f.id !== funcionarioLogado?.id)
-      .map(f => ({
-        value: f.id!,
-        viewValue: f.nome
-      }));
+    this.funcionarioService.listarAtivos().subscribe({
+      next: funcionarios => {
+        this.funcionarios = funcionarios;
+
+        this.funcionarioService.buscarPorEmail(emailLogado).subscribe({
+          next: funcionarioLogado => {
+            this.opcoesCombo = this.funcionarios
+              .filter(f => f.id !== funcionarioLogado?.id)
+              .map(f => ({
+                value: f.id!,
+                viewValue: f.nome
+              }));
+          },
+          error: () => {
+            this.opcoesCombo = this.funcionarios.map(f => ({
+              value: f.id!,
+              viewValue: f.nome
+            }));
+          }
+        });
+      }
+    });
   }
 
   onFuncionarioSelecionado(valor: string | number): void {

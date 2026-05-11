@@ -213,14 +213,16 @@ public class SolicitacaoService {
         solicitacao.setDataHoraCriacao(LocalDateTime.now());
         solicitacao.setAtivo(true);
 
+        Solicitacao solicitacaoSalva = repository.save(solicitacao);
+
         historicoService.registrar(
-            solicitacao,
+            solicitacaoSalva,
             null,
             EstadoSolicitacao.ABERTA,
             null
         );
 
-        return repository.save(solicitacao);
+        return solicitacaoSalva;
     }
 
     public Solicitacao orcar(Long id, Double valor, Long funcionarioId) {

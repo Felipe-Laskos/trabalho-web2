@@ -11,9 +11,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
-import { HistoricoService } from '../../core/services/historico.service';
-import { FuncionarioService } from '../../core/services/funcionario.service';
-import { AuthService } from '../../core/services/auth.service';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
@@ -39,9 +36,6 @@ import { NotificationService } from '../../core/services/notification.service';
 })
 export class EfetuarManutencaoComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
-  private historicoService = inject(HistoricoService);
-  private funcionarioService = inject(FuncionarioService);
-  private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private aviso = inject(MatSnackBar);
@@ -100,8 +94,10 @@ export class EfetuarManutencaoComponent implements OnInit {
 
   confirmarManutencao(): void {
     const dados = this.form.value;
+    const descricao = dados.descricao;
+    const orientacoes = dados.orientacoes;
 
-    if (!dados.descricao || !dados.orientacoes) {
+    if (!descricao || !orientacoes) {
       this.aviso.open('Preencha todos os campos!', 'OK', {
         duration: 3000,
         verticalPosition: 'top',
@@ -111,27 +107,9 @@ export class EfetuarManutencaoComponent implements OnInit {
 
     if (!this.solicitacao) return;
 
-    const emailLogado = this.authService.getEmail();
-    const funcionarioLogado =
-      this.funcionarioService.buscarPorEmail(emailLogado);
-
-    this.historicoService.inserir({
-      dataHora: new Date().toISOString(),
-      estadoAnterior: this.solicitacao.estadoAtual,
-      estadoNovo: SolicitacaoENUM.ARRUMADA,
-      solicitacaoId: this.solicitacao.id!,
-      funcionario: funcionarioLogado,
-      observacao: `Manutenção realizada. Descrição: ${dados.descricao}`,
-    });
-
-    this.solicitacao.estadoAtual = SolicitacaoENUM.ARRUMADA;
-    this.solicitacao.descricaoManutencao = dados.descricao;
-    this.solicitacao.orientacoesCliente = dados.orientacoes;
-    this.solicitacao.funcionarioResponsavel = funcionarioLogado;
-
     this.solicitacaoService.efetuarManutencao(this.solicitacao.id!, {
-      descricaoManutencao: dados.descricao,
-      orientacoesCliente: dados.orientacoes,
+      descricaoManutencao: descricao,
+      orientacoesCliente: orientacoes,
     }).subscribe({
       next: () => {
         this.form.reset();

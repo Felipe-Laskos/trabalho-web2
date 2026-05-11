@@ -23,3 +23,9 @@ export interface Solicitacao {
   funcionarioResponsavel?: Funcionario;
   historico?: HistoricoSolicitacao[];
 }
+
+export interface SolicitacaoCreateRequest {
+  descricaoEquipamento: string;
+  descricaoDefeito: string;
+  categoriaId: number;
+}
