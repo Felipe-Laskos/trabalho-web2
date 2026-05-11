@@ -1,9 +1,31 @@
+:root {
+  --login-primary: #24808f;
+  --login-primary-hover: #1b636f;
+  --login-text-muted: #666666;
+  --login-border: #eeeeee;
+  --login-bg-banner: #f5f5f5;
+  --login-error: #b3261e;
+  --login-success: #1e8e3e;
+}
+
+@keyframes fadeAndSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  animation: fadeAndSlideIn 0.5s ease-out forwards;
 }
 
 app-card-visualizacao {
@@ -18,20 +40,20 @@ app-card-visualizacao {
 
 .header-text h1 {
   font-size: 26px;
-  color: #24808f;
+  color: var(--login-primary);
   text-align: center;
   margin-bottom: 5px;
 }
 
 .header-text p {
   text-align: center;
-  color: #666;
+  color: var(--login-text-muted);
   font-size: 14px;
 }
 
 .divider {
   border: 0;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--login-border);
   margin: 20px 0;
 }
 
@@ -74,25 +96,32 @@ app-card-visualizacao {
   text-align: center;
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--login-border);
 }
 
 .link-cadastro p {
-  color: #666;
+  color: var(--login-text-muted);
   font-size: 14px;
 }
 
 .link-cadastro a {
-  color: #24808f;
+  color: var(--login-primary);
   font-weight: bold;
   text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
 }
 
 .link-cadastro a:hover {
+  color: var(--login-primary-hover);
   text-decoration: underline;
 }
 
-/* Estilos placeholder reservados para iterações futuras. */
+.link-cadastro a:focus-visible {
+  outline: 2px dashed var(--login-primary);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 .login-aviso {
   font-size: 0.85rem;
   color: #888;
@@ -100,19 +129,19 @@ app-card-visualizacao {
 }
 
 .login-aviso--erro {
-  color: #b3261e;
+  color: var(--login-error);
 }
 
 .login-aviso--sucesso {
-  color: #1e8e3e;
+  color: var(--login-success);
 }
 
 .login-banner {
   width: 100%;
   padding: 12px 16px;
   border-radius: 6px;
-  background: #f5f5f5;
-  border-left: 4px solid #24808f;
+  background: var(--login-bg-banner);
+  border-left: 4px solid var(--login-primary);
   margin-bottom: 12px;
 }
 
@@ -142,4 +171,24 @@ app-card-visualizacao {
   content: "";
   flex: 1;
   border-top: 1px solid #ddd;
+}
+
+@media screen and (max-width: 480px) {
+  .login-container {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  app-card-visualizacao {
+    max-width: 100% !important;
+    box-shadow: none !important;
+  }
+
+  .header-text h1 {
+    font-size: 22px;
+  }
+
+  .login-content {
+    padding: 15px 10px;
+  }
 }
