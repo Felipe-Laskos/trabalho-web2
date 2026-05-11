@@ -17,6 +17,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class FuncionarioService {
@@ -33,8 +35,8 @@ public class FuncionarioService {
         this.emailService = emailService;
     }
 
-    public List<Funcionario> listarTodos() {
-        return repository.findAll();
+    public Page<Funcionario> listarTodos(Pageable pageable) {
+        return repository.findAll(pageable);
     }
     
     public List<Funcionario> listarAtivos() {

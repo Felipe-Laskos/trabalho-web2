@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.web.equipe5.manutencaoequipamentos.service.HistoricoService;
 import com.web.equipe5.manutencaoequipamentos.dto.response.HistoricoSolicitacaoResponseDTO;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -22,10 +22,9 @@ public class HistoricoController {
         this.historicoService = historicoService;
     }
 
-    @GetMapping("/{id}/historico") 
-    public ResponseEntity<List<HistoricoSolicitacaoResponseDTO>> historico(@PathVariable Long id) {
-        List<HistoricoSolicitacaoResponseDTO> historicoDTOs = historicoService.listarPorSolicitacao(id)
-            .stream().map(HistoricoSolicitacaoResponseDTO::new).collect(Collectors.toList());
+    @GetMapping("/{id}/historico")
+    public ResponseEntity<Page<HistoricoSolicitacaoResponseDTO>> historico(@PathVariable Long id, Pageable pageable) {
+        Page<HistoricoSolicitacaoResponseDTO> historicoDTOs = historicoService.listarPorSolicitacao(id, pageable).map(HistoricoSolicitacaoResponseDTO::new);
         return ResponseEntity.ok(historicoDTOs);
     }
 }

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class CategoriaEquipamentoService {
     private final CategoriaRepository repository;
@@ -18,8 +21,8 @@ public class CategoriaEquipamentoService {
         this.repository = repository;
     } 
 
-    public List<CategoriaEquipamento> listarTodas() {
-        return repository.findAll();
+    public Page<CategoriaEquipamento> listarTodas(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public List<CategoriaEquipamento> listarAtivas() {

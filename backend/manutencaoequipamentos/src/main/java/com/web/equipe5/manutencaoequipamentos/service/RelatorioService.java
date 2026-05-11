@@ -5,6 +5,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorDiaProjection;
+import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorCategoriaProjection;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,10 @@ public class RelatorioService {
         return solicitacaoRepository.findReceitasAgrupadasPorDia(inicioDia, fimDia);
     }
 
+    public List<ReceitaPorCategoriaProjection> gerarRelatorioCategorias() {
+        return solicitacaoRepository.findReceitasAgrupadasPorCategoria();
+    }
+    
     public byte[] gerarPdf(LocalDate inicio, LocalDate fim) throws IOException {
 
         List<ReceitaPorDiaProjection> dados =

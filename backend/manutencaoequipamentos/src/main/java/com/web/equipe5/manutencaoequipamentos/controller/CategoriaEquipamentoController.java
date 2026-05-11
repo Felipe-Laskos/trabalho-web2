@@ -5,14 +5,16 @@ import com.web.equipe5.manutencaoequipamentos.mapper.CategoriaEquipamentoMapper;
 import com.web.equipe5.manutencaoequipamentos.model.CategoriaEquipamento;
 import com.web.equipe5.manutencaoequipamentos.service.CategoriaEquipamentoService;
 
-import jakarta.validation.Valid;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.List;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -25,14 +27,10 @@ public class CategoriaEquipamentoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoriaEquipamentoResponseDTO>> listarTodas() {
-        List<CategoriaEquipamento> categorias = service.listarTodas();
-
-        List<CategoriaEquipamentoResponseDTO> response = categorias.stream()
-            .map(CategoriaEquipamentoMapper::toDTO) 
-            .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarTodas(Pageable pageable) {
+        Page<CategoriaEquipamento> categorias = service.listarTodas(pageable);
+        Page<CategoriaEquipamentoResponseDTO> response = categorias.map(CategoriaEquipamentoMapper::toDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/ativas")
@@ -43,20 +41,20 @@ public class CategoriaEquipamentoController {
             .map(CategoriaEquipamentoMapper::toDTO)
             .collect(Collectors.toList());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaEquipamentoResponseDTO> buscarPorId(@PathVariable Long id) {
         CategoriaEquipamento categoria = service.buscarPorId(id);
-        return ResponseEntity.ok(CategoriaEquipamentoMapper.toDTO(categoria));
+        return ResponseEntity.status(HttpStatus.OK).body(CategoriaEquipamentoMapper.toDTO(categoria));
     }
     
     @PostMapping
     public ResponseEntity<CategoriaEquipamentoResponseDTO> criar(
         @Valid @RequestBody CategoriaEquipamento requisicao) {
         CategoriaEquipamento novaCategoria = service.salvar(requisicao);
-        return ResponseEntity.status(201).body(CategoriaEquipamentoMapper.toDTO(novaCategoria));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CategoriaEquipamentoMapper.toDTO(novaCategoria));
     }
 
     @PatchMapping("/{id}")
@@ -64,12 +62,12 @@ public class CategoriaEquipamentoController {
             @PathVariable Long id, 
             @Valid @RequestBody Map<String, Object> campos) {
         CategoriaEquipamento categoriaAtualizada = service.atualizar(id, campos);
-        return ResponseEntity.ok(CategoriaEquipamentoMapper.toDTO(categoriaAtualizada));
+        return ResponseEntity.status(HttpStatus.OK).body(CategoriaEquipamentoMapper.toDTO(categoriaAtualizada));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<CategoriaEquipamentoResponseDTO> deletar(@PathVariable Long id) {
         CategoriaEquipamento categoriaDeletada = service.deletar(id);
-        return ResponseEntity.ok(CategoriaEquipamentoMapper.toDTO(categoriaDeletada));
+        return ResponseEntity.status(HttpStatus.OK).body(CategoriaEquipamentoMapper.toDTO(categoriaDeletada));
     }
 }
