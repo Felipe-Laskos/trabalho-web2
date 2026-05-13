@@ -1,6 +1,7 @@
 package com.web.equipe5.manutencaoequipamentos.controller;
 
 import com.web.equipe5.manutencaoequipamentos.dto.request.FuncionarioRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.request.FuncionarioUpdateRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.FuncionarioResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.model.Funcionario;
 import com.web.equipe5.manutencaoequipamentos.service.FuncionarioService;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map; 
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -73,8 +73,8 @@ public class FuncionarioController {
     @PatchMapping("/{id}")  
     public ResponseEntity<FuncionarioResponseDTO> atualizarParcial(
             @PathVariable Long id, 
-            @Valid @RequestBody Map<String, Object> campos) {
-        Funcionario funcionarioAtualizado = service.atualizar(id, campos);
+            @Valid @RequestBody FuncionarioUpdateRequestDTO requisicao) {
+        Funcionario funcionarioAtualizado = service.atualizar(id, requisicao);
         return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(funcionarioAtualizado));
     }
 

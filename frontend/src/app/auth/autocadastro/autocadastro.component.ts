@@ -122,11 +122,14 @@ export class AutocadastroComponent {
       return;
     }
 
+    const cpfLimpo = this.usuario.cpf.replace(/\D/g, '');
+    const telefoneLimpo = this.usuario.telefone.replace(/\D/g, '');
+
     const requisicao: ClienteRequest = {
       nome: this.usuario.nome,
-      cpf: this.usuario.cpf,
+      cpf: cpfLimpo,
       email: this.usuario.email,
-      telefone: this.usuario.telefone,
+      telefone: telefoneLimpo,
       endereco: {
         cep: this.usuario.cep,
         logradouro: this.usuario.logradouro,

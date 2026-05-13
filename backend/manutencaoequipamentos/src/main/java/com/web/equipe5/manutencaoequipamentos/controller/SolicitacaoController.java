@@ -18,12 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -36,34 +33,46 @@ public class SolicitacaoController {
     }
 
     @PatchMapping("/{id}/aprovar") 
-    public ResponseEntity<SolicitacaoResponseDTO> aprovar(@PathVariable Long id) {
-        Solicitacao s = service.aprovar(id);
+    public ResponseEntity<SolicitacaoResponseDTO> aprovar(
+            @PathVariable Long id,
+            @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        Solicitacao s = service.aprovar(id, principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/rejeitar")
-    public ResponseEntity<SolicitacaoResponseDTO> rejeitar(@PathVariable Long id, @RequestParam String motivoRejeicao) {
-        Solicitacao s = service.rejeitar(id, motivoRejeicao);
+    public ResponseEntity<SolicitacaoResponseDTO> rejeitar(
+            @PathVariable Long id,
+            @RequestParam String motivoRejeicao,
+            @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        Solicitacao s = service.rejeitar(id, motivoRejeicao, principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/resgatar")
-    public ResponseEntity<SolicitacaoResponseDTO> resgatar(@PathVariable Long id) {
-        Solicitacao s = service.resgatar(id);
+    public ResponseEntity<SolicitacaoResponseDTO> resgatar(
+            @PathVariable Long id,
+            @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        Solicitacao s = service.resgatar(id, principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/pagar")
-    public ResponseEntity<SolicitacaoResponseDTO> pagar(@PathVariable Long id) {
-        Solicitacao s = service.pagar(id);
+    public ResponseEntity<SolicitacaoResponseDTO> pagar(
+            @PathVariable Long id,
+            @AuthenticationPrincipal AuthenticatedPrincipal principal) {
+        Solicitacao s = service.pagar(id, principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @GetMapping("/cliente/{clienteId}") 
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarPorCliente(@PathVariable Long clienteId) {
-        List<SolicitacaoResponseDTO> dtos = service.listarPorCliente(clienteId).stream()
-            .map(SolicitacaoResponseDTO::new)
-            .collect(Collectors.toList());
+    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarPorCliente(
+            @PathVariable Long clienteId,
+            @AuthenticationPrincipal AuthenticatedPrincipal principal,
+            @PageableDefault(size = 5, sort = "dataHoraCriacao") Pageable pageable) {
+        Page<SolicitacaoResponseDTO> dtos = service
+                .listarPorCliente(clienteId, pageable, principal)
+                .map(SolicitacaoResponseDTO::new);
         return ResponseEntity.ok(dtos);
     }
 
@@ -71,10 +80,11 @@ public class SolicitacaoController {
     @GetMapping("/estado")
     public ResponseEntity<Page<SolicitacaoResponseDTO>> listarPorEstado(
             @RequestParam EstadoSolicitacao estadoAtual,
+            @AuthenticationPrincipal AuthenticatedPrincipal principal,
             Pageable pageable) {
 
         Page<SolicitacaoResponseDTO> dtos = service
-                .listarPorEstado(estadoAtual, pageable)
+                .listarPorEstado(estadoAtual, pageable, principal)
                 .map(SolicitacaoResponseDTO::new);
         return ResponseEntity.ok(dtos);
     }
@@ -114,7 +124,7 @@ public class SolicitacaoController {
             @Valid @RequestBody SolicitacaoCreateRequestDTO request,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
 
-        Solicitacao s = service.criar(request, principal.id());
+        Solicitacao s = service.criar(request, principal);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SolicitacaoResponseDTO(s));
     }
 
@@ -123,7 +133,7 @@ public class SolicitacaoController {
             @PathVariable Long id,
             @Valid @RequestBody OrcarRequestDTO request,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        Solicitacao s = service.orcar(id, request.valor(), principal.id());
+        Solicitacao s = service.orcar(id, request.valor(), principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
@@ -132,14 +142,13 @@ public class SolicitacaoController {
             @PathVariable Long id,
             @Valid @RequestBody EfetuarManutencaoRequestDTO dto,
             @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        Long funcionarioId = principal.id();
-        Solicitacao s = service.efetuarManutencao(id, dto, funcionarioId);
+        Solicitacao s = service.efetuarManutencao(id, dto, principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
     @PatchMapping("/{id}/finalizar")
     public ResponseEntity<SolicitacaoResponseDTO> finalizar(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
-        Solicitacao s = service.finalizar(id, principal.id());
+        Solicitacao s = service.finalizar(id, principal);
         return ResponseEntity.ok(new SolicitacaoResponseDTO(s));
     }
 
@@ -149,12 +158,8 @@ public class SolicitacaoController {
             @AuthenticationPrincipal AuthenticatedPrincipal principal,
             Pageable pageable
     ) {
-        if (principal == null) {
-            throw new AccessDeniedException("Funcionário não autenticado");
-        }
-
         Page<SolicitacaoResponseDTO> solicitacoes = service
-                .listarTodos(pageable)
+                .listarTodos(pageable, principal)
                 .map(SolicitacaoMapper::toDTO);
 
         return ResponseEntity.ok(solicitacoes);
