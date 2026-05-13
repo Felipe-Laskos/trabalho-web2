@@ -27,14 +27,14 @@
     @if (solicitacoesFiltradas.length > 0) {
       <app-tabela
         [colunas]="colunas"
-        [dados]="dadosPaginados"
+        [dados]="solicitacoesFiltradas"
         [acoes]="acoes"
         campoEstado="estadoAtual"
         (acaoClicada)="onAcaoTabela($event)">
       </app-tabela>
 
       <app-paginacao
-        [totalItens]="solicitacoesFiltradas.length"
+        [totalItens]="totalItens"
         [itensPorPagina]="itensPorPagina"
         [paginaAtual]="paginaAtual"
         (paginaChange)="onPaginaChange($event)">

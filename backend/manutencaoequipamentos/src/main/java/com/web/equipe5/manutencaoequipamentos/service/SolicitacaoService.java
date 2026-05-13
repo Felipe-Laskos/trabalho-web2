@@ -16,6 +16,8 @@ import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -310,4 +312,43 @@ public class SolicitacaoService {
         return repository.save(s);
     }
 
+    public Page<Solicitacao> listarComFiltros(
+            String filtro,
+            String dataInicio,
+            String dataFim,
+            Pageable pageable
+    ) {
+
+        if (filtro.equalsIgnoreCase("HOJE")) {
+
+            LocalDate hoje = LocalDate.now();
+
+            return repository.findByDataHoraCriacaoBetween(
+                    hoje.atStartOfDay(),
+                    hoje.atTime(23, 59, 59),
+                    pageable
+            );
+        }
+
+        if (
+            filtro.equalsIgnoreCase("PERIODO") &&
+            dataInicio != null &&
+            dataFim != null
+        ) {
+
+            LocalDateTime inicio = LocalDate.parse(dataInicio)
+                    .atStartOfDay();
+
+            LocalDateTime fim = LocalDate.parse(dataFim)
+                    .atTime(23, 59, 59);
+
+            return repository.findByDataHoraCriacaoBetween(
+                    inicio,
+                    fim,
+                    pageable
+            );
+        }
+
+        return repository.findAll(pageable);
+    }
 }

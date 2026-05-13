@@ -14,8 +14,6 @@ import { CardInfoComponent } from '../../shared/card-info/card-info.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { MatIcon } from '@angular/material/icon';
 import { NotificationService } from '../../core/services/notification.service';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 export interface ReceitaDia {
   data: string;
@@ -78,116 +76,81 @@ export class RelatorioReceitasComponent implements OnInit {
   }
 
   filtrar(): void {
+
+    if (!this.dataInicio || !this.dataFim) {
+      return;
+    }
+
     this.paginaAtual = 1;
 
-    this.solicitacaoService.listarTodos().subscribe({
-      next: (solicitacoes: Solicitacao[]) => {
-        let pagas = solicitacoes.filter(
-          (s: Solicitacao) =>
-            s.estadoAtual === SolicitacaoENUM.PAGA ||
-            s.estadoAtual === SolicitacaoENUM.FINALIZADA,
-        );
+    this.solicitacaoService
+      .buscarReceitasPeriodo(this.dataInicio, this.dataFim)
+      .subscribe({
 
-        if (this.dataInicio) {
-          const [ano, mes, dia] = this.dataInicio.split('-').map(Number);
-          const inicio = new Date(ano, mes - 1, dia, 0, 0, 0, 0);
-          pagas = pagas.filter((s: Solicitacao) => {
-            const data = new Date(s.dataHoraPagamento || s.dataHoraCriacao);
-            return data >= inicio;
-          });
-        }
+        next: (dados) => {
 
-        if (this.dataFim) {
-          const [ano, mes, dia] = this.dataFim.split('-').map(Number);
-          const fim = new Date(ano, mes - 1, dia, 23, 59, 59, 999);
-          pagas = pagas.filter((s: Solicitacao) => {
-            const data = new Date(s.dataHoraPagamento || s.dataHoraCriacao);
-            return data <= fim;
-          });
-        }
+          this.receitasPorDia = dados.map((item: any) => ({
 
-        const agrupado: Record<string, { quantidade: number; total: number }> =
-          {};
+            data: new Date(item.data)
+              .toLocaleDateString('pt-BR'),
 
-        pagas.forEach((s: Solicitacao) => {
-          const dataStr = s.dataHoraPagamento || s.dataHoraCriacao;
-          const dia = new Date(dataStr).toLocaleDateString('pt-BR');
+            quantidade: item.quantidade,
 
-          if (!agrupado[dia]) {
-            agrupado[dia] = { quantidade: 0, total: 0 };
-          }
-          agrupado[dia].quantidade++;
-          agrupado[dia].total += s.valorOrcado || 0;
-        });
+            total: item.total,
 
-        this.receitasPorDia = Object.keys(agrupado)
-          .sort((a, b) => {
-            const [dA, mA, yA] = a.split('/').map(Number);
-            const [dB, mB, yB] = b.split('/').map(Number);
-            return (
-              new Date(yA, mA - 1, dA).getTime() -
-              new Date(yB, mB - 1, dB).getTime()
-            );
-          })
-          .map((dia) => ({
-            data: dia,
-            quantidade: agrupado[dia].quantidade,
-            total: agrupado[dia].total,
-            totalFormatado: agrupado[dia].total.toLocaleString('pt-BR', {
-              style: 'currency',
-              currency: 'BRL',
-            }),
+            totalFormatado: item.total.toLocaleString(
+              'pt-BR',
+              {
+                style: 'currency',
+                currency: 'BRL'
+              }
+            )
           }));
 
-        this.totalGeral = this.receitasPorDia.reduce(
-          (acc, r) => acc + r.total,
-          0,
-        );
-        this.quantidadeTotal = this.receitasPorDia.reduce(
-          (acc, r) => acc + r.quantidade,
-          0,
-        );
-      },
-      error: (err) => {
-        this.notificationService.exibirErro(err);
-      },
-    });
+          this.totalGeral =
+            this.receitasPorDia.reduce(
+              (acc, r) => acc + r.total,
+              0
+            );
+
+          this.quantidadeTotal =
+            this.receitasPorDia.reduce(
+              (acc, r) => acc + r.quantidade,
+              0
+            );
+        },
+
+        error: (erro) => {
+          this.notificationService.exibirErro(erro);
+        }
+      });
   }
 
   gerarPdf(): void {
-    const doc = new jsPDF();
 
-    doc.setFontSize(16);
-    doc.text('Relatório de Receita por Período', 14, 15);
+    this.solicitacaoService
+      .gerarRelatorioPeriodoPdf(this.dataInicio, this.dataFim)
+      .subscribe({
 
-    doc.setFontSize(10);
-    const dataAtual = new Date().toLocaleDateString('pt-BR');
-    doc.text(`Gerado em: ${dataAtual}`, 14, 22);
+        next: (blob: Blob) => {
 
-    const colunas = ['Data', 'Qtd. Serviços', 'Receita'];
-    const linhas = this.receitasPorDia.map((r) => [
-      r.data,
-      r.quantidade.toString(),
-      r.totalFormatado,
-    ]);
+          const url = window.URL.createObjectURL(blob);
 
-    autoTable(doc, {
-      startY: 30,
-      head: [colunas],
-      body: linhas,
-    });
+          const a = document.createElement('a');
 
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
+          a.href = url;
 
-    doc.setFontSize(12);
-    doc.text(`Total de Serviços: ${this.quantidadeTotal}`, 14, finalY);
-    doc.text(
-      `Total Geral: ${this.formatarMoeda(this.totalGeral)}`,
-      14,
-      finalY + 7,
-    );
+          a.download = 'relatorio-periodo.pdf';
 
-    doc.save('relatorio-receitas.pdf');
+          a.click();
+
+          window.URL.revokeObjectURL(url);
+        },
+
+        error: (erro) => {
+          this.notificationService.exibirErro(erro);
+        }
+      });
   }
 
   formatarMoeda(valor: number): string {

@@ -50,7 +50,6 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   dataInicio?: string;
   dataFim?: string;
 
-  solicitacoes: Solicitacao[] = [];
   solicitacoesFiltradas: Solicitacao[] = [];
 
   colunas: ColunaTabela[] = [
@@ -88,30 +87,47 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     },
   ];
 
-  paginaAtual: number = 1;
+  paginaAtual: number = 0;
   itensPorPagina: number = 4;
+  totalItens: number = 0;
 
   ngOnInit(): void {
     this.carregarSolicitacoes();
   }
 
   carregarSolicitacoes(): void {
-    this.solicitacaoService.listarTodos().subscribe({
-      next: (dados) => {
-        this.solicitacoes = dados;
-        this.aplicarFiltros();
-      },
-      error: (erro) => {
-        this.dialog.open(ModalGenericoComponent, {
-          data: {
-            titulo: 'Erro',
-            mensagem: erro?.error?.message || 'Não foi possível carregar as solicitações.',
-            textoConfirmar: 'OK',
-            textoCancelar: ''
-          }
-        });
-      }
-    });
+
+    this.solicitacaoService
+      .listarComFiltros(
+        this.filtro,
+        this.paginaAtual,
+        this.itensPorPagina,
+        this.dataInicio,
+        this.dataFim
+      )
+      .subscribe({
+
+        next: (pagina) => {
+
+          this.solicitacoesFiltradas = pagina.content;
+
+          this.totalItens = pagina.totalElements;
+        },
+
+        error: (erro) => {
+
+          this.dialog.open(ModalGenericoComponent, {
+            data: {
+              titulo: 'Erro',
+              mensagem:
+                erro?.error?.message ||
+                'Não foi possível carregar as solicitações.',
+              textoConfirmar: 'OK',
+              textoCancelar: ''
+            }
+          });
+        }
+      });
   }
   getFuncionarioLogadoId(): number | undefined {
     return this.authService.getId();
@@ -165,61 +181,22 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   }
 
   onFiltroChange(valor: string | number) {
+
     this.filtro = valor as 'TODAS' | 'HOJE' | 'PERIODO';
     this.aplicarFiltros();
   }
 
-  aplicarFiltros() {
-    const funcionarioLogadoId = this.getFuncionarioLogadoId();
-    let lista = [...this.solicitacoes];
-    const hoje = new Date();
+  aplicarFiltros(): void {
 
-  lista = lista.filter((s) => {
-    if (s.estadoAtual === SolicitacaoENUM.REDIRECIONADA) {
-      return s.funcionarioResponsavel?.id === funcionarioLogadoId;
-    }
+    this.paginaAtual = 0;
 
-  return true;
-});
-
-    if (this.filtro === 'HOJE') {
-      lista = lista.filter((s) => {
-        const data = new Date(s.dataHoraCriacao);
-        return data.toDateString() === hoje.toDateString();
-      });
-    }
-
-    if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
-      const [anoI, mesI, diaI] = this.dataInicio.split('-').map(Number);
-      const [anoF, mesF, diaF] = this.dataFim.split('-').map(Number);
-
-      const inicio = new Date(anoI, mesI - 1, diaI, 0, 0, 0, 0);
-      const fim = new Date(anoF, mesF - 1, diaF, 23, 59, 59, 999);
-
-      lista = lista.filter((s) => {
-        const data = new Date(s.dataHoraCriacao);
-        return data >= inicio && data <= fim;
-      });
-    }
-
-    lista.sort((a, b) => {
-      return (
-        new Date(a.dataHoraCriacao).getTime() -
-        new Date(b.dataHoraCriacao).getTime()
-      );
-    });
-
-    this.solicitacoesFiltradas = lista;
-    this.paginaAtual = 1;
-  }
-
-  get dadosPaginados() {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    const fim = inicio + this.itensPorPagina;
-    return this.solicitacoesFiltradas.slice(inicio, fim);
+    this.carregarSolicitacoes();
   }
 
   onPaginaChange(pagina: number) {
-    this.paginaAtual = pagina;
+
+    this.paginaAtual = pagina - 1;
+
+    this.carregarSolicitacoes();
   }
 }

@@ -35,4 +35,9 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
                    "WHERE s.estado_atual IN ('PAGA', 'FINALIZADA') " +
                    "GROUP BY c.nome", nativeQuery = true)
     List<ReceitaPorCategoriaProjection> findReceitasAgrupadasPorCategoria();
+    Page<Solicitacao> findByDataHoraCriacaoBetween(
+        LocalDateTime inicio,
+        LocalDateTime fim,
+        Pageable pageable
+);
 }

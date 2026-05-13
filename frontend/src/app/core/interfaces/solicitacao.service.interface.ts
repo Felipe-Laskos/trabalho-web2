@@ -1,8 +1,13 @@
 import { Observable } from "rxjs";
 import { Solicitacao, SolicitacaoCreateRequest } from "../models/solicitacao.model";
 import { SolicitacaoENUM } from "../models/solicitacaoENUM.model";
+import { Page } from "../models/page.model";
 export interface ISolicitacaoService {
   listarTodos(): Observable<Solicitacao[]>;
+  listarTodosPaginado(
+    page?: number,
+    size?: number
+  ): Observable<Page<Solicitacao>>;  
   buscarPorId(id: number): Observable<Solicitacao>;
   inserir(solicitacao: SolicitacaoCreateRequest): Observable<Solicitacao>;
   atualizar(solicitacao: Solicitacao): Observable<Solicitacao>;
@@ -18,9 +23,11 @@ export interface ISolicitacaoService {
 
   listarComFiltros(
     filtro: string,
+    page?: number,
+    size?: number,
     dataInicio?: string,
     dataFim?: string
-  ): Observable<Solicitacao[]>;
+  ): Observable<Page<Solicitacao>>;
 
   redirecionar(
     id: number,
@@ -36,4 +43,9 @@ export interface ISolicitacaoService {
   ): Observable<Solicitacao>;
 
   finalizar(id: number): Observable<Solicitacao>;
+
+    gerarRelatorioPeriodoPdf(
+    dataInicio?: string,
+    dataFim?: string
+  ): Observable<Blob>;
 }
