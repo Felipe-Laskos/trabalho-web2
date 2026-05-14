@@ -47,9 +47,9 @@
 
     <div class="footer-custom-paginacao" *ngIf="dadosFiltrados.length > 0">
       <app-paginacao 
-        [totalItens]="dadosFiltrados.length" 
+        [totalElements]="dadosFiltrados.length" 
         [itensPorPagina]="itensPorPagina" 
-        [paginaAtual]="paginaAtual"
+        [number]="paginaAtual"
         (paginaChange)="aoMudarPagina($event)">
       </app-paginacao>
     </div>

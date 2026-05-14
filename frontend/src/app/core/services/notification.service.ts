@@ -27,10 +27,13 @@ export class NotificationService {
     });
   }
 
-  exibirErro(erro: HttpErrorResponse): void {
+  exibirErro(erro: HttpErrorResponse | string): void {
     let msg = 'Erro inesperado. Tente novamente.';
 
-    if (erro.status === 400 && erro.error?.erros) {
+    if (typeof erro === 'string') {
+      msg = erro;
+    } else {
+        if (erro.status === 400 && erro.error?.erros) {
         const msgValidacao = Object.values(erro.error.erros);
 
         if(msgValidacao.length > 0) {
@@ -49,6 +52,7 @@ export class NotificationService {
       panelClass: ['snack-erro'], 
       horizontalPosition: 'right',
       verticalPosition: 'top'
-    });
+     });
+    }
   }
 }

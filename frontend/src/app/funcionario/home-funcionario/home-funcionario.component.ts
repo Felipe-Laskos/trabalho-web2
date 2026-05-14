@@ -25,6 +25,11 @@ export class HomeFuncionarioComponent implements OnInit {
   private router = inject(Router);
   private notificationService = inject(NotificationService);
 
+  estadoFiltro = SolicitacaoENUM.ABERTA;
+  paginaAtual = 0;
+  itensPorPagina = 5;
+  totalElements = 0;
+  
   nomeFuncionario: string = '';
   solicitacoesAbertas: Solicitacao[] = [];
 
@@ -45,29 +50,23 @@ export class HomeFuncionarioComponent implements OnInit {
     }
   ];
 
-  paginaAtual = 1;
-  itensPorPagina = 5;
-
   ngOnInit(): void {
     this.nomeFuncionario = this.authService.getNome();
     this.carregarSolicitacoes();
   }
   
   private carregarSolicitacoes(): void {
-        this.solicitacaoService.listarPorEstado(SolicitacaoENUM.ABERTA).subscribe({      next: (lista) => {
-        this.solicitacoesAbertas = lista
-      .sort((a, b) => new Date(a.dataHoraCriacao).getTime() - new Date(b.dataHoraCriacao).getTime());
+        this.solicitacaoService.listarPorPagina(this.estadoFiltro, this.paginaAtual, this.itensPorPagina)
+          .subscribe({
+            next: (pageData) => {
+              this.solicitacoesAbertas = pageData.content;
+              this.totalElements = pageData.totalElements;
+              this.paginaAtual = pageData.number;
       },
       error: (err) => {
       this.notificationService.exibirErro(err);
       }
     });
-  }
-
-  get dadosPaginados() {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    const fim = inicio + this.itensPorPagina;
-    return this.solicitacoesAbertas.slice(inicio, fim);
   }
 
   onAcaoTabela(evento: any) {
@@ -80,7 +79,8 @@ export class HomeFuncionarioComponent implements OnInit {
     this.router.navigate(['/funcionario/efetuar-orcamento', id]);
   }
 
-  onPaginaMudou(pagina: any) {
-    this.paginaAtual = Number(pagina);
+  onPaginaMudou(novaPaginaZeroBased: number) {
+    this.paginaAtual = novaPaginaZeroBased;
+    this.carregarSolicitacoes();
   }
 }

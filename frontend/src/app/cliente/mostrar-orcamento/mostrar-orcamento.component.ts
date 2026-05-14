@@ -118,7 +118,6 @@ export class MostrarOrcamentoComponent implements OnInit {
 
         this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
         this.estadoModal = 'sucesso';
-        this.notificationService.exibirSucesso('Serviço aprovado com sucesso!');
       } catch (erro) {
         this.notificationService.exibirErro(erro as HttpErrorResponse);
       } finally {

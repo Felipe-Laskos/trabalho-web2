@@ -2,9 +2,11 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { NotificationService } from '../services/notification.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const notificationService = inject(NotificationService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -45,8 +47,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      // TODO: Futuramente implementar a Semana 10 do roadmap para integrar com serviço de Snackbar/Toast do Angular Material aqui
-      console.error('Interceptor capturou:', mensagemErro);
+      notificationService.exibirErro(mensagemErro);
       return throwError(() => new Error(mensagemErro));
     })
   );

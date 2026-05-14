@@ -7,6 +7,7 @@ import { ClienteRequest } from '../dto/request/cliente-request.model';
 import { ClienteResponse } from '../dto/response/cliente-response.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ClienteService implements IClienteService {
   private apiUrl = `${API_URL}/clientes`;
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
+  constructor(private http: HttpClient, private snackBar: MatSnackBar, private notificationService: NotificationService) {}
 
   autocadastrar(requisicao: ClienteRequest): Observable<ClienteResponse> {
     return this.http.post<ClienteResponse>(this.apiUrl, requisicao, defaultHttpOptions);
@@ -28,7 +29,7 @@ export class ClienteService implements IClienteService {
       defaultHttpOptions).pipe(
         map(response => response),
         catchError(error => {
-          console.error('Erro ao listar clientes:', error);
+          this.notificationService.exibirErro('Erro ao listar clientes.');
           throw error;
         })
       );
@@ -40,7 +41,7 @@ export class ClienteService implements IClienteService {
       defaultHttpOptions
     ).pipe(
       catchError(error => {
-        console.error(`Erro ao buscar cliente ${id}:`, error);
+        this.notificationService.exibirErro(`Erro ao buscar cliente ${id}.`);
         throw error;
       })
     );
@@ -52,7 +53,7 @@ export class ClienteService implements IClienteService {
       defaultHttpOptions
     ).pipe(
       catchError(error => {
-        console.error(`Erro ao buscar cliente por email ${email}:`, error);
+        this.notificationService.exibirErro(`Erro ao buscar cliente por email ${email}.`);
         throw error;
       })
     );
@@ -64,7 +65,7 @@ export class ClienteService implements IClienteService {
       defaultHttpOptions
     ).pipe(
       catchError(error => {
-        console.error(`Erro ao buscar cliente por CPF ${cpf}:`, error);
+        this.notificationService.exibirErro(`Erro ao buscar cliente por CPF ${cpf}.`);
         throw error;
       })
     );
@@ -86,7 +87,7 @@ export class ClienteService implements IClienteService {
           return response;
         }),
         catchError(error => {
-          console.error('Erro ao inserir cliente:', error);
+          this.notificationService.exibirErro('Erro ao inserir cliente.');
           throw error;
         })
       )
@@ -109,7 +110,7 @@ export class ClienteService implements IClienteService {
         return response;
       }),
       catchError(error => {
-        console.error('Erro ao atualizar cliente:', error);
+        this.notificationService.exibirErro('Erro ao atualizar cliente.');
         throw error;
       })
     );
@@ -123,7 +124,7 @@ export class ClienteService implements IClienteService {
     .pipe(
       map(response => response.filter(c => c.ativo === true)),
       catchError(error => {
-        console.error('Erro ao listar clientes ativos:', error);
+        this.notificationService.exibirErro('Erro ao listar clientes ativos.');
         throw error;
       })
     );
@@ -135,11 +136,11 @@ export class ClienteService implements IClienteService {
       defaultHttpOptions
     ).pipe(
       map(response => {
-        console.log('Cliente removido com sucesso:', response);
+        this.notificationService.exibirSucesso('Cliente removido com sucesso.');
         return response;
       }),
       catchError(error => {
-        console.error('Erro ao remover cliente:', error);
+        this.notificationService.exibirErro('Erro ao remover cliente.');
         throw error;
       })
     );

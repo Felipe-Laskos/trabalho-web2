@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { map } from 'rxjs/internal/operators/map';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ import { API_URL, defaultHttpOptions } from '../config/http.config';
 export class FuncionarioService implements IFuncionarioService {
   private apiUrl = `${API_URL}/funcionarios`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
   listarTodos(): Observable<Funcionario[]> {
     return this.http.get<Funcionario[]>(
@@ -22,7 +23,7 @@ export class FuncionarioService implements IFuncionarioService {
     ).pipe(
       map(response => response),
       catchError(error => {
-        console.error('Erro ao listar funcionários:', error);
+        this.notificationService.exibirErro('Erro ao listar funcionários.');
         throw error;
       })
     );
@@ -34,7 +35,7 @@ export class FuncionarioService implements IFuncionarioService {
     defaultHttpOptions
   ).pipe(
     catchError(error => {
-      console.error(`Erro ao buscar funcionário com ID ${id}:`, error);
+      this.notificationService.exibirErro(`Erro ao buscar funcionário com ID ${id}.`);
       throw error;
     })
   );
@@ -46,7 +47,7 @@ export class FuncionarioService implements IFuncionarioService {
       defaultHttpOptions
     ).pipe(
       catchError(error => {
-        console.error(`Erro ao buscar funcionário com email ${email}:`, error);
+        this.notificationService.exibirErro(`Erro ao buscar funcionário com email ${email}.`);
         throw error;
       })
     );
@@ -59,7 +60,7 @@ export class FuncionarioService implements IFuncionarioService {
       defaultHttpOptions
     ).pipe(
       catchError(error => {
-        console.error(`Erro ao buscar funcionário com CPF ${cpfLimpo}:`, error);
+        this.notificationService.exibirErro(`Erro ao buscar funcionário com CPF ${cpfLimpo}.`);
         throw error;
       })
     );
@@ -72,11 +73,11 @@ export class FuncionarioService implements IFuncionarioService {
       defaultHttpOptions    
     ).pipe(
       map(response => {
-        console.log('Funcionário inserido com sucesso:', response);
+        this.notificationService.exibirSucesso('Funcionário inserido com sucesso!');
         return response;
       }),
       catchError(error => {
-        console.error('Erro ao inserir funcionário:', error);
+        this.notificationService.exibirErro('Erro ao inserir funcionário.');
         throw error;
       })
     );
@@ -89,11 +90,11 @@ export class FuncionarioService implements IFuncionarioService {
       defaultHttpOptions
     ).pipe(
       map(response => {
-        console.log('Funcionário atualizado com sucesso:', response);
+        this.notificationService.exibirSucesso('Funcionário atualizado com sucesso!');
         return response;
       }),
       catchError(error => {
-        console.error('Erro ao atualizar funcionário:', error);
+        this.notificationService.exibirErro('Erro ao atualizar funcionário.');
         throw error;
       })
     );
@@ -106,7 +107,7 @@ export class FuncionarioService implements IFuncionarioService {
       ).pipe(
       map(funcionarios => funcionarios.filter(f => f.ativo)),
       catchError(error => {
-        console.error('Erro ao listar funcionários ativos:', error);
+        this.notificationService.exibirErro('Erro ao listar funcionários ativos.');
         throw error;
       })
     );
@@ -119,9 +120,9 @@ export class FuncionarioService implements IFuncionarioService {
         defaultHttpOptions
     ).pipe(
         catchError(error => {
-            console.error('Erro ao remover funcionário:', error);
+            this.notificationService.exibirErro('Erro ao remover funcionário.');
             throw error;
         })
     );
-}
+  }
 }
