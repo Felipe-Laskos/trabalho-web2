@@ -19,6 +19,7 @@ import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-visualizar-solicitacoes',
@@ -39,6 +40,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private notificationService = inject(NotificationService);
 
   opcoesFiltro: OpcaoCombo[] = [
     { value: 'TODAS', viewValue: 'Todas' },
@@ -154,8 +156,8 @@ export class VisualizarSolicitacoesComponent implements OnInit {
                 item.funcionarioResponsavel = solicitacaoAtualizada.funcionarioResponsavel;
                 this.carregarSolicitacoes();
               },
-              error: (erro) => {
-                console.error('Erro ao finalizar solicitação', erro);
+              error: () => {
+                this.notificationService.exibirErro('Não foi possível finalizar a solicitação.');
               }
             });
           }

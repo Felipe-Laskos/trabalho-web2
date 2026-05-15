@@ -24,9 +24,9 @@
 </app-tabela>
 
 <app-paginacao
-  [totalItens]="funcionariosFiltrados.length"
+  [totalElements]="funcionariosFiltrados.length"
   [itensPorPagina]="itensPorPagina"
-  [paginaAtual]="paginaAtual"
+  [number]="paginaAtual"
   (paginaChange)="selecionarPagina($event)">
 </app-paginacao>
 

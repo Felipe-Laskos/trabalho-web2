@@ -6,6 +6,7 @@ import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface
 import { Solicitacao, SolicitacaoCreateRequest } from '../models/solicitacao.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { SolicitacaoENUM } from '../models/solicitacaoENUM.model';
+import { Page } from '../dto/response/page.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -142,4 +143,12 @@ export class SolicitacaoService implements ISolicitacaoService {
     opcoes
   );
 }
+
+listarPorEstadoPaginado(estado: SolicitacaoENUM | string, page = 0, size = 5): Observable<Page<Solicitacao>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('estadoAtual', estado);
+    return this.http.get<Page<Solicitacao>>(`${this.base}/estado`, { ...defaultHttpOptions, params });
+  }
 }

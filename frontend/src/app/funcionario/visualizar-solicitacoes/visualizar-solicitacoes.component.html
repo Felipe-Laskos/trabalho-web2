@@ -34,9 +34,9 @@
       </app-tabela>
 
       <app-paginacao
-        [totalItens]="solicitacoesFiltradas.length"
+        [totalElements]="solicitacoesFiltradas.length"
         [itensPorPagina]="itensPorPagina"
-        [paginaAtual]="paginaAtual"
+        [number]="paginaAtual"
         (paginaChange)="onPaginaChange($event)">
       </app-paginacao>
     }
