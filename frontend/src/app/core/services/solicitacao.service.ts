@@ -144,7 +144,7 @@ export class SolicitacaoService implements ISolicitacaoService {
   );
 }
 
-listarPorPagina(estado: SolicitacaoENUM | string, page = 0, size = 5): Observable<Page<Solicitacao>> {
+listarPorEstadoPaginado(estado: SolicitacaoENUM | string, page = 0, size = 5): Observable<Page<Solicitacao>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString())

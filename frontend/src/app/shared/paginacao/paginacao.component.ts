@@ -14,18 +14,18 @@ export class PaginacaoComponent implements OnChanges {
   @Input() totalElements: number = 0;
   @Input() itensPorPagina: number = 5;
   @Input() number: number = 0;
+  @Input() totalPaginas: number = 0;
  
   @Output() paginaChange = new EventEmitter<number>();
 
-  totalPaginas: number = 0;
   paginas: number[] = [];
   primeiroItem: number = 0;
   ultimoItem: number = 0;
 
   ngOnChanges(): void {
-    if (this.totalElements !== undefined && this.itensPorPagina) {
-      this.totalPaginas = Math.ceil(this.totalElements / this.itensPorPagina) || 1;
-      this.paginas = Array.from({ length: this.totalPaginas }, (_, i) => i);
+    if (this.totalElements !== undefined && this.itensPorPagina && this.totalPaginas !== undefined) {
+      const paginasCount = this.totalPaginas > 0 ? this.totalPaginas : 1;
+      this.paginas = Array.from({ length: paginasCount }, (_, i) => i);
 
       if (this.totalElements === 0) {
         this.primeiroItem = 0;

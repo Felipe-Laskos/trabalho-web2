@@ -29,6 +29,7 @@ export class HomeFuncionarioComponent implements OnInit {
   paginaAtual = 0;
   itensPorPagina = 5;
   totalElements = 0;
+  totalPaginas = 0;
   
   nomeFuncionario: string = '';
   solicitacoesAbertas: Solicitacao[] = [];
@@ -56,12 +57,13 @@ export class HomeFuncionarioComponent implements OnInit {
   }
   
   private carregarSolicitacoes(): void {
-        this.solicitacaoService.listarPorPagina(this.estadoFiltro, this.paginaAtual, this.itensPorPagina)
+        this.solicitacaoService.listarPorEstadoPaginado(this.estadoFiltro, this.paginaAtual, this.itensPorPagina)
           .subscribe({
             next: (pageData) => {
               this.solicitacoesAbertas = pageData.content;
               this.totalElements = pageData.totalElements;
               this.paginaAtual = pageData.number;
+              this.totalPaginas = pageData.totalPages;
       },
       error: (err) => {
       this.notificationService.exibirErro(err);
