@@ -64,6 +64,29 @@ export class RelatorioReceitasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    const hoje = new Date();
+
+    const primeiroDia = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth(),
+      1
+    );
+
+    const ultimoDia = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth() + 1,
+      0
+    );
+
+    this.dataInicio = primeiroDia
+      .toISOString()
+      .split('T')[0];
+
+    this.dataFim = ultimoDia
+      .toISOString()
+      .split('T')[0];
+
     this.filtrar();
   }
 

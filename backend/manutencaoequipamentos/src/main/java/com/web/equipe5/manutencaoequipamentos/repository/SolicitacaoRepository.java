@@ -29,12 +29,18 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
             @Param("inicio") LocalDateTime inicio,
             @Param("fim") LocalDateTime fim);
     
-    @Query(value = "SELECT c.nome as nome, SUM(s.valor_orcado) as total " +
-                   "FROM solicitacoes s " +
-                   "JOIN categorias c ON s.categoria_id = c.id " +
-                   "WHERE s.estado_atual IN ('PAGA', 'FINALIZADA') " +
-                   "GROUP BY c.nome", nativeQuery = true)
-    List<ReceitaPorCategoriaProjection> findReceitasAgrupadasPorCategoria();
+    @Query(value = """
+        SELECT
+            c.nome as nome,
+            SUM(s.valor_orcado) as total
+        FROM solicitacoes s
+        JOIN categorias c
+            ON s.categoria_id = c.id
+        WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+        GROUP BY c.nome
+        """, nativeQuery = true)
+    List<ReceitaPorCategoriaProjection>
+    findReceitasAgrupadasPorCategoria();
     Page<Solicitacao> findByDataHoraCriacaoBetween(
         LocalDateTime inicio,
         LocalDateTime fim,

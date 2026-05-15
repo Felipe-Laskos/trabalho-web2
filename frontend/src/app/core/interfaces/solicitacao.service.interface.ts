@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { Solicitacao, SolicitacaoCreateRequest } from "../models/solicitacao.model";
 import { SolicitacaoENUM } from "../models/solicitacaoENUM.model";
-import { Page } from "../models/page.model";
+import { Page } from "../dto/response/page-response.model";
 export interface ISolicitacaoService {
   listarTodos(): Observable<Solicitacao[]>;
   listarTodosPaginado(
