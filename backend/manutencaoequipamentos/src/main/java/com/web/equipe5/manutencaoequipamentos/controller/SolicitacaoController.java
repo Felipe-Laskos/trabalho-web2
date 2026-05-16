@@ -88,6 +88,21 @@ public class SolicitacaoController {
                 .map(SolicitacaoResponseDTO::new);
         return ResponseEntity.ok(dtos);
     }
+    
+    @GetMapping("/filtros")
+    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarComFiltros(
+            @RequestParam String filtro,
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim,
+            Pageable pageable
+    ) {
+
+        Page<SolicitacaoResponseDTO> solicitacoes = service
+                .listarComFiltros(filtro, dataInicio, dataFim, pageable)
+                .map(SolicitacaoResponseDTO::new);
+
+        return ResponseEntity.ok(solicitacoes);
+    }
 
     @GetMapping("/{id}") 
     public ResponseEntity<SolicitacaoResponseDTO> buscarPorId(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedPrincipal principal) {
@@ -149,4 +164,6 @@ public class SolicitacaoController {
 
         return ResponseEntity.ok(solicitacoes);
     }
+
+
 }

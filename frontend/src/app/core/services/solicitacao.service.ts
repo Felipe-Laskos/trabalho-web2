@@ -6,6 +6,7 @@ import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface
 import { Solicitacao, SolicitacaoCreateRequest } from '../models/solicitacao.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { SolicitacaoENUM } from '../models/solicitacaoENUM.model';
+import { Page } from '../dto/response/page.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,29 @@ export class SolicitacaoService implements ISolicitacaoService {
   constructor(private http: HttpClient) {}
 
   listarTodos(): Observable<Solicitacao[]> {
-    return this.http.get<Solicitacao[]>(this.base, defaultHttpOptions);
+
+  return this.http.get<Solicitacao[]>(
+    this.base,
+    defaultHttpOptions
+  );
+}
+
+  listarTodosPaginado(
+    page = 0,
+    size = 4
+  ): Observable<Page<Solicitacao>> {
+
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    return this.http.get<Page<Solicitacao>>(
+      this.base,
+      {
+        ...defaultHttpOptions,
+        params
+      }
+    );
   }
 
   buscarPorId(id: number): Observable<Solicitacao> {
@@ -118,13 +141,17 @@ export class SolicitacaoService implements ISolicitacaoService {
   }
 
   listarComFiltros(
-  filtro: string,
-  dataInicio?: string,
-  dataFim?: string
-): Observable<Solicitacao[]> {
-  let params = new HttpParams().set('filtro', filtro);
-
-  if (dataInicio) {
+    filtro: string,
+    page = 0,
+    size = 4,
+    dataInicio?: string,
+    dataFim?: string
+  ): Observable<Page<Solicitacao>> {
+  let params = new HttpParams()
+    .set('filtro', filtro)
+    .set('page', page)
+    .set('size', size);
+    if (dataInicio) {
     params = params.set('dataInicio', dataInicio);
   }
 
@@ -137,9 +164,52 @@ export class SolicitacaoService implements ISolicitacaoService {
     params
   };
 
-  return this.http.get<Solicitacao[]>(
+  return this.http.get<Page<Solicitacao>>(
     `${this.base}/filtros`,
     opcoes
+  );
+}
+
+  gerarRelatorioPeriodoPdf(
+    dataInicio?: string,
+    dataFim?: string
+  ): Observable<Blob> {
+
+    let params = new HttpParams();
+
+    if (dataInicio) {
+      params = params.set('inicio', dataInicio);
+    }
+
+    if (dataFim) {
+      params = params.set('fim', dataFim);
+    }
+
+  return this.http.get(
+    `${API_URL}/relatorios/receitas-periodo/pdf`,
+      {
+        ...defaultHttpOptions,
+        params,
+        responseType: 'blob'
+      }
+    );
+  }
+
+  buscarReceitasPeriodo(
+  dataInicio: string,
+  dataFim: string
+): Observable<any[]> {
+
+  const params = new HttpParams()
+    .set('dataInicio', dataInicio)
+    .set('dataFim', dataFim);
+
+  return this.http.get<any[]>(
+    `${API_URL}/relatorios/receitas-periodo`,
+    {
+      ...defaultHttpOptions,
+      params
+    }
   );
 }
 }
