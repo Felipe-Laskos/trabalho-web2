@@ -6,7 +6,7 @@ import { ISolicitacaoService } from '../interfaces/solicitacao.service.interface
 import { Solicitacao, SolicitacaoCreateRequest } from '../models/solicitacao.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { SolicitacaoENUM } from '../models/solicitacaoENUM.model';
-import { Page } from '../dto/response/page-response.model';
+import { Page } from '../dto/response/page.dto';
 
 @Injectable({
   providedIn: 'root',
