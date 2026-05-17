@@ -5,7 +5,7 @@
       <hr class="divider">
     </div>
 
-    <form (ngSubmit)="efetuarLogin()">
+    <form (ngSubmit)="efetuarLogin()" (keydown.enter)="efetuarLogin()">
       <app-input-card label="Acesso ao Sistema" largura="100%">
         <div class="field-group">
           <app-input
@@ -34,7 +34,7 @@
       </app-input-card>
 
       <div class="acoes-login">
-        <app-botao-aprovar (clicou)="efetuarLogin()">
+        <app-botao-aprovar (clicou)="efetuarLogin()" [desabilitado]="carregando">
           Entrar
         </app-botao-aprovar>
       </div>
