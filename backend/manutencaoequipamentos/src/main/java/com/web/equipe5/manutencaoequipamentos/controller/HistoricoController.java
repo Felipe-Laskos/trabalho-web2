@@ -11,6 +11,7 @@ import com.web.equipe5.manutencaoequipamentos.dto.response.HistoricoSolicitacaoR
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -23,7 +24,9 @@ public class HistoricoController {
     }
 
     @GetMapping("/{id}/historico")
-    public ResponseEntity<Page<HistoricoSolicitacaoResponseDTO>> historico(@PathVariable Long id, Pageable pageable) {
+    public ResponseEntity<Page<HistoricoSolicitacaoResponseDTO>> historico(
+        @PathVariable Long id, 
+        @PageableDefault(size = 10, sort = "dataHora") Pageable pageable) {
         Page<HistoricoSolicitacaoResponseDTO> historicoDTOs = historicoService.listarPorSolicitacao(id, pageable).map(HistoricoSolicitacaoResponseDTO::new);
         return ResponseEntity.ok(historicoDTOs);
     }

@@ -48,7 +48,7 @@ public class RelatorioController {
     public ResponseEntity<byte[]> gerarRelatorioCategoriasPDF() throws IOException {
 
         byte[] pdf = relatorioPdfService.gerarRelatorioCategorias();
-
+        
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=RelatorioCategoria.pdf")

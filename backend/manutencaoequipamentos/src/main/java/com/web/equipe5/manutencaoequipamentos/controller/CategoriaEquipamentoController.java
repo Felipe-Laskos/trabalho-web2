@@ -11,11 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
-import java.util.List;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -28,19 +27,19 @@ public class CategoriaEquipamentoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarTodas(Pageable pageable) {
+    public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarTodas(
+        @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
         Page<CategoriaEquipamento> categorias = service.listarTodas(pageable);
         Page<CategoriaEquipamentoResponseDTO> response = categorias.map(CategoriaEquipamentoMapper::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/ativas")
-    public ResponseEntity<List<CategoriaEquipamentoResponseDTO>> listarAtivas() {
-        List<CategoriaEquipamento> categorias = service.listarAtivas();
+    public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarAtivas(
+        @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+        Page<CategoriaEquipamento> categorias = service.listarAtivas(pageable);
 
-        List<CategoriaEquipamentoResponseDTO> response = categorias.stream()
-            .map(CategoriaEquipamentoMapper::toDTO)
-            .collect(Collectors.toList());
+        Page<CategoriaEquipamentoResponseDTO> response = categorias.map(CategoriaEquipamentoMapper::toDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

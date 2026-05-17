@@ -11,6 +11,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 
+
 import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorCategoriaProjection;
 
 @Service
