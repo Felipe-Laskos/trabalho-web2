@@ -26,19 +26,22 @@
       </app-botao-aprovar>
     </div>
 
-    <div class="estado-carregamento" *ngIf="carregamento" style="text-align: center; padding: 40px; color: #666;">
-      <mat-icon style="animation: spin 1s linear infinite;">autorenew</mat-icon>
-      <p>Carregando solicitações...</p>
+    <div class="area-solicitacoes">
+      <div class="estado-carregamento" *ngIf="carregamento">
+        <mat-icon>autorenew</mat-icon>
+        <p>Carregando solicitações...</p>
+      </div>
+
+      <app-tabela
+        *ngIf="!carregamento"
+        [dados]="dadosExibidos"
+        [colunas]="colunasTabela"
+        [acoes]="acoesTabela"
+        (acaoClicada)="aoClicarAcaoTabela($event)">
+      </app-tabela>
     </div>
 
     <ng-container *ngIf="!carregamento">
-
-    <app-tabela 
-      [dados]="dadosExibidos" 
-      [colunas]="colunasTabela"
-      [acoes]="acoesTabela"
-      (acaoClicada)="aoClicarAcaoTabela($event)">
-    </app-tabela>
 
     <div class="sem-dados" *ngIf="dadosFiltrados.length === 0">
       <mat-icon>info</mat-icon>
@@ -47,9 +50,10 @@
 
     <div class="footer-custom-paginacao" *ngIf="dadosFiltrados.length > 0">
       <app-paginacao 
-        [totalElements]="dadosFiltrados.length" 
+        [totalElements]="totalElements"
         [itensPorPagina]="itensPorPagina" 
         [number]="paginaAtual"
+        [totalPaginas]="totalPaginas"
         (paginaChange)="aoMudarPagina($event)">
       </app-paginacao>
     </div>
