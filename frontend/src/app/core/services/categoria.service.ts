@@ -5,6 +5,7 @@ import { ICategoriaService } from '../interfaces/categoria.service.interface';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { Observable } from 'rxjs/internal/Observable';
 import { catchError, map } from 'rxjs';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { catchError, map } from 'rxjs';
 export class CategoriaService implements ICategoriaService {
   private apiUrl = `${API_URL}/categorias`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
   listarTodos(): Observable<CategoriaEquipamento[]> {
     return this.http.get<CategoriaEquipamento[]>(
@@ -21,7 +22,7 @@ export class CategoriaService implements ICategoriaService {
     ).pipe(
       map(response => response),
       catchError(error => {
-        console.error('Erro ao listar categorias:', error);
+        this.notificationService.exibirErro('Erro ao listar categorias.');
         throw error;
       })
     );
@@ -33,7 +34,7 @@ export class CategoriaService implements ICategoriaService {
       defaultHttpOptions
     ).pipe(
       catchError(error => {
-        console.error('Erro ao listar categorias ativas:', error);
+        this.notificationService.exibirErro('Erro ao listar categorias ativas.');
         throw error;
       })
     );
@@ -45,7 +46,7 @@ export class CategoriaService implements ICategoriaService {
     defaultHttpOptions
   ).pipe(
     catchError(error => {
-      console.error(`Erro ao buscar categoria ${id}:`, error);
+      this.notificationService.exibirErro(`Erro ao buscar categoria ${id}.`);
       throw error;
     })
   );
@@ -59,7 +60,7 @@ export class CategoriaService implements ICategoriaService {
     ).pipe(
       map(response => response),
       catchError(error => {
-        console.error('Erro ao inserir categoria:', error);
+        this.notificationService.exibirErro('Erro ao inserir categoria.');
         throw error;
       })
     );
@@ -73,7 +74,7 @@ export class CategoriaService implements ICategoriaService {
     ).pipe(
       map(response => response),
       catchError(error => {
-        console.error('Erro ao atualizar categoria:', error);
+        this.notificationService.exibirErro('Erro ao atualizar categoria.');
         throw error;
       })
     );
@@ -85,7 +86,7 @@ export class CategoriaService implements ICategoriaService {
       defaultHttpOptions
     ).pipe(
       catchError(error => {
-        console.error('Erro ao remover categoria:', error);
+        this.notificationService.exibirErro('Erro ao remover categoria.');
         throw error;
       })
     );

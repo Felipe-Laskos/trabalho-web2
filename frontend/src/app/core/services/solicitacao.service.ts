@@ -170,6 +170,14 @@ export class SolicitacaoService implements ISolicitacaoService {
   );
 }
 
+listarPorEstadoPaginado(estado: SolicitacaoENUM | string, page = 0, size = 5): Observable<Page<Solicitacao>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('estadoAtual', estado);
+    return this.http.get<Page<Solicitacao>>(`${this.base}/estado`, { ...defaultHttpOptions, params });
+  }
+
   gerarRelatorioPeriodoPdf(
     dataInicio?: string,
     dataFim?: string
@@ -209,7 +217,7 @@ export class SolicitacaoService implements ISolicitacaoService {
     {
       ...defaultHttpOptions,
       params
-    }
-  );
-}
+      }
+    );
+  }
 }

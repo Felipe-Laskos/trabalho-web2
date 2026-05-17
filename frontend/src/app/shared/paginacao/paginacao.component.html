@@ -1,27 +1,31 @@
+@if (totalElements > 0) {
 <div class="paginacao">
     <span class="paginacao__info">
-        Mostrando {{ primeiroItem }} a {{ ultimoItem }} de {{ totalItens }} resultados
+        Mostrando {{ primeiroItem }} a {{ ultimoItem }} de {{ totalElements }} resultados
     </span>
 
+    @if (totalPaginas > 1) {
     <div class="paginacao__controles">
         <mat-icon
             class="paginacao__seta"
-            [class.paginacao__seta_desabilitada]="paginaAtual === 1"
+            [class.paginacao__seta_desabilitada]="number === 0"
             (click)="anterior()"
         >chevron_left</mat-icon>
 
         @for (pagina of paginas; track pagina) {
             <span
                 class="paginacao__numero"
-                [class.paginacao__numero_ativo]="pagina === paginaAtual"
+                [class.paginacao__numero_ativo]="pagina === number"
                 (click)="irParaPagina(pagina)"
-            >{{ pagina }}</span>
+            >{{ pagina + 1 }}</span>
         }
 
         <mat-icon
             class="paginacao__seta"
-            [class.paginacao__seta_desabilitada]="paginaAtual === totalPaginas"
+            [class.paginacao__seta_desabilitada]="number === (totalPaginas - 1)"
             (click)="proxima()"
         >chevron_right</mat-icon>
     </div>
+    }
 </div>
+}
