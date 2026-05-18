@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [MatIconModule],
   templateUrl: './paginacao.component.html',
-  styleUrl: './paginacao.component.css'
+  styleUrls: ['./paginacao.component.css']
 })
 export class PaginacaoComponent implements OnChanges {
 

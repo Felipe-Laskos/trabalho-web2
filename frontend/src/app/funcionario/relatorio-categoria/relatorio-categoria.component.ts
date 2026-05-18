@@ -1,18 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Solicitacao } from '../../core/models/solicitacao.model';
-import { SolicitacaoService } from '../../core/services/solicitacao.service';
-import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { InputComponent } from '../../shared/input/input.component';
 import { TabelaComponent, ColunaTabela } from '../../shared/tabela/tabela.component';
 import { CardInfoComponent } from '../../shared/card-info/card-info.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
-import { MatIcon } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { NotificationService } from '../../core/services/notification.service';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { CategoriaService } from '../../core/services/categoria.service';
 
 export interface ReceitaDia {
   data: string;
@@ -31,21 +27,20 @@ export interface ReceitaDia {
     TabelaComponent,
     CardInfoComponent,
     PaginacaoComponent,
-    MatIcon
+    MatIconModule
   ],
   templateUrl: './relatorio-categoria.component.html',
-  styleUrl: './relatorio-categoria.component.css'
+  styleUrls: ['./relatorio-categoria.component.css']
 })
 export class RelatorioCategoriasComponent implements OnInit {
-
-  private solicitacaoService = inject(SolicitacaoService);
   private notificationService = inject(NotificationService);
+  private categoriaService = inject(CategoriaService);
 
   categoria: string = '';
   receitasPorCategoria: any[] = [];
   totalGeral: number = 0;
   quantidadeTotal: number = 0;
-  paginaAtual: number = 1;
+  paginaAtual: number = 0;
   itensPorPagina: number = 5;
 
   colunasTabela: ColunaTabela[] = [
@@ -55,8 +50,7 @@ export class RelatorioCategoriasComponent implements OnInit {
   ];
 
   get dadosPaginados(): any[] {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    return this.receitasPorCategoria.slice(inicio, inicio + this.itensPorPagina);
+    return this.receitasPorCategoria;
   }
 
   onPaginaMudou(pagina: number): void {
@@ -72,47 +66,30 @@ export class RelatorioCategoriasComponent implements OnInit {
   }
 
   filtrar(): void {
-  this.paginaAtual = 1;
-  
+    this.categoriaService.getReceitasCategoria(
+      this.paginaAtual,
+      this.itensPorPagina
+    ).subscribe({
 
-  this.solicitacaoService.listarTodos().subscribe({
-      next: (solicitacoes: Solicitacao[]) => {
-        
-        let pagas = solicitacoes.filter((s: Solicitacao) =>
-          s.estadoAtual === SolicitacaoENUM.PAGA ||
-          s.estadoAtual === SolicitacaoENUM.FINALIZADA
-        );
+       next: (response: any) => {
+        this.receitasPorCategoria =
+          response.content.map((r: any) => ({
+            categoria: r.nome,
+            total: r.total,
+            totalFormatado: Number(r.total).toLocaleString(
+              'pt-BR',
+              {
+                style: 'currency',
+                currency: 'BRL'
+              }
+            )
+          }));
 
-        if (this.categoria) {
-          pagas = pagas.filter((s: Solicitacao) => 
-            s.categoriaEquipamento?.nome.toLowerCase().includes(this.categoria.toLowerCase())
-          );
-        }
-        
-        const agrupado: Record<string, { quantidade: number; total: number }> = {};
-
-        pagas.forEach((s: Solicitacao) => {
-          const nomeCategoria = s.categoriaEquipamento?.nome || 'Sem Categoria';
-
-          if (!agrupado[nomeCategoria]) {
-            agrupado[nomeCategoria] = { quantidade: 0, total: 0 };
-          }
-
-          agrupado[nomeCategoria].quantidade++;
-          agrupado[nomeCategoria].total += s.valorOrcado || 0;
-        });
-        this.receitasPorCategoria = Object.keys(agrupado).map(nomeCategoria => ({
-          categoria: nomeCategoria,
-          quantidade: agrupado[nomeCategoria].quantidade,
-          total: agrupado[nomeCategoria].total,
-          totalFormatado: agrupado[nomeCategoria].total.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-          })
-        }));
-        this.totalGeral = this.receitasPorCategoria.reduce((acc, r) => acc + r.total, 0);
-        this.quantidadeTotal = this.receitasPorCategoria.reduce((acc, r) => acc + r.quantidade, 0);
+        this.totalGeral =
+          this.receitasPorCategoria
+            .reduce((acc, r) => acc + r.total, 0);
       },
+
       error: (err) => {
         this.notificationService.exibirErro(err);
       }
@@ -120,35 +97,30 @@ export class RelatorioCategoriasComponent implements OnInit {
   }
 
   gerarPdf(): void {
-    const doc = new jsPDF();
+    this.categoriaService
+      .baixarRelatorioPdf()
+      .subscribe({
 
-    doc.setFontSize(16);
-    doc.text('Relatório de Receita por Categoria', 14, 15);
+        next: (pdf: Blob) => {
+          const blob = new Blob(
+            [pdf],
+            { type: 'application/pdf' }
+          );
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
 
-    doc.setFontSize(10);
-    const dataAtual = new Date().toLocaleDateString('pt-BR');
-    doc.text(`Gerado em: ${dataAtual}`, 14, 22);
+          a.href = url;
+          a.download = 'relatorio-categorias.pdf';
 
-    const colunas = ['Categoria', 'Qtd. Serviços', 'Receita'];
-    const linhas = this.receitasPorCategoria.map(r => [
-      r.categoria,
-      r.quantidade.toString(),
-      r.totalFormatado
-    ]);
+          a.click();
 
-    autoTable(doc, {
-      startY: 30,
-      head: [colunas],
-      body: linhas,
-    });
+          window.URL.revokeObjectURL(url);
+        },
 
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-
-    doc.setFontSize(12);
-    doc.text(`Total de Serviços: ${this.quantidadeTotal}`, 14, finalY);
-    doc.text(`Total Geral: ${this.formatarMoeda(this.totalGeral)}`, 14, finalY + 7);
-
-    doc.save('relatorio-categorias.pdf');
+        error: (err) => {
+          this.notificationService.exibirErro(err);
+        }
+      });
   }
 
   formatarMoeda(valor: number): string {

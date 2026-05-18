@@ -30,7 +30,7 @@ export interface EventoAcao {
   standalone: true,
   imports: [CommonModule, MatTableModule, MatButtonModule, TruncatePipe, CpfPipe, NomePipe],
   templateUrl: './tabela.component.html',
-  styleUrl: './tabela.component.css'
+  styleUrls: ['./tabela.component.css']
 })
 export class TabelaComponent {
   @Input() colunas: ColunaTabela[] = [];

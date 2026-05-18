@@ -36,31 +36,35 @@ export class CrudCategoriaComponent implements OnInit {
   dados: CategoriaEquipamento[] = [];
   categoriaSelecionada?: CategoriaEquipamento;
 
-  paginaAtual: number = 1;
+  paginaAtual: number = 0;
   itensPorPagina: number = 5;
   mostrarInativas: boolean = true;
   termoPesquisa: string = '';
+  totalPaginas: number = 0;
+  totalElements: number = 0;
 
   ngOnInit(): void {
     this.carregarDados();
   }
 
   private carregarDados(): void {
-    this.categoriaService.listarTodos().subscribe({
-      next: categorias => {
-        this.dados = categorias;
+    this.categoriaService
+      .listarTodos(
+        this.paginaAtual,
+        this.itensPorPagina
+      ).subscribe({
+      next: (response) => {
+        this.dados = response.content;
+        this.totalPaginas = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.paginaAtual = response.number;
       }
     });
   }
 
   selecionarPagina(pagina: number): void {
     this.paginaAtual = pagina;
-  }
-
-  get dadosPaginados(): CategoriaEquipamento[] {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    const fim = inicio + this.itensPorPagina;
-    return this.categoriasFiltradas.slice(inicio, fim);
+    this.carregarDados();
   }
 
   get categoriasFiltradas(): CategoriaEquipamento[] {
@@ -79,7 +83,8 @@ export class CrudCategoriaComponent implements OnInit {
 
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.paginaAtual = 1;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   toggleInativas(): void {
