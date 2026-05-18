@@ -12,16 +12,17 @@
 
   <app-tabela
     [colunas]="colunas"
-    [dados]="dadosPaginados"
+    [dados]="solicitacoesAbertas"
     [acoes]="acoes"
     (acaoClicada)="onAcaoTabela($event)">
   </app-tabela>
 
   <app-paginacao
-    [paginaAtual]="paginaAtual"
-    [totalItens]="solicitacoesAbertas.length"
+    [number]="paginaAtual"
+    [totalElements]="totalElements"
     [itensPorPagina]="itensPorPagina"
-    (paginaMudou)="onPaginaMudou($event)">
+    [totalPaginas]="totalPaginas"
+    (paginaChange)="onPaginaMudou($event)">
   </app-paginacao>
 
 </app-card-visualizacao>

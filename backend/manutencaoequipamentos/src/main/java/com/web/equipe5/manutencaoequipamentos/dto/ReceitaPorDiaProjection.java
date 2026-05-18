@@ -5,5 +5,6 @@ import java.time.LocalDate;
 
 public interface ReceitaPorDiaProjection { 
     LocalDate getData();
+    Long getQuantidade();
     BigDecimal getTotal(); 
 }

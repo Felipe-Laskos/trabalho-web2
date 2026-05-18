@@ -21,7 +21,7 @@ public record SolicitacaoResponseDTO(
     LocalDateTime dataHoraFinalizacao,
     Boolean ativo,
     ClienteResponseDTO cliente,
-    CategoriaEquipamentoResponseDTO categoria,
+    CategoriaEquipamentoResponseDTO categoriaEquipamento,
     FuncionarioResponseDTO funcionarioResponsavel,
     List<HistoricoSolicitacaoResponseDTO> historico
 ) {

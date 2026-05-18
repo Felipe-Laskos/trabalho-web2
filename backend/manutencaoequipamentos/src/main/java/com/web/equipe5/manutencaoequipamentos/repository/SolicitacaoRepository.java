@@ -19,26 +19,68 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
 
     Page<Solicitacao> findByEstadoAtual(EstadoSolicitacao estadoAtual, Pageable pageable);
     Page<Solicitacao> findAllByOrderByDataHoraCriacaoAsc(Pageable pageable);
-    @Query(value = "SELECT CAST(s.data_hora_pagamento AS DATE) as data, SUM(s.valor_orcado) as total " +
-                   "FROM solicitacoes s " +
-                   "WHERE s.estado_atual IN ('PAGA', 'FINALIZADA') " +
-                   "AND s.data_hora_pagamento >= :inicio AND s.data_hora_pagamento <= :fim " +
-                   "GROUP BY CAST(s.data_hora_pagamento AS DATE) " +
-                   "ORDER BY data ASC", nativeQuery = true)
-    List<ReceitaPorDiaProjection> findReceitasAgrupadasPorDia(
-            @Param("inicio") LocalDateTime inicio,
-            @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+        SELECT
+                CAST(s.data_hora_pagamento AS DATE) as data,
+                COUNT(*) as quantidade,
+                SUM(s.valor_orcado) as total
+        FROM solicitacoes s
+        WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+        AND s.data_hora_pagamento >= :inicio
+        AND s.data_hora_pagamento <= :fim
+        GROUP BY CAST(s.data_hora_pagamento AS DATE)
+        ORDER BY data ASC
+        """, nativeQuery = true)
+        List<ReceitaPorDiaProjection> findReceitasAgrupadasPorDia(
+                @Param("inicio") LocalDateTime inicio,
+                @Param("fim") LocalDateTime fim
+        );
+
+    Page<Solicitacao> findByDataHoraCriacaoBetween(
+        LocalDateTime inicio,
+        LocalDateTime fim,
+        Pageable pageable
+    );
     
-    @Query(
-        value = "SELECT c.nome as nome, SUM(s.valor_orcado) as total " +
-                   "FROM solicitacoes s " +
-                   "JOIN categorias c ON s.categoria_id = c.id " +
-                   "WHERE s.estado_atual IN ('PAGA', 'FINALIZADA') " +
-                   "GROUP BY c.nome", 
-        countQuery = "SELECT COUNT(DISTINCT c.nome) " +
-                 "FROM solicitacoes s " +
-                 "JOIN categorias c ON s.categoria_id = c.id " +
-                 "WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')",
-        nativeQuery = true)
-    List<ReceitaPorCategoriaProjection> findReceitasAgrupadasPorCategoria();
+
+    // Consulta LIST para PDF
+    @Query(value = """
+        SELECT
+            c.nome as nome,
+            SUM(s.valor_orcado) as total
+        FROM solicitacoes s
+        JOIN categorias c
+            ON s.categoria_id = c.id
+        WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+        GROUP BY c.nome
+        """, nativeQuery = true)
+    List<ReceitaPorCategoriaProjection>
+    findReceitasAgrupadasPorCategoria();
+
+    // Consulta PAGE para tela
+    @Query(value = """
+        SELECT
+            c.nome as nome,
+            SUM(s.valor_orcado) as total
+        FROM solicitacoes s
+        JOIN categorias c
+            ON s.categoria_id = c.id
+        WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+        GROUP BY c.nome
+        """,
+        countQuery = """
+            SELECT COUNT(DISTINCT c.nome)
+            FROM solicitacoes s
+            JOIN categorias c
+                ON s.categoria_id = c.id
+            WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+            """,
+        nativeQuery = true
+    )
+    Page<ReceitaPorCategoriaProjection>
+    findReceitasAgrupadasPorCategoria(Pageable pageable);
+
+    
 }
+

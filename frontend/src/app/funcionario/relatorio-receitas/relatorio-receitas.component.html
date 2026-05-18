@@ -71,9 +71,9 @@
         </div>
 
         <app-paginacao
-          [totalItens]="receitasPorDia.length"
+          [totalElements]="receitasPorDia.length"
           [itensPorPagina]="itensPorPagina"
-          [paginaAtual]="paginaAtual"
+          [number]="paginaAtual"
           (paginaChange)="onPaginaMudou($event)">
         </app-paginacao>
       } @else {

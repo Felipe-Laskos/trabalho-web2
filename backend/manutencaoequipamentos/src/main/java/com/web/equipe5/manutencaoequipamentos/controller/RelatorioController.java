@@ -18,6 +18,9 @@ import org.springframework.http.MediaType;
 import com.web.equipe5.manutencaoequipamentos.dto.request.RelatorioPeriodoRequest;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/relatorios")
@@ -39,8 +42,8 @@ public class RelatorioController {
     }
 
     @GetMapping("/receitas-categoria")
-    public ResponseEntity<List<ReceitaPorCategoriaProjection>> gerarRelatorioCategorias() {
-        List<ReceitaPorCategoriaProjection> categorias = relatorioService.gerarRelatorioCategorias();
+    public ResponseEntity<Page<ReceitaPorCategoriaProjection>> gerarRelatorioCategorias(@PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+        Page<ReceitaPorCategoriaProjection> categorias = relatorioService.gerarRelatorioCategorias(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(categorias);
     }
 
