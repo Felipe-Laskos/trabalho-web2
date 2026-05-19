@@ -99,7 +99,8 @@ export class CrudFuncionariosComponent implements OnInit {
 
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.paginaAtual = 1;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   toggleInativas(): void {

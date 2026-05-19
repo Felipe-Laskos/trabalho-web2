@@ -48,6 +48,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     @Query(value = """
         SELECT
             c.nome as nome,
+            COUNT(*) as quantidade,
             SUM(s.valor_orcado) as total
         FROM solicitacoes s
         JOIN categorias c
@@ -62,6 +63,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     @Query(value = """
         SELECT
             c.nome as nome,
+            COUNT(*) as quantidade,
             SUM(s.valor_orcado) as total
         FROM solicitacoes s
         JOIN categorias c
@@ -83,4 +85,3 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
 
     
 }
-

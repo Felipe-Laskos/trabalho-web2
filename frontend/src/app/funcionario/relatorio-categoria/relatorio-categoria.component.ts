@@ -42,6 +42,8 @@ export class RelatorioCategoriasComponent implements OnInit {
   quantidadeTotal: number = 0;
   paginaAtual: number = 0;
   itensPorPagina: number = 5;
+  totalElements: number = 0;
+  totalPaginas: number = 0;
 
   colunasTabela: ColunaTabela[] = [
     { campo: 'categoria', titulo: 'Categoria', tipo: 'texto' },
@@ -55,6 +57,7 @@ export class RelatorioCategoriasComponent implements OnInit {
 
   onPaginaMudou(pagina: number): void {
     this.paginaAtual = pagina;
+    this.filtrar(false);
   }
 
   ngOnInit(): void {
@@ -65,7 +68,11 @@ export class RelatorioCategoriasComponent implements OnInit {
     this.categoria = valor;
   }
 
-  filtrar(): void {
+  filtrar(resetarPagina = true): void {
+    if (resetarPagina) {
+      this.paginaAtual = 0;
+    }
+
     this.categoriaService.getReceitasCategoria(
       this.paginaAtual,
       this.itensPorPagina
@@ -75,6 +82,7 @@ export class RelatorioCategoriasComponent implements OnInit {
         this.receitasPorCategoria =
           response.content.map((r: any) => ({
             categoria: r.nome,
+            quantidade: r.quantidade ?? 0,
             total: r.total,
             totalFormatado: Number(r.total).toLocaleString(
               'pt-BR',
@@ -88,6 +96,12 @@ export class RelatorioCategoriasComponent implements OnInit {
         this.totalGeral =
           this.receitasPorCategoria
             .reduce((acc, r) => acc + r.total, 0);
+        this.quantidadeTotal =
+          this.receitasPorCategoria
+            .reduce((acc, r) => acc + r.quantidade, 0);
+        this.totalElements = response.totalElements;
+        this.totalPaginas = response.totalPages;
+        this.paginaAtual = response.number;
       },
 
       error: (err) => {

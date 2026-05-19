@@ -108,7 +108,10 @@ export class CategoriaService implements ICategoriaService {
 
     return this.http.get(
       `${API_URL}/relatorios/receitas-categoria`,
-      { params }
+      {
+        ...defaultHttpOptions,
+        params
+      }
     );
   }
 
@@ -116,6 +119,7 @@ baixarRelatorioPdf() {
   return this.http.get(
     `${API_URL}/relatorios/receitas-categoria/pdf`,
     {
+      headers: defaultHttpOptions.headers,
       responseType: 'blob'
     }
   );
