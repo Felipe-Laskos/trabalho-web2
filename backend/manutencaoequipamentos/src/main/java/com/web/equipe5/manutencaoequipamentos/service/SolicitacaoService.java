@@ -194,6 +194,8 @@ public class SolicitacaoService {
 
         Funcionario novoFuncionario = funcionarioRepository.findById(idFuncionarioDestino)
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário de destino não encontrado."));
+        Funcionario funcionarioOrigem = funcionarioRepository.findById(principal.id())
+                .orElseThrow(() -> new ResourceNotFoundException("Funcionário de origem não encontrado."));
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
@@ -204,7 +206,9 @@ public class SolicitacaoService {
             s,
             anterior,
             EstadoSolicitacao.REDIRECIONADA,
-            novoFuncionario
+            funcionarioOrigem,
+            novoFuncionario,
+            null
         );
 
         return repository.save(s);
@@ -265,7 +269,7 @@ public class SolicitacaoService {
             s,
             anterior,
             EstadoSolicitacao.ORCADA,
-            null
+            funcionario
         );
 
         return repository.save(s);
@@ -300,7 +304,7 @@ public class SolicitacaoService {
             s,
             anterior,
             EstadoSolicitacao.ARRUMADA,
-            null
+            funcionario
         );
 
         return repository.save(s);
@@ -325,7 +329,7 @@ public class SolicitacaoService {
             s,
             anterior,
             EstadoSolicitacao.FINALIZADA,
-            null
+            funcionario
         );
 
         return repository.save(s);

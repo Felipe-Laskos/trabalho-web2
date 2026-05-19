@@ -2,6 +2,7 @@ package com.web.equipe5.manutencaoequipamentos.config;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +20,7 @@ public class DataSeeder implements CommandLineRunner {
     private final FuncionarioRepository funcRepository;
     private final CategoriaRepository categoriaRepository;
     private final SolicitacaoRepository solicitacaoRepository;
+    private final HistoricoRepository historicoRepository;
     private final HashService hashService;
 
     public DataSeeder(
@@ -26,11 +28,13 @@ public class DataSeeder implements CommandLineRunner {
             FuncionarioRepository funcRepository,
             CategoriaRepository categoriaRepository,
             SolicitacaoRepository solicitacaoRepository,
+            HistoricoRepository historicoRepository,
             HashService hashService) {
         this.clienteRepository = clienteRepository;
         this.funcRepository = funcRepository;
         this.categoriaRepository = categoriaRepository;
         this.solicitacaoRepository = solicitacaoRepository;
+        this.historicoRepository = historicoRepository;
         this.hashService = hashService;
     }
 
@@ -126,54 +130,56 @@ private void seedSolicitacoes() {
     var categorias = categoriaRepository.findAll();
     var funcionarios = funcRepository.findAll();
 
-    solicitacaoRepository.saveAll(List.of(
+    List<String> equipamentos = List.of(
+        "Mouse Logitech", "Notebook Dell", "Tablet Lenovo", "Monitor LG",
+        "Impressora HP", "PlayStation 4", "Teclado Redragon", "Notebook Acer",
+        "Mouse Gamer", "Notebook HP", "Camera Canon", "Headset HyperX",
+        "Notebook Samsung", "Monitor Dell", "Teclado Logitech", "Mouse Multilaser"
+    );
 
-        // ABERTA
-        criarSolicitacao("Mouse Logitech", "Não funciona", EstadoSolicitacao.ABERTA, null, clientes.get(0), categorias.get(3), null),
+    List<String> defeitos = List.of(
+        "Nao funciona", "Tela queimada", "Tela trincada", "Imagem piscando",
+        "Nao imprime", "Superaquecendo", "Teclas falhando", "Bateria ruim",
+        "Clique falha", "HD queimado", "Nao foca", "Microfone nao funciona",
+        "Nao liga", "Tela preta", "Teclas presas", "Scroll quebrado"
+    );
 
-        // ORCADA
-        criarSolicitacao("Notebook Dell", "Tela queimada", EstadoSolicitacao.ORCADA, 350.0, clientes.get(0), categorias.get(0), funcionarios.get(0)),
+    EstadoSolicitacao[] estados = EstadoSolicitacao.values();
+    List<Solicitacao> solicitacoes = new ArrayList<>();
 
-        // APROVADA
-        criarSolicitacao("Tablet Lenovo", "Tela trincada", EstadoSolicitacao.APROVADA, 200.0, clientes.get(2), categorias.get(1), funcionarios.get(1)),
+    for (int i = 0; i < 56; i++) {
+        EstadoSolicitacao estado = estados[i % estados.length];
+        Cliente cliente = clientes.get(i % clientes.size());
+        CategoriaEquipamento categoria = categorias.get(i % categorias.size());
+        Funcionario funcionario = estado == EstadoSolicitacao.ABERTA ? null : funcionarios.get(i % funcionarios.size());
+        LocalDateTime dataCriacao = LocalDateTime.now()
+            .minusDays((i * 7L) % 90)
+            .withHour(8 + (i % 10))
+            .withMinute((i * 11) % 60)
+            .withSecond(0)
+            .withNano(0);
+        Double valor = estado == EstadoSolicitacao.ABERTA ? null : 80.0 + ((i % 12) * 45.0);
 
-        // ARRUMADA
-        criarSolicitacao("Monitor LG", "Imagem piscando", EstadoSolicitacao.ARRUMADA, 150.0, clientes.get(0), categorias.get(2), funcionarios.get(0)),
+        solicitacoes.add(criarSolicitacao(
+            equipamentos.get(i % equipamentos.size()) + " #" + (i + 1),
+            defeitos.get(i % defeitos.size()),
+            estado,
+            valor,
+            cliente,
+            categoria,
+            funcionario,
+            dataCriacao
+        ));
+    }
 
-        // PAGA
-        criarSolicitacao("Impressora HP", "Não imprime", EstadoSolicitacao.PAGA, 120.0, clientes.get(3), categorias.get(4), funcionarios.get(0)),
+    List<Solicitacao> salvas = solicitacaoRepository.saveAll(solicitacoes);
+    List<HistoricoSolicitacao> historicos = new ArrayList<>();
 
-        // FINALIZADA
-        criarSolicitacao("PlayStation 4", "Superaquecendo", EstadoSolicitacao.FINALIZADA, 220.0, clientes.get(3), categorias.get(1), funcionarios.get(1)),
+    for (Solicitacao solicitacao : salvas) {
+        historicos.addAll(criarHistorico(solicitacao));
+    }
 
-        criarSolicitacao("Teclado Redragon", "Teclas falhando", EstadoSolicitacao.ORCADA, 140.0, clientes.get(2), categorias.get(3), funcionarios.get(0)),
-
-        criarSolicitacao("Notebook Acer", "Bateria ruim", EstadoSolicitacao.APROVADA, 300.0, clientes.get(1), categorias.get(0), funcionarios.get(1)),
-
-        criarSolicitacao("Mouse Gamer", "Clique falha", EstadoSolicitacao.PAGA, 80.0, clientes.get(1), categorias.get(3), funcionarios.get(1)),
-
-        criarSolicitacao("Notebook HP", "HD queimado", EstadoSolicitacao.ARRUMADA, 400.0, clientes.get(1), categorias.get(0), funcionarios.get(0)),
-
-        criarSolicitacao("Câmera Canon", "Não foca", EstadoSolicitacao.APROVADA, 500.0, clientes.get(0), categorias.get(2), funcionarios.get(1)),
-
-        criarSolicitacao("Headset HyperX", "Microfone não funciona", EstadoSolicitacao.ABERTA, null, clientes.get(2), categorias.get(4), null),
-
-        criarSolicitacao("Notebook Samsung", "Não liga", EstadoSolicitacao.ABERTA, null, clientes.get(0), categorias.get(0), null),
-
-        criarSolicitacao("Monitor Dell", "Tela preta", EstadoSolicitacao.ORCADA, 200.0, clientes.get(1), categorias.get(2), funcionarios.get(0)),
-
-        criarSolicitacao("Teclado Logitech", "Teclas presas", EstadoSolicitacao.APROVADA, 90.0, clientes.get(2), categorias.get(3), funcionarios.get(1)),
-
-        criarSolicitacao("Mouse Multilaser", "Scroll quebrado", EstadoSolicitacao.ARRUMADA, 50.0, clientes.get(3), categorias.get(3), funcionarios.get(0)),
-
-        criarSolicitacao("Impressora Epson", "Mancha tinta", EstadoSolicitacao.PAGA, 180.0, clientes.get(0), categorias.get(4), funcionarios.get(1)),
-
-        criarSolicitacao("Notebook Lenovo", "Superaquecendo", EstadoSolicitacao.FINALIZADA, 350.0, clientes.get(2), categorias.get(0), funcionarios.get(0)),
-
-        criarSolicitacao("Headset JBL", "Sem som", EstadoSolicitacao.APROVADA, 120.0, clientes.get(1), categorias.get(4), funcionarios.get(1)),
-
-        criarSolicitacao("Monitor Samsung", "Linhas na tela", EstadoSolicitacao.ABERTA, null, clientes.get(3), categorias.get(2), null)
-    ));
+    historicoRepository.saveAll(historicos);
 }
 
 
@@ -181,7 +187,8 @@ private void seedSolicitacoes() {
 private Solicitacao criarSolicitacao(String eq, String defeito,
     EstadoSolicitacao estado, Double valor,
     Cliente cliente, CategoriaEquipamento categoria,
-    Funcionario funcionario) {
+    Funcionario funcionario,
+    LocalDateTime dataCriacao) {
 
     Solicitacao s = new Solicitacao();
 
@@ -193,9 +200,105 @@ private Solicitacao criarSolicitacao(String eq, String defeito,
     s.setCategoriaEquipamento(categoria);
     s.setFuncionarioResponsavel(funcionario);
     s.setAtivo(true);
-    s.setDataHoraCriacao(LocalDateTime.now());
+    s.setDataHoraCriacao(dataCriacao);
+
+    if (funcionario != null && valor != null) {
+        s.setFuncionarioOrcamento(funcionario.getNome());
+        s.setDataHoraOrcamento(dataCriacao.plusDays(1));
+    }
+
+    if (estado == EstadoSolicitacao.REJEITADA) {
+        s.setMotivoRejeicao("Cliente rejeitou o orcamento inicial.");
+    }
+
+    if (estado == EstadoSolicitacao.ARRUMADA || estado == EstadoSolicitacao.PAGA || estado == EstadoSolicitacao.FINALIZADA) {
+        s.setDescricaoManutencao("Manutencao executada conforme diagnostico.");
+        s.setOrientacoesCliente("Retirar o equipamento e testar na entrega.");
+        s.setDataHoraManutencao(dataCriacao.plusDays(3));
+    }
+
+    if (estado == EstadoSolicitacao.PAGA || estado == EstadoSolicitacao.FINALIZADA) {
+        s.setDataHoraPagamento(dataCriacao.plusDays(4));
+    }
+
+    if (estado == EstadoSolicitacao.FINALIZADA) {
+        s.setDataHoraFinalizacao(dataCriacao.plusDays(5));
+    }
 
     return s;
+}
+
+private List<HistoricoSolicitacao> criarHistorico(Solicitacao solicitacao) {
+    List<HistoricoSolicitacao> historicos = new ArrayList<>();
+    Funcionario funcionario = solicitacao.getFuncionarioResponsavel();
+    LocalDateTime data = solicitacao.getDataHoraCriacao();
+
+    historicos.add(criarHistoricoItem(solicitacao, null, EstadoSolicitacao.ABERTA, null, data, "Solicitacao aberta pelo cliente."));
+
+    switch (solicitacao.getEstadoAtual()) {
+        case ABERTA -> { }
+        case ORCADA -> historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ABERTA, EstadoSolicitacao.ORCADA, funcionario, data.plusDays(1), "Orcamento registrado."));
+        case REJEITADA -> {
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ABERTA, EstadoSolicitacao.ORCADA, funcionario, data.plusDays(1), "Orcamento registrado."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ORCADA, EstadoSolicitacao.REJEITADA, funcionario, data.plusDays(2), "Orcamento rejeitado pelo cliente."));
+        }
+        case APROVADA -> {
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ABERTA, EstadoSolicitacao.ORCADA, funcionario, data.plusDays(1), "Orcamento registrado."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ORCADA, EstadoSolicitacao.APROVADA, funcionario, data.plusDays(2), "Orcamento aprovado pelo cliente."));
+        }
+        case REDIRECIONADA -> {
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ABERTA, EstadoSolicitacao.ORCADA, funcionario, data.plusDays(1), "Orcamento registrado."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ORCADA, EstadoSolicitacao.APROVADA, funcionario, data.plusDays(2), "Orcamento aprovado pelo cliente."));
+            HistoricoSolicitacao redirecionamento = criarHistoricoItem(solicitacao, EstadoSolicitacao.APROVADA, EstadoSolicitacao.REDIRECIONADA, funcionarioOrigem(funcionario), data.plusDays(3), "Solicitacao redirecionada para outro funcionario.");
+            redirecionamento.setFuncionarioDestino(funcionario);
+            historicos.add(redirecionamento);
+        }
+        case ARRUMADA -> {
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ABERTA, EstadoSolicitacao.ORCADA, funcionario, data.plusDays(1), "Orcamento registrado."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ORCADA, EstadoSolicitacao.APROVADA, funcionario, data.plusDays(2), "Orcamento aprovado pelo cliente."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.APROVADA, EstadoSolicitacao.ARRUMADA, funcionario, data.plusDays(3), "Manutencao concluida."));
+        }
+        case PAGA -> {
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ABERTA, EstadoSolicitacao.ORCADA, funcionario, data.plusDays(1), "Orcamento registrado."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ORCADA, EstadoSolicitacao.APROVADA, funcionario, data.plusDays(2), "Orcamento aprovado pelo cliente."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.APROVADA, EstadoSolicitacao.ARRUMADA, funcionario, data.plusDays(3), "Manutencao concluida."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ARRUMADA, EstadoSolicitacao.PAGA, funcionario, data.plusDays(4), "Pagamento registrado."));
+        }
+        case FINALIZADA -> {
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ABERTA, EstadoSolicitacao.ORCADA, funcionario, data.plusDays(1), "Orcamento registrado."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ORCADA, EstadoSolicitacao.APROVADA, funcionario, data.plusDays(2), "Orcamento aprovado pelo cliente."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.APROVADA, EstadoSolicitacao.ARRUMADA, funcionario, data.plusDays(3), "Manutencao concluida."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.ARRUMADA, EstadoSolicitacao.PAGA, funcionario, data.plusDays(4), "Pagamento registrado."));
+            historicos.add(criarHistoricoItem(solicitacao, EstadoSolicitacao.PAGA, EstadoSolicitacao.FINALIZADA, funcionario, data.plusDays(5), "Solicitacao finalizada."));
+        }
+    }
+
+    return historicos;
+}
+
+private Funcionario funcionarioOrigem(Funcionario funcionarioDestino) {
+    return funcRepository.findAll().stream()
+        .filter(funcionario -> !funcionario.getId().equals(funcionarioDestino.getId()))
+        .findFirst()
+        .orElse(funcionarioDestino);
+}
+
+private HistoricoSolicitacao criarHistoricoItem(
+    Solicitacao solicitacao,
+    EstadoSolicitacao estadoAnterior,
+    EstadoSolicitacao estadoNovo,
+    Funcionario funcionario,
+    LocalDateTime dataHora,
+    String observacao) {
+
+    HistoricoSolicitacao historico = new HistoricoSolicitacao();
+    historico.setSolicitacao(solicitacao);
+    historico.setEstadoAnterior(estadoAnterior);
+    historico.setEstadoNovo(estadoNovo);
+    historico.setFuncionario(funcionario);
+    historico.setDataHora(dataHora);
+    historico.setObservacao(observacao);
+    return historico;
 }
 
 

@@ -180,13 +180,13 @@
               <div class="visualizar__timeline_info" *ngIf="item.funcionario">
                 <mat-icon class="visualizar__timeline_icone_pequeno">person</mat-icon>
                 <span class="visualizar__timeline_info_label">Funcionário:</span>
-                <span class="visualizar__timeline_info_valor">{{ item.funcionario.nome }}</span>
+                <span class="visualizar__timeline_info_valor">{{ item.funcionario }}</span>
               </div>
 
               <div class="visualizar__timeline_info" *ngIf="item.funcionarioDestino">
                 <mat-icon class="visualizar__timeline_icone_pequeno">swap_horiz</mat-icon>
                 <span class="visualizar__timeline_info_label">Redirecionado para:</span>
-                <span class="visualizar__timeline_info_valor">{{ item.funcionarioDestino.nome }}</span>
+                <span class="visualizar__timeline_info_valor">{{ item.funcionarioDestino }}</span>
               </div>
 
               <div class="visualizar__timeline_observacao" *ngIf="item.observacao">

@@ -48,6 +48,10 @@ export class LoginComponent {
   }
 
   efetuarLogin() {
+    if (this.carregando) {
+      return;
+    }
+
     this.enviou = true;
 
     if (!this.credenciais.email || !this.credenciais.senha) {

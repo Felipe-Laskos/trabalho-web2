@@ -83,6 +83,25 @@
   font-weight: 600;
 }
 
+.area-solicitacoes {
+  min-height: 340px;
+}
+
+.estado-carregamento {
+  min-height: 340px;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.estado-carregamento mat-icon {
+  animation: spin 1s linear infinite;
+}
+
 .sem-dados {
   padding: 50px;
   text-align: center;
@@ -93,6 +112,16 @@
   margin-top: 20px;
   display: flex;
   justify-content: center;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {

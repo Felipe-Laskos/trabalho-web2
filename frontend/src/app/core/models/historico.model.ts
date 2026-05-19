@@ -1,5 +1,3 @@
-import { Funcionario } from './funcionario.model';
-
 export interface HistoricoSolicitacao {
   id?: number;
 
@@ -12,6 +10,6 @@ export interface HistoricoSolicitacao {
 
   solicitacaoId: number;
 
-  funcionario?: Funcionario;
-  funcionarioDestino?: Funcionario;
+  funcionario?: string;
+  funcionarioDestino?: string;
 }

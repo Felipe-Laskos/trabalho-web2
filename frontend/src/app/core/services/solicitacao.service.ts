@@ -93,6 +93,21 @@ export class SolicitacaoService implements ISolicitacaoService {
     );
   }
 
+  listarPorClientePaginado(clienteId: number, page = 0, size = 5): Observable<Page<Solicitacao>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'dataHoraCriacao,desc');
+
+    return this.http.get<Page<Solicitacao>>(
+      `${this.base}/cliente/${clienteId}`,
+      {
+        ...defaultHttpOptions,
+        params
+      }
+    );
+  }
+
   redirecionar(id: number, idFuncionarioDestino: number): Observable<Solicitacao> {
     return this.http.patch<Solicitacao>(
       `${this.base}/${id}/redirecionar`,

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { HistoricoSolicitacao } from '../models/historico.model';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { IHistoricoService } from '../interfaces/historico.service.interface';
@@ -23,23 +24,12 @@ export class HistoricoService implements IHistoricoService {
     return this.http.get<HistoricoSolicitacao[]>(`${this.base}/historico`, defaultHttpOptions);
   }
 
-  listarPorSolicitacao(solicitacaoId: number, page: number, size: number): Observable<Page<HistoricoSolicitacao>> {
-
-    const params = new HttpParams()
-      .set('page', page)
-      .set('size', size);
-
-    return this.http.get<Page<HistoricoSolicitacao>>(
+  listarPorSolicitacao(solicitacaoId: number): Observable<HistoricoSolicitacao[]> {
+    return this.http.get<Page<HistoricoSolicitacao> | HistoricoSolicitacao[]>(
       `${API_URL}/solicitacoes/${solicitacaoId}/historico`,
-      {
-        params,
-        ...defaultHttpOptions
-      }
+      defaultHttpOptions
     ).pipe(
-      catchError(error => {
-        this.notificationService.exibirErro('Erro ao listar histórico.');
-        throw error;
-      })
+      map(response => Array.isArray(response) ? response : response.content)
     );
   }
 }
