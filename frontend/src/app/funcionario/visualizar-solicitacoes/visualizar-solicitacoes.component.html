@@ -17,31 +17,31 @@
         </app-combo>
 
         @if (filtro === 'PERIODO') {
-        <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">
-        <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltros()">
+          <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">
+          <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltros()">
         }
 
       </div>
     </div>
 
-    @if (solicitacoesFiltradas.length > 0) {
+    @if (solicitacoes.length > 0) {
       <app-tabela
         [colunas]="colunas"
-        [dados]="solicitacoesFiltradas"
+        [dados]="solicitacoes"
         [acoes]="acoes"
         campoEstado="estadoAtual"
         (acaoClicada)="onAcaoTabela($event)">
       </app-tabela>
 
       <app-paginacao
-        [totalElements]="solicitacoesFiltradas.length"
+        [totalElements]="totalElements" 
         [itensPorPagina]="itensPorPagina"
         [number]="paginaAtual"
         (paginaChange)="onPaginaChange($event)">
       </app-paginacao>
     }
 
-    @if (solicitacoesFiltradas.length === 0) {
+    @if (solicitacoes.length === 0) {
       <div class="sem-dados">
         Nenhuma solicitação encontrada
       </div>
