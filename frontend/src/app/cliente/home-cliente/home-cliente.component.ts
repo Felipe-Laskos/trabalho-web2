@@ -37,7 +37,6 @@ export class HomeClienteComponent implements OnInit {
 
   nomeUsuario: string = 'Cliente';
   listaSolicitacoes: Solicitacao[] = [];
-  dadosFiltrados: Solicitacao[] = [];
   dadosExibidos: Solicitacao[] = [];
   idPedidoPendente: string | number = '00000';
 
@@ -58,15 +57,14 @@ export class HomeClienteComponent implements OnInit {
     { nome: 'Visualizar', acao: 'visualizar' }
   ];
 
-  paginaAtual: number = 1;
+  paginaAtual: number = 0;
   itensPorPagina: number = 5;
+  totalElements: number = 0;
 
   constructor(public router: Router) {}
 
   ngOnInit(): void {
     this.carregarDadosIniciais();
-    this.dadosFiltrados = this.listaSolicitacoes;
-    this.atualizarPaginacao();
   }
 
   private carregarDadosIniciais(): void {
@@ -79,23 +77,18 @@ export class HomeClienteComponent implements OnInit {
     }
 
     this.carregamento = true;
-
-    this.solicitacaoService.listarPorCliente(clienteId).subscribe({
-    next: (lista) => {
-      this.listaSolicitacoes = lista
-        .sort((a, b) =>
-          new Date(a.dataHoraCriacao).getTime() -
-          new Date(b.dataHoraCriacao).getTime()
-        );
-
-      this.dadosFiltrados = this.listaSolicitacoes;
+    this.solicitacaoService.listarPorCliente(clienteId, this.paginaAtual, this.itensPorPagina).subscribe({
+    next: (pagina) => {
+      this.listaSolicitacoes = pagina.content;
+      this.totalElements = pagina.totalElements;
+      
+      this.dadosExibidos = this.listaSolicitacoes;
       this.identificarUltimoPedidoEmAnalise();
-      this.atualizarPaginacao();
 
       this.carregamento = false;
     },
     error: (err) => { 
-      this.notificationService.exibirErro(err);
+      this.notificationService.exibirErro(err?.error?.message || 'Erro ao carregar.');
       this.carregamento = false;
     }
   });
@@ -103,25 +96,23 @@ export class HomeClienteComponent implements OnInit {
 
   onBusca(valor: string) {
     const termo = valor.toLowerCase();
-    this.dadosFiltrados = this.listaSolicitacoes.filter(s =>
+    
+    if (!termo) {
+      this.dadosExibidos = this.listaSolicitacoes;
+      return;
+    }
+
+    this.dadosExibidos = this.listaSolicitacoes.filter(s =>
       s.id?.toString().includes(termo) ||
       s.descricaoEquipamento.toLowerCase().includes(termo) ||
       s.estadoAtual.toLowerCase().includes(termo) ||
       s.dataHoraCriacao?.toLowerCase().includes(termo)
     );
-    this.paginaAtual = 1;
-    this.atualizarPaginacao();
-  }
-
-  atualizarPaginacao(): void {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    const fim = inicio + this.itensPorPagina;
-    this.dadosExibidos = this.dadosFiltrados.slice(inicio, fim);
   }
 
   aoMudarPagina(novaPagina: number) {
-    this.paginaAtual = novaPagina;
-    this.atualizarPaginacao();
+    this.paginaAtual = novaPagina - 1; 
+    this.carregarDadosIniciais();
   }
 
   private identificarUltimoPedidoEmAnalise(): void {
@@ -145,18 +136,17 @@ export class HomeClienteComponent implements OnInit {
       this.solicitacaoService.resgatar(item.id!).subscribe({
       next: () => {
         this.carregarDadosIniciais();
-
         this.notificationService.exibirSucesso('Serviço resgatado com sucesso!')
         this.carregamento = false;
       },
       error: (err) => { 
-        this.notificationService.exibirErro(err);
+        this.notificationService.exibirErro(err?.error?.message || 'Erro ao resgatar.');
         this.carregamento = false;
       }
     });
   }
 }
-  pagar(item: Solicitacao) { this.router.navigate(['/cliente/pagar', item.id]); } // RF010 Laura
+  pagar(item: Solicitacao) { this.router.navigate(['/cliente/pagar', item.id]); }
 
   irParaSolicitacao(): void {
     this.router.navigate(['/cliente/solicitar-manutencao']);

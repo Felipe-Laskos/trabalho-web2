@@ -3,7 +3,7 @@
 
   <div class="header-actions">
     <app-pesquisa
-      placeholder="Pesquisar..."
+      placeholder="Pesquisar por nome, email ou cargo..."
       [valor]="termoPesquisa"
       (pesquisou)="pesquisar($event)">
     </app-pesquisa>
@@ -19,12 +19,12 @@
 
 <app-tabela
   [colunas]="colunas"
-  [dados]="dadosPaginados"
+  [dados]="dados"
   (linhaSelecionada)="selecionarLinha($event)">
 </app-tabela>
 
 <app-paginacao
-  [totalElements]="funcionariosFiltrados.length"
+  [totalElements]="totalElements"
   [itensPorPagina]="itensPorPagina"
   [number]="paginaAtual"
   (paginaChange)="selecionarPagina($event)">
@@ -51,8 +51,7 @@
     icone="delete"
     cor="warn"
     (clicou)="excluir()"
-    [desabilitado]="!funcionarioSelecionado">
+    [desabilitado]="!funcionarioSelecionado || funcionarioSelecionado.ativo === false">
     Desativar
   </app-botao>
-
 </div>

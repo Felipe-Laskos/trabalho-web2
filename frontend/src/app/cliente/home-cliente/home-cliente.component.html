@@ -2,8 +2,6 @@
   
   <section class="boas-vindas">
     <h1>Olá, {{ nomeUsuario }}!</h1>
-    
-
   </section>
 
   <app-card-visualizacao>
@@ -40,14 +38,14 @@
       (acaoClicada)="aoClicarAcaoTabela($event)">
     </app-tabela>
 
-    <div class="sem-dados" *ngIf="dadosFiltrados.length === 0">
+    <div class="sem-dados" *ngIf="dadosExibidos.length === 0">
       <mat-icon>info</mat-icon>
       <p>Nenhuma solicitação encontrada.</p>
     </div>
 
-    <div class="footer-custom-paginacao" *ngIf="dadosFiltrados.length > 0">
+    <div class="footer-custom-paginacao" *ngIf="dadosExibidos.length > 0">
       <app-paginacao 
-        [totalElements]="dadosFiltrados.length" 
+        [totalElements]="totalElements" 
         [itensPorPagina]="itensPorPagina" 
         [number]="paginaAtual"
         (paginaChange)="aoMudarPagina($event)">

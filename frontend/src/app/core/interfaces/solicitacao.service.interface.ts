@@ -12,14 +12,13 @@ export interface ISolicitacaoService {
   inserir(solicitacao: SolicitacaoCreateRequest): Observable<Solicitacao>;
   atualizar(solicitacao: Solicitacao): Observable<Solicitacao>;
   remover(id: number): Observable<void>;
-
   aprovar(id: number): Observable<Solicitacao>;
   rejeitar(id: number, motivo: string): Observable<Solicitacao>;
   resgatar(id: number): Observable<Solicitacao>;
   pagar(id: number): Observable<Solicitacao>;
-
   listarPorEstado(estado: SolicitacaoENUM): Observable<Solicitacao[]>;
   orcar(id: number, valor: number): Observable<Solicitacao>;
+  listarPorCliente(clienteId: number, page?: number, size?: number): Observable<Page<Solicitacao>>;
 
   listarComFiltros(
     filtro: string,

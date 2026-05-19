@@ -33,6 +33,11 @@
                             }
                         </div>
                     }
+                    
+                    @case ('moeda') {
+                        {{ getValor(item, coluna.campo) ? (getValor(item, coluna.campo) | currency:'BRL':'symbol':'1.2-2':'pt-BR') : '---' }}
+                    }
+                    
                      @default {
                         {{ coluna.truncar ? (getValor(item, coluna.campo) | truncate:coluna.truncar) : getValor(item, coluna.campo) }}
                     }

@@ -16,10 +16,10 @@
 
         <div class="linha-flex-ajustada recuo-superior">
           <div class="flex-1">
-            <app-input titulo="CPF" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.cpf" (mudou)="aplicarMascaraCPF($event)" altura="34px" largura="100%" [maxLength]="14"></app-input>
+            <app-input titulo="CPF" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.cpf" (mudou)="usuario.cpf = $event" mask="000.000.000-00" altura="34px" largura="100%" [maxLength]="14"></app-input>
           </div>
           <div class="flex-1">
-            <app-input titulo="Telefone" [obrigatorio]="true" [inteiro] = "true" [valor]="usuario.telefone" (mudou)="aplicarMascaraTelefone($event)" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%" [maxLength]="15"></app-input>
+            <app-input titulo="Telefone" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.telefone" (mudou)="usuario.telefone = $event" mask="(00) 00000-0000" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%" [maxLength]="15"></app-input>
           </div>
         </div>
       </div>
@@ -28,32 +28,32 @@
         <h3 class="titulo-secao">Endereço (ViaCEP)</h3>
         <div class="linha-flex-ajustada">
           <div class="flex-1">
-            <app-input titulo="CEP" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.cep" (mudou)="aplicarMascaraCEP($event)" (focusout)="buscarCep(); camposTocados.cep = true" altura="34px" largura="100%" [maxLength]="9"></app-input>
+            <app-input titulo="CEP" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.cep" (mudou)="usuario.cep = $event" mask="00000-000" (focusout)="buscarCep(); camposTocados.cep = true" altura="34px" largura="100%" [maxLength]="9"></app-input>
           </div>
           <div class="flex-1">
-            <app-input titulo="Cidade" [obrigatorio]="true" [texto] = "true" [valor]="usuario.cidade" (mudou)="usuario.cidade = $event" (focusout)="camposTocados.cidade = true" altura="34px" largura="100%"></app-input>
+            <app-input titulo="Cidade" [obrigatorio]="true" [texto]="true" [valor]="usuario.cidade" (mudou)="usuario.cidade = $event" (focusout)="camposTocados.cidade = true" altura="34px" largura="100%"></app-input>
           </div>
         </div>
         
         <div class="linha-flex-ajustada recuo-superior">
           <div class="flex-1">
-            <app-input titulo="Bairro" [obrigatorio]="true" [texto] = "true" [valor]="usuario.bairro" (mudou)="usuario.bairro = $event" (focusout)="camposTocados.bairro = true" altura="34px" largura="100%"></app-input>
+            <app-input titulo="Bairro" [obrigatorio]="true" [texto]="true" [valor]="usuario.bairro" (mudou)="usuario.bairro = $event" (focusout)="camposTocados.bairro = true" altura="34px" largura="100%"></app-input>
           </div>
           <div class="flex-1">
-            <app-input titulo="UF" [obrigatorio]="true" [texto] = "true" [valor]="usuario.uf" (mudou)="usuario.uf = $event" (focusout)="camposTocados.uf = true" altura="34px" largura="100%"></app-input>
+            <app-input titulo="UF" [obrigatorio]="true" [texto]="true" [valor]="usuario.uf" (mudou)="usuario.uf = $event" (focusout)="camposTocados.uf = true" altura="34px" largura="100%"></app-input>
           </div>
         </div>
 
         <div class="wrapper-individual recuo-superior">
-          <app-input titulo="Logradouro" [obrigatorio]="true" [textoNum] = "true" [valor]="usuario.logradouro" (mudou)="usuario.logradouro = $event" (focusout)="camposTocados.logradouro = true" altura="34px" largura="100%"></app-input>
+          <app-input titulo="Logradouro" [obrigatorio]="true" [textoNum]="true" [valor]="usuario.logradouro" (mudou)="usuario.logradouro = $event" (focusout)="camposTocados.logradouro = true" altura="34px" largura="100%"></app-input>
         </div>
 
         <div class="linha-flex-ajustada recuo-superior">
           <div class="flex-1">
-            <app-input titulo="Número" [obrigatorio]="true" [inteiro] = "true" [valor]="usuario.numero" (mudou)="usuario.numero = $event" (focusout)="camposTocados.numero = true" altura="34px" largura="100%"></app-input>
+            <app-input titulo="Número" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.numero" (mudou)="usuario.numero = $event" (focusout)="camposTocados.numero = true" altura="34px" largura="100%"></app-input>
           </div>
           <div class="flex-1">
-            <app-input titulo="Complemento" [textoNum] = "true" [valor]="usuario.complemento" (mudou)="usuario.complemento = $event" altura="34px" largura="100%"></app-input>
+            <app-input titulo="Complemento" [textoNum]="true" [valor]="usuario.complemento" (mudou)="usuario.complemento = $event" altura="34px" largura="100%"></app-input>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@
       <div class="secao-ajustada">
         <h3 class="titulo-secao">Acesso</h3>
         <div class="wrapper-individual">
-          <app-input titulo="E-mail" [obrigatorio]="true" [email] = "true" [valor]="usuario.email" (mudou)="usuario.email = $event" (focusout)="camposTocados.email = true" altura="34px" largura="100%"></app-input>
+          <app-input titulo="E-mail" [obrigatorio]="true" [email]="true" [valor]="usuario.email" (mudou)="usuario.email = $event" (focusout)="camposTocados.email = true" altura="34px" largura="100%"></app-input>
         </div>
       </div>
 

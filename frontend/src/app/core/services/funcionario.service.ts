@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Funcionario } from '../models/funcionario.model';
 import { IFuncionarioService } from '../interfaces/funcionario.service.interface';
 import { Observable } from 'rxjs/internal/Observable';
@@ -7,6 +7,7 @@ import { catchError } from 'rxjs/internal/operators/catchError';
 import { map } from 'rxjs/internal/operators/map';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { NotificationService } from './notification.service';
+import { Page } from '../dto/response/page.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -124,5 +125,18 @@ export class FuncionarioService implements IFuncionarioService {
             throw error;
         })
     );
+  }
+
+  listarComFiltros(termo: string, inativas: boolean, page: number, size: number): Observable<Page<Funcionario>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('inativas', inativas.toString());
+
+    if (termo) {
+      params = params.set('termo', termo);
+    }
+
+    return this.http.get<Page<Funcionario>>(`${this.apiUrl}/filtros`, { headers: defaultHttpOptions.headers, params });
   }
 }

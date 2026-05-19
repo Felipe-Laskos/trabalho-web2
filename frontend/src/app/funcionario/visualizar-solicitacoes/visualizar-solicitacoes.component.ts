@@ -51,8 +51,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   filtro: 'TODAS' | 'HOJE' | 'PERIODO' = 'TODAS';
   dataInicio?: string;
   dataFim?: string;
-
-  solicitacoesFiltradas: Solicitacao[] = [];
+  solicitacoes: Solicitacao[] = [];
 
   colunas: ColunaTabela[] = [
     { campo: 'id', titulo: 'ID', tipo: 'texto' },
@@ -64,7 +63,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
     },
     { campo: 'dataHoraCriacao', titulo: 'Data', tipo: 'data' },
     { campo: 'estadoAtual', titulo: 'Status', tipo: 'estado' },
-    { campo: 'valorOrcado', titulo: 'Valor', tipo: 'texto' },
+    { campo: 'valorOrcado', titulo: 'Valor', tipo: 'moeda' },
     { campo: 'acao', titulo: 'Ação', tipo: 'acao' },
   ];
 
@@ -91,14 +90,13 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   paginaAtual: number = 0;
   itensPorPagina: number = 4;
-  totalItens: number = 0;
+  totalElements: number = 0;
 
   ngOnInit(): void {
     this.carregarSolicitacoes();
   }
 
   carregarSolicitacoes(): void {
-
     this.solicitacaoService
       .listarComFiltros(
         this.filtro,
@@ -108,16 +106,11 @@ export class VisualizarSolicitacoesComponent implements OnInit {
         this.dataFim
       )
       .subscribe({
-
         next: (pagina) => {
-
-          this.solicitacoesFiltradas = pagina.content;
-
-          this.totalItens = pagina.totalElements;
+          this.solicitacoes = pagina.content;
+          this.totalElements = pagina.totalElements;
         },
-
         error: (erro) => {
-
           this.dialog.open(ModalGenericoComponent, {
             data: {
               titulo: 'Erro',
@@ -131,6 +124,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
         }
       });
   }
+
   getFuncionarioLogadoId(): number | undefined {
     return this.authService.getId();
   }
@@ -163,8 +157,6 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((confirmado) => {
           if (confirmado && item) {
-
-
             this.solicitacaoService.finalizar(item.id!).subscribe({
               next: (solicitacaoAtualizada) => {
                 item.estadoAtual = solicitacaoAtualizada.estadoAtual;
@@ -183,22 +175,17 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   }
 
   onFiltroChange(valor: string | number) {
-
     this.filtro = valor as 'TODAS' | 'HOJE' | 'PERIODO';
     this.aplicarFiltros();
   }
 
   aplicarFiltros(): void {
-
     this.paginaAtual = 0;
-
     this.carregarSolicitacoes();
   }
 
   onPaginaChange(pagina: number) {
-
     this.paginaAtual = pagina - 1;
-
     this.carregarSolicitacoes();
   }
 }

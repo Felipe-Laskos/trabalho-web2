@@ -9,7 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { PesquisaComponent } from '../../shared/pesquisa/pesquisa.component';
-import { TabelaComponent } from '../../shared/tabela/tabela.component';
+import { ColunaTabela, TabelaComponent } from '../../shared/tabela/tabela.component';
 import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 
@@ -37,21 +37,21 @@ export class CrudFuncionariosComponent implements OnInit {
   private dialog = inject(MatDialog);
   private aviso = inject(MatSnackBar);
 
-  colunas = [
-    { campo: 'id', titulo: 'ID' },
-    { campo: 'nome', titulo: 'Nome', truncar: 20, tipo: 'nome' as const },
-    { campo: 'cpf', titulo: 'CPF', tipo: 'cpf' as const },
-    { campo: 'email', titulo: 'Email', truncar: 20 },
-    { campo: 'dataNascimento', titulo: 'Data de Nascimento' },
-    { campo: 'cargo', titulo: 'Cargo', truncar: 20, tipo: 'nome' as const },
+ colunas: ColunaTabela[] = [
+    { campo: 'id', titulo: 'ID', tipo: 'texto' },
+    { campo: 'nome', titulo: 'Nome', truncar: 20, tipo: 'nome' },
+    { campo: 'cpf', titulo: 'CPF', tipo: 'cpf' },
+    { campo: 'email', titulo: 'Email', truncar: 20, tipo: 'texto' },
+    { campo: 'dataNascimento', titulo: 'Data de Nascimento', tipo: 'data' },
+    { campo: 'cargo', titulo: 'Cargo', truncar: 20, tipo: 'nome' },
   ];
 
   dados: Funcionario[] = [];
   funcionarioSelecionado?: Funcionario;
-
-  paginaAtual: number = 1;
+  paginaAtual: number = 0;
   itensPorPagina: number = 5;
-  mostrarInativas: boolean = true;
+  totalElements: number = 0;
+  mostrarInativas: boolean = false;
   termoPesquisa: string = '';
 
   ngOnInit(): void {
@@ -59,46 +59,38 @@ export class CrudFuncionariosComponent implements OnInit {
   }
 
   private carregarDados(): void {
-    this.funcionarioService.listarTodos().subscribe({
-      next: funcionarios => {
-        this.dados = funcionarios;
+    this.funcionarioService.listarComFiltros(
+        this.termoPesquisa, 
+        this.mostrarInativas, 
+        this.paginaAtual, 
+        this.itensPorPagina
+    ).subscribe({
+      next: pagina => {
+        this.dados = pagina.content;
+        this.totalElements = pagina.totalElements;
+        this.funcionarioSelecionado = undefined;
+      },
+      error: () => {
+        this.aviso.open('Erro ao carregar os dados.', 'OK', { duration: 3000 });
       }
     });
   }
 
   selecionarPagina(pagina: number): void {
-    this.paginaAtual = pagina;
-  }
-
-  get dadosPaginados(): Funcionario[] {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    const fim = inicio + this.itensPorPagina;
-    return this.funcionariosFiltrados.slice(inicio, fim);
-  }
-
-  get funcionariosFiltrados(): Funcionario[] {
-    const termo = this.termoPesquisa.toLowerCase();
-    let filtrados = this.dados.filter(f =>
-      f.id?.toString().includes(termo) ||
-      f.nome.toLowerCase().includes(termo) ||
-      f.cargo.toLowerCase().includes(termo) ||
-      f.email.toLowerCase().includes(termo)
-    );
-
-    if (this.mostrarInativas) {
-      filtrados = filtrados.filter(f => f.ativo === true);
-    }
-
-    return filtrados;
+    this.paginaAtual = pagina - 1;
+    this.carregarDados();
   }
 
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.paginaAtual = 1;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   toggleInativas(): void {
     this.mostrarInativas = !this.mostrarInativas;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   selecionarLinha(item: any): void {
@@ -133,41 +125,17 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
-        const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
-        if (emailEmFuncionario || emailEmCliente) {
-          this.aviso.open('E-mail já cadastrado no sistema. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-          return;
-        }
-
-        const cpfEmFuncionario = this.funcionarioService.buscarPorCpf(result.cpf);
-        const cpfEmCliente = this.clienteService.buscarPorCpf(result.cpf);
-
-        if (cpfEmFuncionario || cpfEmCliente) {
-          this.aviso.open('CPF já cadastrado no sistema. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-          return;
-        }
-
-        if (result.senha.length < 4) {
-          this.aviso.open('A senha deve conter no mínimo 4 caracteres. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-          return;
-        }
-
-        if (result.dataNascimento) {
-          const dataNascimento = new Date(result.dataNascimento);
-          const hoje = new Date();
-          const idade = hoje.getFullYear() - dataNascimento.getFullYear();
-          if (idade < 18) {
-            this.aviso.open('O funcionário deve ser maior de idade. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-            return;
-          }
-        }
+        const cpfLimpo = result.cpf.replace(/\D/g, '');
 
         const novo: Funcionario = {
           ...result,
+          cpf: cpfLimpo,
           ativo: true
         };
-        this.funcionarioService.inserir(novo).subscribe(() => this.carregarDados());
+        this.funcionarioService.inserir(novo).subscribe({
+          next: () => this.carregarDados(),
+          error: (err: any) => this.aviso.open(err?.error?.message || 'Erro ao adicionar funcionário', 'OK', { duration: 3000 })
+        });
       }
     });
   }
@@ -194,36 +162,13 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && this.funcionarioSelecionado) {
-        if (result.email !== this.funcionarioSelecionado.email) {
-          const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
-          const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
-          if (emailEmFuncionario || emailEmCliente) {
-            this.aviso.open('E-mail já cadastrado no sistema. Realize nova tentativa.', 'OK', { 
-              duration: 3000, 
-              verticalPosition: 'top' 
-            });
-            return;
-          }
-        }
-
-        if (result.dataNascimento) {
-          const dataNascimento = new Date(result.dataNascimento);
-          const hoje = new Date();
-          const idade = hoje.getFullYear() - dataNascimento.getFullYear();
-          if (idade < 18) {
-            this.aviso.open('O funcionário deve ser maior de idade. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-            return;
-          }
-        }
-
         const atualizado: Funcionario = {
           ...this.funcionarioSelecionado,
           ...result,
-          ativo: true
         };
-        this.funcionarioService.atualizar(atualizado).subscribe(() => {
-          this.carregarDados();
-          this.funcionarioSelecionado = undefined;
+        this.funcionarioService.atualizar(atualizado).subscribe({
+            next: () => this.carregarDados(),
+            error: (err: any) => this.aviso.open(err?.error?.message || 'Erro ao atualizar funcionário', 'OK', { duration: 3000 })
         });
       }
     });
@@ -240,17 +185,11 @@ export class CrudFuncionariosComponent implements OnInit {
       return;
     }
 
-    const ativos = this.dados.filter(f => f.ativo !== false);
-    if (ativos.length <= 1) {
-      this.aviso.open('Não é possível remover o último funcionário!', 'OK', { duration: 3000, verticalPosition: 'top' });
-      return;
-    }
-
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
       data: {
         tipo: 'confirmacao',
         titulo: 'Confirmar Exclusão',
-        mensagem: 'Tem certeza que deseja desativar este funcionário?',
+        mensagem: `Tem certeza que deseja desativar o funcionário ${funcionario.nome}?`,
         textoConfirmar: 'Sim',
         textoCancelar: 'Não'
       }
@@ -259,9 +198,9 @@ export class CrudFuncionariosComponent implements OnInit {
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
         funcionario.ativo = false;
-        this.funcionarioService.atualizar(funcionario).subscribe(() => {
-          this.carregarDados();
-          this.funcionarioSelecionado = undefined;
+        this.funcionarioService.atualizar(funcionario).subscribe({
+          next: () => this.carregarDados(),
+          error: (err: any) => this.aviso.open(err?.error?.message || 'Erro ao desativar funcionário', 'OK', { duration: 3000 })
         });
       }
     });
