@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/funcionarios")
@@ -31,7 +32,8 @@ public class FuncionarioController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<FuncionarioResponseDTO>> listar(Pageable pageable) {
+    public ResponseEntity<Page<FuncionarioResponseDTO>> listar(
+        @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
         Page<Funcionario> lista = service.listarTodos(pageable);
         Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);

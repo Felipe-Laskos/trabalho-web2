@@ -9,9 +9,6 @@ import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundExceptio
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,8 +24,8 @@ public class CategoriaEquipamentoService {
         return repository.findAll(pageable);
     }
 
-    public List<CategoriaEquipamento> listarAtivas() {
-        return repository.findByAtivoTrue();
+    public Page<CategoriaEquipamento> listarAtivas(Pageable pageable) {
+        return repository.findByAtivoTrue(pageable);
     }
 
     public CategoriaEquipamento buscarPorId(Long id) {

@@ -62,9 +62,10 @@
         </div>
 
         <app-paginacao
-          [totalElements]="receitasPorCategoria.length"
+          [totalElements]="totalElements"
           [itensPorPagina]="itensPorPagina"
           [number]="paginaAtual"
+          [totalPaginas]="totalPaginas"
           (paginaChange)="onPaginaMudou($event)">
         </app-paginacao>
       } @else {

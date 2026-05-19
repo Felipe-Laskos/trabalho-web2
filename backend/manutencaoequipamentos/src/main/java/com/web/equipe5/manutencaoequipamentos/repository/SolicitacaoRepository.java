@@ -36,10 +36,19 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
                 @Param("inicio") LocalDateTime inicio,
                 @Param("fim") LocalDateTime fim
         );
+
+    Page<Solicitacao> findByDataHoraCriacaoBetween(
+        LocalDateTime inicio,
+        LocalDateTime fim,
+        Pageable pageable
+    );
     
+
+    // Consulta LIST para PDF
     @Query(value = """
         SELECT
             c.nome as nome,
+            COUNT(*) as quantidade,
             SUM(s.valor_orcado) as total
         FROM solicitacoes s
         JOIN categorias c
@@ -49,10 +58,30 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
         """, nativeQuery = true)
     List<ReceitaPorCategoriaProjection>
     findReceitasAgrupadasPorCategoria();
-    Page<Solicitacao> findByDataHoraCriacaoBetween(
-        LocalDateTime inicio,
-        LocalDateTime fim,
-        Pageable pageable
-);
-}
 
+    // Consulta PAGE para tela
+    @Query(value = """
+        SELECT
+            c.nome as nome,
+            COUNT(*) as quantidade,
+            SUM(s.valor_orcado) as total
+        FROM solicitacoes s
+        JOIN categorias c
+            ON s.categoria_id = c.id
+        WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+        GROUP BY c.nome
+        """,
+        countQuery = """
+            SELECT COUNT(DISTINCT c.nome)
+            FROM solicitacoes s
+            JOIN categorias c
+                ON s.categoria_id = c.id
+            WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+            """,
+        nativeQuery = true
+    )
+    Page<ReceitaPorCategoriaProjection>
+    findReceitasAgrupadasPorCategoria(Pageable pageable);
+
+    
+}

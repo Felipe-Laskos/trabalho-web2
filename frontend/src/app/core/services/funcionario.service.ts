@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Funcionario } from '../models/funcionario.model';
 import { IFuncionarioService } from '../interfaces/funcionario.service.interface';
 import { Observable } from 'rxjs/internal/Observable';
@@ -7,6 +7,7 @@ import { catchError } from 'rxjs/internal/operators/catchError';
 import { map } from 'rxjs/internal/operators/map';
 import { API_URL, defaultHttpOptions } from '../config/http.config';
 import { NotificationService } from './notification.service';
+import { Page } from '../dto/response/page.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +17,22 @@ export class FuncionarioService implements IFuncionarioService {
 
   constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
-  listarTodos(): Observable<Funcionario[]> {
-    return this.http.get<Funcionario[]>(
+  listarTodos(page: number, size: number): Observable<Page<Funcionario>> {
+
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    return this.http.get<Page<Funcionario>>(
       this.apiUrl,
-      defaultHttpOptions
-    ).pipe(
-      map(response => response),
+      {
+        params,
+        ...defaultHttpOptions
+      }).pipe(
       catchError(error => {
-        this.notificationService.exibirErro('Erro ao listar funcionários.');
+        this.notificationService.exibirErro(
+          'Erro ao listar funcionários.'
+        );
         throw error;
       })
     );

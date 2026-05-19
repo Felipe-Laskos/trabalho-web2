@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [MatIconModule, MatButtonModule],
   templateUrl: './botao.component.html',
-  styleUrl: './botao.component.css'
+  styleUrls: ['./botao.component.css']
 })
 export class BotaoComponent {
   @Input() texto: string = 'Clique Aqui';

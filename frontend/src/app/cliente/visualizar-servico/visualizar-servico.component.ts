@@ -34,6 +34,12 @@ export class VisualizarServicoComponent implements OnInit {
   historicoOrdenado: HistoricoSolicitacao[] = [];
   carregamento = false;
 
+  paginaAtual: number = 0;
+  itensPorPagina: number = 10;
+  mostrarInativas: boolean = true;
+  termoPesquisa: string = '';
+  totalPaginas: number = 0;
+  totalElements: number = 0;
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -61,12 +67,16 @@ export class VisualizarServicoComponent implements OnInit {
   }
 
   buscarHistoricoReal(solicitacaoId: number): void {
-    this.historicoService.listarPorSolicitacao(solicitacaoId).subscribe({
-      next: (historico) => {
-        this.historicoOrdenado = historico;
-      }, 
-      error: (err) => { 
-        this.notificationService.exibirErro(err);
+      this.historicoService.listarPorSolicitacao(
+      solicitacaoId,
+      this.paginaAtual,
+      this.itensPorPagina
+    ).subscribe({
+      next: (response) => {
+        this.historicoOrdenado = response.content;
+        this.totalPaginas = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.paginaAtual = response.number;
       }
     });
   }

@@ -19,14 +19,15 @@
 
 <app-tabela
   [colunas]="colunas"
-  [dados]="dadosPaginados"
+  [dados]="funcionariosFiltrados"
   (linhaSelecionada)="selecionarLinha($event)">
 </app-tabela>
 
 <app-paginacao
-  [totalElements]="funcionariosFiltrados.length"
+  [totalElements]="totalElements"
   [itensPorPagina]="itensPorPagina"
   [number]="paginaAtual"
+  [totalPaginas]="totalPaginas"
   (paginaChange)="selecionarPagina($event)">
 </app-paginacao>
 

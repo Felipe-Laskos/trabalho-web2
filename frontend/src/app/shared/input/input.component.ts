@@ -7,7 +7,7 @@ import { InputValidationDirective } from '../directives/input-validation.directi
   standalone: true,
   imports: [CommonModule, InputValidationDirective],
   templateUrl: './input.component.html',
-  styleUrl: './input.component.css'
+  styleUrls: ['./input.component.css']
 })
 export class InputComponent {
   @Input() tipo: string = 'text';

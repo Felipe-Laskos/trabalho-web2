@@ -49,31 +49,36 @@ export class CrudFuncionariosComponent implements OnInit {
   dados: Funcionario[] = [];
   funcionarioSelecionado?: Funcionario;
 
-  paginaAtual: number = 1;
-  itensPorPagina: number = 5;
+  paginaAtual: number = 0;
+  itensPorPagina: number = 10;
   mostrarInativas: boolean = true;
   termoPesquisa: string = '';
+  totalPaginas: number = 0;
+  totalElements: number = 0;
 
   ngOnInit(): void {
     this.carregarDados();
   }
 
   private carregarDados(): void {
-    this.funcionarioService.listarTodos().subscribe({
-      next: funcionarios => {
-        this.dados = funcionarios;
+    this.funcionarioService
+    .listarTodos(
+      this.paginaAtual,
+      this.itensPorPagina
+    )
+    .subscribe({
+      next: (response) => {
+        this.dados = response.content;
+        this.totalPaginas = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.paginaAtual = response.number;
       }
     });
   }
 
   selecionarPagina(pagina: number): void {
     this.paginaAtual = pagina;
-  }
-
-  get dadosPaginados(): Funcionario[] {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    const fim = inicio + this.itensPorPagina;
-    return this.funcionariosFiltrados.slice(inicio, fim);
+    this.carregarDados();
   }
 
   get funcionariosFiltrados(): Funcionario[] {
@@ -94,7 +99,8 @@ export class CrudFuncionariosComponent implements OnInit {
 
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.paginaAtual = 1;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   toggleInativas(): void {

@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [MatCardModule, MatIconModule],
   templateUrl: './card-info.component.html',
-  styleUrl: './card-info.component.css'
+  styleUrls: ['./card-info.component.css']
 })
 export class CardInfoComponent {
   @Input() tituloInfo: string = 'Título Info';

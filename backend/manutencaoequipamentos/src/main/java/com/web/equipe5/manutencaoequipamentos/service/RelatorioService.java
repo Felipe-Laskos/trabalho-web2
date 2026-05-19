@@ -7,6 +7,9 @@ import com.itextpdf.layout.element.Paragraph;
 import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorDiaProjection;
 import com.web.equipe5.manutencaoequipamentos.dto.ReceitaPorCategoriaProjection;
 import com.web.equipe5.manutencaoequipamentos.repository.SolicitacaoRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +40,10 @@ public class RelatorioService {
 
     public List<ReceitaPorCategoriaProjection> gerarRelatorioCategorias() {
         return solicitacaoRepository.findReceitasAgrupadasPorCategoria();
+    }
+
+    public Page<ReceitaPorCategoriaProjection> gerarRelatorioCategorias(Pageable pageable) {
+        return solicitacaoRepository.findReceitasAgrupadasPorCategoria(pageable);
     }
     
     public byte[] gerarPdf(LocalDate inicio, LocalDate fim) throws IOException {
