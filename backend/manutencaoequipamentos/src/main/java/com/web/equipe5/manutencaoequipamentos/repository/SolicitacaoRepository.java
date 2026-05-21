@@ -18,8 +18,53 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     Page<Solicitacao> findByClienteId(Long clienteId, Pageable pageable);
 
     Page<Solicitacao> findByEstadoAtual(EstadoSolicitacao estadoAtual, Pageable pageable);
-    Page<Solicitacao> findAllByOrderByDataHoraCriacaoAsc(Pageable pageable);
+    
+    @Query(
+        value = """
+            SELECT s
+            FROM Solicitacao s
+            WHERE
+                (CAST(:estado AS string) IS NULL
+                OR s.estadoAtual = :estado)
 
+            AND
+                (CAST(:dataInicio AS timestamp) IS NULL
+                OR s.dataHoraCriacao >= :dataInicio)
+
+            AND
+                (CAST(:dataFim AS timestamp) IS NULL
+                OR s.dataHoraCriacao <= :dataFim)
+        """,
+
+        countQuery = """
+            SELECT COUNT(s)
+            FROM Solicitacao s
+            WHERE
+                (CAST(:estado AS string) IS NULL
+                OR s.estadoAtual = :estado)
+
+            AND
+                (CAST(:dataInicio AS timestamp) IS NULL
+                OR s.dataHoraCriacao >= :dataInicio)
+
+            AND
+                (CAST(:dataFim AS timestamp) IS NULL
+                OR s.dataHoraCriacao <= :dataFim)
+        """
+    )
+    Page<Solicitacao> buscarComFiltros(
+            @Param("estado")
+            EstadoSolicitacao estado,
+
+            @Param("dataInicio")
+            LocalDateTime dataInicio,
+
+            @Param("dataFim")
+            LocalDateTime dataFim,
+
+            Pageable pageable
+    );
+    
     @Query(value = """
         SELECT
                 CAST(s.data_hora_pagamento AS DATE) as data,

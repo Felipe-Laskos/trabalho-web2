@@ -154,10 +154,34 @@ public class SolicitacaoService {
         return repository.findByEstadoAtual(estado, pageable);
     }
 
-    public Page<Solicitacao> listarTodos(Pageable pageable, AuthenticatedPrincipal principal) {
+    public Page<Solicitacao> listarTodos(
+            EstadoSolicitacao estado,
+            LocalDate dataInicio,
+            LocalDate dataFim,
+            Pageable pageable,
+            AuthenticatedPrincipal principal
+    ) {
+
         exigirFuncionario(principal);
-        return repository.findAllByOrderByDataHoraCriacaoAsc(pageable);
-    }
+
+        LocalDateTime inicio = null;
+        LocalDateTime fim = null;
+
+        if (dataInicio != null) {
+            inicio = dataInicio.atStartOfDay();
+        }
+
+        if (dataFim != null) {
+            fim = dataFim.atTime(23, 59, 59);
+        }
+
+        return repository.buscarComFiltros(
+                estado,
+                inicio,
+                fim,
+                pageable
+        );
+}
 
     public Solicitacao buscarPorId(Long id) {
         return repository.findById(id)

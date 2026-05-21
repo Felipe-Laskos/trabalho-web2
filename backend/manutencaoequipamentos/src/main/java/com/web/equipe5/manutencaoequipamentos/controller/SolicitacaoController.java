@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -154,13 +157,38 @@ public class SolicitacaoController {
 
 
     @GetMapping
-    public ResponseEntity<Page<SolicitacaoResponseDTO>> listarTodos(
-            @AuthenticationPrincipal AuthenticatedPrincipal principal,
+    public ResponseEntity<Page<SolicitacaoResponseDTO>>
+    listarTodos(
+
+            @RequestParam(required = false)
+            EstadoSolicitacao estado,
+
+            @RequestParam(required = false)
+            LocalDate dataInicio,
+
+            @RequestParam(required = false)
+            LocalDate dataFim,
+
+            @AuthenticationPrincipal
+            AuthenticatedPrincipal principal,
+
+            @PageableDefault(
+                    size = 5,
+                    sort = "dataHoraCriacao"
+            )
             Pageable pageable
     ) {
-        Page<SolicitacaoResponseDTO> solicitacoes = service
-                .listarTodos(pageable, principal)
-                .map(SolicitacaoMapper::toDTO);
+
+        Page<SolicitacaoResponseDTO> solicitacoes =
+                service
+                        .listarTodos(
+                                estado,
+                                dataInicio,
+                                dataFim,
+                                pageable,
+                                principal
+                        )
+                        .map(SolicitacaoMapper::toDTO);
 
         return ResponseEntity.ok(solicitacoes);
     }
