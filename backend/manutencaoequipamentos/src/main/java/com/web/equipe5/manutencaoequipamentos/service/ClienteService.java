@@ -160,7 +160,7 @@ public class ClienteService {
         return clienteRepository.save(clienteExistente);
     }
 
-    public Cliente deletar(Long id) {
+    public Cliente deletar(Long id, Long idFuncionarioLogado) {
 
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado")); 
