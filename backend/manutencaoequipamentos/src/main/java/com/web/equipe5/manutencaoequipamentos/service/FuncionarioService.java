@@ -76,6 +76,18 @@ public class FuncionarioService {
         if (requisicao.dataNascimento() == null) {
             throw new BusinessRuleException("Data de nascimento do funcionário é obrigatório.");
         }
+
+        if (requisicao.dataNascimento().isAfter(java.time.LocalDate.now())) {
+            throw new BusinessRuleException("Data de nascimento não pode ser no futuro.");
+        }
+
+        int idade = java.time.Period
+            .between(requisicao.dataNascimento(), java.time.LocalDate.now())
+            .getYears();
+
+        if (idade < 18) {
+            throw new BusinessRuleException("O funcionário deve ser maior de idade.");
+        }
         
         if (repository.existsByCpf(requisicao.cpf())) {
             throw new BusinessRuleException("Já existe um funcionário com este CPF.");

@@ -21,7 +21,8 @@ export class FuncionarioService implements IFuncionarioService {
 
     const params = new HttpParams()
       .set('page', page)
-      .set('size', size);
+      .set('size', size)
+      .set('sort', 'nome,asc');
 
     return this.http.get<Page<Funcionario>>(
       this.apiUrl,
@@ -84,10 +85,6 @@ export class FuncionarioService implements IFuncionarioService {
       map(response => {
         this.notificationService.exibirSucesso('Funcionário inserido com sucesso!');
         return response;
-      }),
-      catchError(error => {
-        this.notificationService.exibirErro('Erro ao inserir funcionário.');
-        throw error;
       })
     );
   }

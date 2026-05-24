@@ -8,6 +8,7 @@ import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generi
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
 import { PesquisaComponent } from '../../shared/pesquisa/pesquisa.component';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-crud-categoria',
@@ -27,6 +28,7 @@ export class CrudCategoriaComponent implements OnInit {
 
   private categoriaService = inject(CategoriaService);
   private dialog = inject(MatDialog);
+  private notificationService = inject(NotificationService);
 
   colunas = [
     { campo: 'id', titulo: 'ID' },
@@ -37,7 +39,7 @@ export class CrudCategoriaComponent implements OnInit {
   categoriaSelecionada?: CategoriaEquipamento;
 
   paginaAtual: number = 0;
-  itensPorPagina: number = 5;
+  itensPorPagina: number = 10;
   mostrarInativas: boolean = true;
   termoPesquisa: string = '';
   totalPaginas: number = 0;

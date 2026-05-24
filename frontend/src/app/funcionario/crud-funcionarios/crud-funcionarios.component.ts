@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Funcionario } from '../../core/models/funcionario.model';
 import { FuncionarioService } from '../../core/services/funcionario.service';
 import { ClienteService } from '../../core/services/cliente.service';
@@ -12,6 +11,7 @@ import { PesquisaComponent } from '../../shared/pesquisa/pesquisa.component';
 import { TabelaComponent } from '../../shared/tabela/tabela.component';
 import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-crud-funcionarios',
@@ -20,7 +20,6 @@ import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
     CommonModule,
     TabelaComponent,
     MatDialogModule,
-    MatSnackBarModule,
     BotaoComponent,
     PaginacaoComponent,
     PesquisaComponent,
@@ -35,7 +34,7 @@ export class CrudFuncionariosComponent implements OnInit {
   private clienteService = inject(ClienteService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
-  private aviso = inject(MatSnackBar);
+  private notificationService = inject(NotificationService);
 
   colunas = [
     { campo: 'id', titulo: 'ID' },
@@ -138,43 +137,12 @@ export class CrudFuncionariosComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
-        const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
-        if (emailEmFuncionario || emailEmCliente) {
-          this.aviso.open('E-mail já cadastrado no sistema. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-          return;
-        }
-
-        const cpfEmFuncionario = this.funcionarioService.buscarPorCpf(result.cpf);
-        const cpfEmCliente = this.clienteService.buscarPorCpf(result.cpf);
-
-        if (cpfEmFuncionario || cpfEmCliente) {
-          this.aviso.open('CPF já cadastrado no sistema. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-          return;
-        }
-
-        if (result.senha.length < 4) {
-          this.aviso.open('A senha deve conter no mínimo 4 caracteres. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-          return;
-        }
-
-        if (result.dataNascimento) {
-          const dataNascimento = new Date(result.dataNascimento);
-          const hoje = new Date();
-          const idade = hoje.getFullYear() - dataNascimento.getFullYear();
-          if (idade < 18) {
-            this.aviso.open('O funcionário deve ser maior de idade. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
-            return;
-          }
-        }
-
         const novo: Funcionario = {
           ...result,
           ativo: true
         };
+        this.notificationService.exibirSucesso('Funcionário cadastrado com sucesso!');
         this.funcionarioService.inserir(novo).subscribe(() => this.carregarDados());
-      }
     });
   }
 
@@ -204,10 +172,7 @@ export class CrudFuncionariosComponent implements OnInit {
           const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
           const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
           if (emailEmFuncionario || emailEmCliente) {
-            this.aviso.open('E-mail já cadastrado no sistema. Realize nova tentativa.', 'OK', { 
-              duration: 3000, 
-              verticalPosition: 'top' 
-            });
+            this.notificationService.exibirAviso('E-mail já cadastrado no sistema. Realize nova tentativa.');
             return;
           }
         }
@@ -217,7 +182,7 @@ export class CrudFuncionariosComponent implements OnInit {
           const hoje = new Date();
           const idade = hoje.getFullYear() - dataNascimento.getFullYear();
           if (idade < 18) {
-            this.aviso.open('O funcionário deve ser maior de idade. Realize nova tentativa.', 'OK', { duration: 3000, verticalPosition: 'top' });
+            this.notificationService.exibirAviso('O funcionário deve ser maior de idade. Realize nova tentativa.');
             return;
           }
         }
@@ -227,6 +192,7 @@ export class CrudFuncionariosComponent implements OnInit {
           ...result,
           ativo: true
         };
+        this.notificationService.exibirSucesso('Funcionário atualizado com sucesso!');
         this.funcionarioService.atualizar(atualizado).subscribe(() => {
           this.carregarDados();
           this.funcionarioSelecionado = undefined;
@@ -242,13 +208,13 @@ export class CrudFuncionariosComponent implements OnInit {
 
     const emailLogado = this.authService.getEmail();
     if (funcionario.email === emailLogado) {
-      this.aviso.open('Você não pode remover a si mesmo!', 'OK', { duration: 3000, verticalPosition: 'top' });
+      this.notificationService.exibirAviso('Você não pode remover a si mesmo!');
       return;
     }
 
     const ativos = this.dados.filter(f => f.ativo !== false);
     if (ativos.length <= 1) {
-      this.aviso.open('Não é possível remover o último funcionário!', 'OK', { duration: 3000, verticalPosition: 'top' });
+      this.notificationService.exibirAviso('Não é possível remover o último funcionário!');
       return;
     }
 
@@ -266,6 +232,7 @@ export class CrudFuncionariosComponent implements OnInit {
       if (confirmado) {
         funcionario.ativo = false;
         this.funcionarioService.atualizar(funcionario).subscribe(() => {
+          this.notificationService.exibirSucesso('Funcionário desativado com sucesso!');
           this.carregarDados();
           this.funcionarioSelecionado = undefined;
         });

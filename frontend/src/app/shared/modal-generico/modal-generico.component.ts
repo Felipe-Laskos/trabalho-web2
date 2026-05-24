@@ -8,6 +8,7 @@ import { cpfValidator } from '../validators/cpf.validator';
 import { FormControl } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { InputComponent } from '../input/input.component';
+import { NotificationService } from '../../core/services/notification.service';
 
 export interface CampoFormulario {
   label: string;
@@ -54,7 +55,8 @@ export class ModalGenericoComponent {
 
   constructor(
     public dialogRef: MatDialogRef<ModalGenericoComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ModalDados
+    @Inject(MAT_DIALOG_DATA) public data: ModalDados,
+    private notificationService: NotificationService
   ) {
     if (this.data.tipo === 'formulario') {
       this.formData = { ...this.data.formData };
@@ -74,7 +76,7 @@ export class ModalGenericoComponent {
       const erro = cpfValidator(control);
 
       if (erro) {
-        alert('CPF inválido!');
+        this.notificationService.exibirAviso('CPF inválido!');
         return;
       }
 
@@ -94,7 +96,7 @@ export class ModalGenericoComponent {
     });
 
     if (camposInvalidos && camposInvalidos.length > 0) {
-      alert('Preencha todos os campos obrigatórios!');
+      this.notificationService.exibirAviso('Preencha todos os campos obrigatórios!');
       return;
     }
 

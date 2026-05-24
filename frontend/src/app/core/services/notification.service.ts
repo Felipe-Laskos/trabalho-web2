@@ -46,6 +46,7 @@ export class NotificationService {
     else if (erro.status >= 500) {
         msg = 'Erro interno no servidor. Tente novamente mais tarde.';
     }
+  }
 
     this.snackBar.open(msg, 'Fechar', {
       duration: 5000,
@@ -53,6 +54,5 @@ export class NotificationService {
       horizontalPosition: 'right',
       verticalPosition: 'top'
      });
-    }
   }
 }
