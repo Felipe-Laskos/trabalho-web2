@@ -38,6 +38,10 @@ public class CategoriaEquipamentoService {
             throw new BusinessRuleException("Nome da categoria é obrigatório");
         }
 
+        if (repository.existsByNomeIgnoreCase(requisicao.nome().trim())) {
+            throw new BusinessRuleException("Já existe uma categoria com esse nome");
+        }
+
         CategoriaEquipamento categoria = CategoriaEquipamentoMapper.toEntity(requisicao);
         if (categoria.getAtivo() == null) {
             categoria.setAtivo(true);

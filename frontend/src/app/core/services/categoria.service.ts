@@ -19,7 +19,8 @@ export class CategoriaService implements ICategoriaService {
   listarTodos(page: number, size: number): Observable<Page<CategoriaEquipamento>> {
     const params = new HttpParams()
       .set('page', page)
-      .set('size', size);
+      .set('size', size)
+      .set('sort', 'nome,asc');
 
     return this.http.get<Page<CategoriaEquipamento>>(
       this.apiUrl,
@@ -66,13 +67,7 @@ export class CategoriaService implements ICategoriaService {
       this.apiUrl,
       categoria,
       defaultHttpOptions    
-    ).pipe(
-      map(response => response),
-      catchError(error => {
-        this.notificationService.exibirErro('Erro ao inserir categoria.');
-        throw error;
-      })
-    );
+    )
   }
 
   atualizar(categoria: CategoriaEquipamento): Observable<CategoriaEquipamento> {

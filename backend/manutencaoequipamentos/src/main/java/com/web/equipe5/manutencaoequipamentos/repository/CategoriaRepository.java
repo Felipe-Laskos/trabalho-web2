@@ -9,4 +9,5 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface CategoriaRepository extends JpaRepository<CategoriaEquipamento, Long> {
     Page<CategoriaEquipamento> findByAtivoTrue(Pageable pageable);
+    boolean existsByNomeIgnoreCase(String nome);
 }
