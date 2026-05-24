@@ -137,12 +137,44 @@ export class CrudFuncionariosComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
+        const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
+        if (emailEmFuncionario || emailEmCliente) {
+          this.notificationService.exibirAviso('E-mail já cadastrado no sistema. Realize nova tentativa.');
+          return;
+        }
+
+        const cpfEmFuncionario = this.funcionarioService.buscarPorCpf(result.cpf);
+        const cpfEmCliente = this.clienteService.buscarPorCpf(result.cpf);
+
+        if (cpfEmFuncionario || cpfEmCliente) {
+          this.notificationService.exibirAviso('CPF já cadastrado no sistema. Realize nova tentativa.');
+          return;
+        }
+
+        if (result.senha.length < 4) {
+          this.notificationService.exibirAviso('A senha deve conter no mínimo 4 caracteres. Realize nova tentativa.');
+          return;
+        }
+
+        if (result.dataNascimento) {
+          const dataNascimento = new Date(result.dataNascimento);
+          const hoje = new Date();
+          const idade = hoje.getFullYear() - dataNascimento.getFullYear();
+          if (idade < 18) {
+            this.notificationService.exibirAviso('O funcionário deve ser maior de idade. Realize nova tentativa.');
+            return;
+          }
+        }
+        
         const novo: Funcionario = {
           ...result,
           ativo: true
         };
         this.notificationService.exibirSucesso('Funcionário cadastrado com sucesso!');
         this.funcionarioService.inserir(novo).subscribe(() => this.carregarDados());
+      }
     });
   }
 
