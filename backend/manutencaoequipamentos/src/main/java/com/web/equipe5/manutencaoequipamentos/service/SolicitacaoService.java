@@ -14,6 +14,7 @@ import com.web.equipe5.manutencaoequipamentos.repository.CategoriaRepository;
 import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
+import com.web.equipe5.manutencaoequipamentos.state.EstadoSolicitacaoFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -50,9 +51,7 @@ public class SolicitacaoService {
 
         exigirClienteDono(s, principal);
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.ORCADA) {
-            throw new BusinessRuleException("Só é possível aprovar solicitações ORÇADAS");
-        }
+        validarTransicao(s, EstadoSolicitacao.APROVADA);
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
@@ -76,9 +75,7 @@ public class SolicitacaoService {
 
         exigirClienteDono(s, principal);
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.ORCADA) {
-            throw new BusinessRuleException("Só é possível rejeitar solicitações ORÇADAS");
-        }
+        validarTransicao(s, EstadoSolicitacao.REJEITADA);
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
@@ -101,9 +98,7 @@ public class SolicitacaoService {
 
         exigirClienteDono(s, principal);
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.REJEITADA) {
-            throw new BusinessRuleException("Só é possível resgatar solicitações REJEITADAS");
-        }
+        validarTransicao(s, EstadoSolicitacao.APROVADA);
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
@@ -125,9 +120,7 @@ public class SolicitacaoService {
 
         exigirClienteDono(s, principal);
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.ARRUMADA) {
-            throw new BusinessRuleException("Só é possível pagar solicitações ARRUMADAS");
-        }
+        validarTransicao(s, EstadoSolicitacao.PAGA);
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
@@ -208,9 +201,7 @@ public class SolicitacaoService {
         Solicitacao s = repository.findById(idSolicitacao)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.APROVADA && s.getEstadoAtual() != EstadoSolicitacao.REDIRECIONADA) {
-            throw new BusinessRuleException("O redirecionamento só é permitido para solicitações nos estados APROVADA ou REDIRECIONADA.");
-        }
+        validarTransicao(s, EstadoSolicitacao.REDIRECIONADA);
 
         if (principal.id().equals(idFuncionarioDestino)) {
             throw new BusinessRuleException("Você não pode redirecionar a manutenção para si mesmo.");
@@ -274,9 +265,7 @@ public class SolicitacaoService {
         Solicitacao s = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.ABERTA) {
-            throw new BusinessRuleException("Só é possível orçar solicitações ABERTAS");
-        }
+        validarTransicao(s, EstadoSolicitacao.ORCADA);
 
         Funcionario funcionario = funcionarioRepository.findById(principal.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
@@ -305,13 +294,7 @@ public class SolicitacaoService {
         Solicitacao s = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-        if (s.getEstadoAtual() != EstadoSolicitacao.APROVADA &&
-            s.getEstadoAtual() != EstadoSolicitacao.REDIRECIONADA) {
-
-            throw new BusinessRuleException(
-                "Só é possível efetuar manutenção em solicitações APROVADAS ou REDIRECIONADAS"
-            );
-        }
+        validarTransicao(s, EstadoSolicitacao.ARRUMADA);
 
         Funcionario funcionario = funcionarioRepository.findById(principal.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
@@ -342,6 +325,8 @@ public class SolicitacaoService {
 
         Funcionario funcionario = funcionarioRepository.findById(principal.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
+
+        validarTransicao(s, EstadoSolicitacao.FINALIZADA);
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
@@ -402,6 +387,12 @@ public class SolicitacaoService {
         if (principal == null) {
             throw new AccessDeniedException("Usuário não autenticado");
         }
+    }
+
+    private void validarTransicao(Solicitacao solicitacao, EstadoSolicitacao novoEstado) {
+        EstadoSolicitacaoFactory
+                .criar(solicitacao.getEstadoAtual())
+                .validarTransicaoPara(novoEstado);
     }
 
     private void exigirCliente(AuthenticatedPrincipal principal) {
