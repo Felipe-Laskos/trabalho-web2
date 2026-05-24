@@ -163,11 +163,11 @@ public class ClienteService {
     public Cliente deletar(Long id, Long idFuncionarioLogado) {
 
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Funcionario não encontrado")); 
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado")); 
 
         long totalAtivos = clienteRepository.countByAtivoTrue();
         if (totalAtivos <= 1) {
-            throw new BusinessRuleException("Não é possível remover o único funcionário ativo do sistema!");
+            throw new BusinessRuleException("Não é possível remover o único cliente ativo do sistema!");
         }
             
         cliente.setAtivo(false);
