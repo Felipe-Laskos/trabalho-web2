@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, HostBinding, HostListener, ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputValidationDirective } from '../directives/input-validation.directive';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-input',
   standalone: true,
-  imports: [CommonModule, InputValidationDirective],
+  imports: [CommonModule, InputValidationDirective, NgxMaskDirective],
   templateUrl: './input.component.html',
   styleUrl: './input.component.css'
 })
@@ -27,6 +28,8 @@ export class InputComponent {
   @Input() msgAviso: string = '';
   @Input() readonly = false;
   @Input() esconderLabel: boolean = false;
+  @Input() mask: string = '';
+  @Input() erro?: string = '';
 
   @HostBinding('style.width')
    get hostWidth() {

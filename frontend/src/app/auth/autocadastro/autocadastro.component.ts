@@ -1,10 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormsModule, NgForm } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ValidarCpf } from './validacao-cpf';  // isso aqui tem q sair, já existe um validator de cpf
 import { InputCardComponent } from '../../shared/input-card/input-card.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
@@ -49,6 +48,8 @@ export class AutocadastroComponent {
   exibirModal = false;
   camposTocados: any = {};
   enviando = false;
+  
+  errorsFromServer: any = {};
 
   private clienteService = inject(ClienteService);
   private notificationService = inject(NotificationService);
@@ -56,43 +57,9 @@ export class AutocadastroComponent {
 
   constructor(public router: Router, private http: HttpClient) {}
 
-  aplicarMascaraCPF(valor: string) {
-    let v = valor.replace(/\D/g, '');
-    if (v.length > 11) v = v.substring(0, 11);
-    v = v.replace(/(\d{3})(\d)/, '$1.$2');
-    v = v.replace(/(\d{3})(\d)/, '$1.$2');
-    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    this.usuario.cpf = v;
-    this.usuario.cpf = valor;
-      setTimeout(() => {
-        this.usuario.cpf = v;
-      });
-  }
-
-  aplicarMascaraTelefone(valor: string) {
-    let v = valor.replace(/\D/g, '');
-    if (v.length > 11) v = v.substring(0, 11);
-    v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
-    v = v.replace(/(\d{5})(\d)/, '$1-$2');
-    this.usuario.telefone = v;
-    this.usuario.telefone = valor;
-      setTimeout(() => {
-        this.usuario.telefone = v;
-      });
-  }
-  aplicarMascaraCEP(valor: string) {
-    let v = valor.replace(/\D/g, '');
-    if (v.length > 8) v = v.substring(0, 8);
-    v = v.replace(/(\d{5})(\d)/, '$1-$2');
-    this.usuario.cep = v;
-    this.usuario.cep = valor;
-    setTimeout(() => {
-      this.usuario.cep = v;
-    });
-  }
-
   buscarCep() {
-    const cepLimpo = this.usuario.cep.replace(/\D/g, '');
+    const cepLimpo = this.usuario.cep ? this.usuario.cep.replace(/\D/g, '') : '';
+    
     if (cepLimpo.length === 8) {
       this.http.get<any>(`https://viacep.com.br/ws/${cepLimpo}/json/`).subscribe(dados => {
         if (!dados.erro) {
@@ -108,22 +75,17 @@ export class AutocadastroComponent {
   onSubmit(form: NgForm) {
     if (this.enviando) return;
 
+    this.errorsFromServer = {};
+
     if (!this.usuario.nome || !this.usuario.cpf || !this.usuario.email ||
         !this.usuario.telefone || !this.usuario.cep) {
       this.notificationService.exibirAviso('Preencha todos os campos obrigatórios!');
       return;
     }
-
-    const controleCpf = new FormControl(this.usuario.cpf);
-    const erroCpf = ValidarCpf()(controleCpf);
-
-    if (erroCpf !== null) {
-      this.notificationService.exibirAviso('CPF inválido.');
-      return;
-    }
-
+    
     const cpfLimpo = this.usuario.cpf.replace(/\D/g, '');
     const telefoneLimpo = this.usuario.telefone.replace(/\D/g, '');
+    const cepLimpo = this.usuario.cep.replace(/\D/g, '');
 
     const requisicao: ClienteRequest = {
       nome: this.usuario.nome,
@@ -131,7 +93,7 @@ export class AutocadastroComponent {
       email: this.usuario.email,
       telefone: telefoneLimpo,
       endereco: {
-        cep: this.usuario.cep,
+        cep: cepLimpo,
         logradouro: this.usuario.logradouro,
         bairro: this.usuario.bairro,
         cidade: this.usuario.cidade,
@@ -156,9 +118,14 @@ export class AutocadastroComponent {
           this.router.navigate(['/login']);
         });
       },
-      error: (err: Error) => {
+      error: (err: any) => {
         this.enviando = false;
-        this.notificationService.exibirAviso('Erro ao realizar cadastro. Por favor, tente novamente.');
+        if (err.status === 400 && err.error?.fieldErrors) {
+          this.errorsFromServer = err.error.fieldErrors;
+          this.notificationService.exibirAviso('Por favor, corrija os erros no formulário.');
+        } else {
+          this.notificationService.exibirAviso(err?.error?.message || 'Erro ao realizar cadastro. Por favor, tente novamente.');
+        }
       }
     });
   }

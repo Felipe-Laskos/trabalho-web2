@@ -4,10 +4,10 @@
       <span class = "asterisco" *ngIf="obrigatorio">*</span>
     </label>
     
-
   <input
     class="campo-input"
     appInputValidation
+    [mask]="mask"
     [decimal]="decimal"
     [inteiro]="inteiro"
     [texto]="texto"
@@ -25,6 +25,6 @@
     (avisoOculto)="onAvisoOculto()"
   />
 
-  <span class="msg-erro" *ngIf="msgDirective"> {{ msgDirective }}</span>
+  <span class="msg-erro" *ngIf="msgDirective || erro"> {{ msgDirective || erro }}</span>
 </div>
   
