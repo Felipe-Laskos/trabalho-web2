@@ -7,7 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class CpfPipe implements PipeTransform {
   
   // alterando para aceitar string ou number
-  transform(value: string | number): string {
+  transform(value: string | number | undefined | null): string {
     if (!value) return '';
 
     // garantindo que o valor seja convertido para string antes de usar o replace

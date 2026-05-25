@@ -18,12 +18,12 @@
       <h3>Cliente</h3>
       <p><strong>Nome:</strong> {{ solicitacao.cliente?.nome }}</p>
       <p><strong>Email:</strong> {{ solicitacao.cliente?.email }}</p>
-      <p><strong>Telefone:</strong> {{ solicitacao.cliente?.telefone }}</p>
-      <p><strong>CPF:</strong> {{ solicitacao.cliente?.cpf }}</p>
+      <p><strong>Telefone:</strong> {{ solicitacao.cliente?.telefone | telefone }}</p>
+      <p><strong>CPF:</strong> {{ solicitacao.cliente?.cpf | cpf }}</p>
       <p><strong>Endereço:</strong> {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }} 
       @if (solicitacao.cliente?.endereco?.complemento) { - {{ solicitacao.cliente?.endereco?.complemento }}}</p>
       <p><strong>Bairro/Cidade:</strong> {{ solicitacao.cliente?.endereco?.bairro }} - {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}</p>
-      <p> <strong>CEP:</strong> {{ solicitacao.cliente?.endereco?.cep }}</p>
+      <p> <strong>CEP:</strong> {{ solicitacao.cliente?.endereco?.cep | cep }}</p>
     </div>
   </div>
   }

@@ -17,6 +17,9 @@ import { TextAreaComponent } from '../../shared/text-area/text-area.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 import { NotificationService } from '../../core/services/notification.service';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
+import { CpfPipe } from '../../shared/pipes/cpf.pipe';
+import { CepPipe } from '../../shared/pipes/cep.pipe';
 
 @Component({
   selector: 'app-efetuar-manutencao',
@@ -30,6 +33,9 @@ import { NotificationService } from '../../core/services/notification.service';
     TextAreaComponent,
     BotaoAprovarComponent,
     BotaoCancelarComponent,
+    TelefonePipe,
+    CpfPipe,
+    CepPipe
   ],
   templateUrl: './efetuar-manutencao.component.html',
   styleUrls: ['./efetuar-manutencao.component.css'],

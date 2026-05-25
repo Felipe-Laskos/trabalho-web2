@@ -37,18 +37,17 @@
           <div class="checkout-card">
             <span class="checkout-label">Total a ser pago:</span>
             <div class="valor-container">
-              <span class="moeda">R$</span>
-              <span class="valor">{{ solicitacao.valorOrcado | number:'1.2-2' }}</span>
+              <span class="valor">{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
             </div>
             
             <div class="detalhes-pagamento">
               <div class="linha-detalhe">
                 <span>Peças e Mão de Obra</span>
-                <span>R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}</span>
+                <span>{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
               </div>
               <div class="linha-detalhe total">
                 <span>Total</span>
-                <span>R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}</span>
+                <span>{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
               </div>
             </div>
             <app-botao class="btn-pagar"
@@ -66,7 +65,7 @@
         <h2>Confirmar Pagamento?</h2>
         <p>O serviço ficou no valor de:</p>
         <div class="valor-confirmacao">
-          R$ {{ solicitacao.valorOrcado | number:'1.2-2' }}
+          {{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
         </div>
         <div class="modal-actions">
 

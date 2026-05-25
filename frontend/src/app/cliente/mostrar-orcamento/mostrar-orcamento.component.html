@@ -19,7 +19,7 @@
           </div>
           <div class="info-box">
             <p class="nome-cliente">{{ cliente?.nome }}</p>
-            <p class="telefone-cliente">{{ cliente?.telefone }}</p>
+            <p class="telefone-cliente">{{ cliente?.telefone | telefone }}</p>
           </div>
         </div>
 
@@ -111,7 +111,7 @@
           <h2>VALOR TOTAL:</h2>
           <div class="info-box box-total">
             <p class="texto-total">
-              R$ {{ solicitacao?.valorOrcado | number: "1.2-2" }}
+              {{ solicitacao?.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
             </p>
           </div>
         </div>
@@ -144,7 +144,7 @@
     <div *ngIf="estadoModal === 'sucesso'">
       <h2>Tudo pronto!</h2>
       <p id="paragrafo2">Serviço Aprovado no Valor:</p>
-      <h3>R$ {{ solicitacao?.valorOrcado | number: "1.2-2" }}</h3>
+      <h3>{{ solicitacao?.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h3>
       <app-botao class="btn-ok"
       texto="Ok" 
       icone="done" cor="accent" 

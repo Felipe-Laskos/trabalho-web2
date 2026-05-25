@@ -17,7 +17,7 @@ export interface CampoFormulario {
   obrigatorio?: boolean;
   senha?: string;
   readonly?: boolean;
-
+  mask?: string;
   validacao?: 'texto' | 'textoNum' | 'email' | 'inteiro';
   msgAviso?: string;
 }

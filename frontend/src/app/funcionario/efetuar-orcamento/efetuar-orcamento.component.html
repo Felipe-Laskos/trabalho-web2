@@ -25,14 +25,14 @@
     <h3>Dados do Cliente</h3>
 
     <p><b>Nome:</b> {{ solicitacao.cliente?.nome }}</p>
-    <p><b>CPF:</b> {{ solicitacao.cliente?.cpf }}</p>
+    <p><b>CPF:</b> {{ solicitacao.cliente?.cpf | cpf }}</p>
     <p><b>Email:</b> {{ solicitacao.cliente?.email }}</p>
 
     <p>
       <b>Telefone:</b>
-      ({{ solicitacao.cliente?.telefone | slice:0:2 }})
-      {{ solicitacao.cliente?.telefone | slice:2:7 }}-
-      {{ solicitacao.cliente?.telefone | slice:7 }}
+      ({{ solicitacao.cliente?.telefone | telefone }})
+      {{ solicitacao.cliente?.telefone | telefone }}-
+      {{ solicitacao.cliente?.telefone | telefone }}
     </p>
 
     @if (solicitacao.cliente?.endereco) {
@@ -40,7 +40,7 @@
         {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }}
         @if (solicitacao.cliente?.endereco?.complemento) { - {{ solicitacao.cliente?.endereco?.complemento }} }
         - {{ solicitacao.cliente?.endereco?.bairro }},
-        {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}
+        {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }},
       </p>
     }
   </div>

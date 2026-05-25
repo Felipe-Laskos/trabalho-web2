@@ -58,7 +58,7 @@
         <div class="relatorio__total_row">
           <span class="relatorio__total_label">TOTAL</span>
           <span class="relatorio__total_qtd">{{ quantidadeTotal }}</span>
-          <span class="relatorio__total_valor">{{ totalGeral | currency:'BRL' }}</span>
+          <span class="relatorio__total_valor">{{ totalGeral | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
         </div>
 
         <app-paginacao
