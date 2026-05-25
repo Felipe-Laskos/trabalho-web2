@@ -30,9 +30,9 @@
 
     <p>
       <b>Telefone:</b>
-      ({{ solicitacao.cliente?.telefone | telefone | slice:0:2 }})
-      {{ solicitacao.cliente?.telefone | telefone | slice:2:7 }}-
-      {{ solicitacao.cliente?.telefone | telefone | slice:7 }}
+      ({{ solicitacao.cliente?.telefone | telefone }})
+      {{ solicitacao.cliente?.telefone | telefone }}-
+      {{ solicitacao.cliente?.telefone | telefone }}
     </p>
 
     @if (solicitacao.cliente?.endereco) {

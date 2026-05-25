@@ -10,6 +10,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      if (error.status === 400 && error.error?.fieldErrors) {
+        return throwError(() => error);
+      }
+      
       let mensagemErro = 'Ocorreu um erro desconhecido!';
 
       if (error.error instanceof ErrorEvent) {

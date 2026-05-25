@@ -13,6 +13,7 @@ import { ModalGenericoComponent } from "../../shared/modal-generico/modal-generi
 import { ClienteService } from '../../core/services/cliente.service';
 import { ClienteRequest } from '../../core/dto/request/cliente-request.model';
 import { NotificationService } from '../../core/services/notification.service';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-autocadastro',
@@ -121,10 +122,11 @@ export class AutocadastroComponent {
       error: (err: any) => {
         this.enviando = false;
         if (err.status === 400 && err.error?.fieldErrors) {
-          this.errorsFromServer = err.error.fieldErrors;
-          this.notificationService.exibirAviso('Por favor, corrija os erros no formulário.');
+            this.errorsFromServer = err.error.fieldErrors;
+            this.notificationService.exibirAviso('Por favor, corrija os erros no formulário.');
+          
         } else {
-          this.notificationService.exibirAviso(err?.error?.message || 'Erro ao realizar cadastro. Por favor, tente novamente.');
+            this.notificationService.exibirAviso(err?.error?.message || 'Erro ao realizar cadastro. Por favor, tente novamente.');
         }
       }
     });
