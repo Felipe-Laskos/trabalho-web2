@@ -11,11 +11,13 @@ import { Solicitacao } from '../../core/models/solicitacao.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/modal-generico.component';
 import { NotificationService } from '../../core/services/notification.service';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
+import { CpfPipe } from '../../shared/pipes/cpf.pipe';
 
 @Component({
   selector: 'app-efetuar-orcamento',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardVisualizacaoComponent, InputComponent, BotaoComponent],
+  imports: [CommonModule, FormsModule, CardVisualizacaoComponent, InputComponent, BotaoComponent, TelefonePipe, CpfPipe],
   templateUrl: './efetuar-orcamento.component.html',
   styleUrls: ['./efetuar-orcamento.component.css']
 })

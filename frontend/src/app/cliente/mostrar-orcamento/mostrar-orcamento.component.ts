@@ -15,6 +15,7 @@ import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { NotificationService } from '../../core/services/notification.service';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 
 @Component({
   selector: 'app-mostrar-orcamento',
@@ -27,6 +28,7 @@ import { NotificationService } from '../../core/services/notification.service';
     FormsModule,
     TextAreaComponent,
     BotaoComponent,
+    TelefonePipe
   ],
   templateUrl: './mostrar-orcamento.component.html',
   styleUrl: './mostrar-orcamento.component.css',

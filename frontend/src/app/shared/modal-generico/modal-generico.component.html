@@ -17,6 +17,7 @@
               [texto]="campo.validacao == 'texto'"
               [textoNum]="campo.validacao == 'textoNum'"
               [readonly]="campo.readonly ?? false"
+              [mask]="campo.mask ?? ''" [msgAviso]="campo.msgAviso ?? ''"
               [msgAviso]="campo.msgAviso ?? ''"
               (mudou)="formData[campo.campo] = $event">
           </app-input>

@@ -9,7 +9,7 @@ import { NomePipe } from '../pipes/nome.pipe';
 export interface ColunaTabela {
   campo: string;
   titulo: string;
-  tipo?: 'texto' | 'data' | 'estado' | 'acao' | 'cpf' | 'nome';
+  tipo?: 'texto' | 'data' | 'estado' | 'acao' | 'cpf' | 'nome' | 'moeda';
   truncar?: number;
 }
 

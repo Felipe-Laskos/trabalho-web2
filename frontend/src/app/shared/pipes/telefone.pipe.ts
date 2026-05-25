@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true
 })
 export class TelefonePipe implements PipeTransform {
-  transform(value: string | number): string {
+  transform(value: string | number | undefined | null): string {
     if (!value) return '';
 
     let telefone = value.toString().replace(/\D/g, '');

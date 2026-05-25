@@ -21,7 +21,7 @@ export class TextAreaComponent {
   @Input() placeholder: string = 'Ex: O notebook não liga';
   @Input() valor: string = '';   
   @Input() obrigatorio: boolean = false;    
-
+  @Input() erro?: string = '';
   @Input() altura: string ='100%';
   @Input() largura: string ='120px';
   @Input() maxLength: number = 200;

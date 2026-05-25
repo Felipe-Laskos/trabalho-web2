@@ -25,8 +25,8 @@
           </div>
           <div class="visualizar__info_box">
             <p class="visualizar__info_destaque">{{ solicitacao.cliente?.nome }}</p>
-            <p class="visualizar__info_sub">CPF: {{ solicitacao.cliente?.cpf }}</p>
-            <p class="visualizar__info_sub">{{ solicitacao.cliente?.telefone }}</p>
+            <p class="visualizar__info_sub">CPF: {{ solicitacao.cliente?.cpf | cpf }}</p>
+            <p class="visualizar__info_sub">{{ solicitacao.cliente?.telefone | telefone }}</p>
             <p class="visualizar__info_sub">{{ solicitacao.cliente?.email }}</p>
             <p class="visualizar__info_sub" *ngIf="solicitacao.cliente?.endereco">
               {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }}
@@ -111,7 +111,7 @@
             <h2>VALOR ORÇADO</h2>
           </div>
           <div class="visualizar__info_box visualizar__info_box_valor">
-            <p class="visualizar__valor_total">R$ {{ solicitacao.valorOrcado | number: '1.2-2' }}</p>
+            <p class="visualizar__valor_total">R$ {{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
           </div>
         </div>
 

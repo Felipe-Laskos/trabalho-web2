@@ -10,6 +10,8 @@ import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { HistoricoService } from '../../core/services/historico.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { NotificationService } from '../../core/services/notification.service';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
+import { CpfPipe } from '../../shared/pipes/cpf.pipe';
 
 @Component({
   selector: 'app-visualizar-servico',
@@ -19,6 +21,8 @@ import { NotificationService } from '../../core/services/notification.service';
     MatIconModule,
     CardVisualizacaoComponent,
     BotaoComponent,
+    TelefonePipe,
+    CpfPipe
   ],
   templateUrl: './visualizar-servico.component.html',
   styleUrl: './visualizar-servico.component.css',
