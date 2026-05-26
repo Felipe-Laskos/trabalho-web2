@@ -14,6 +14,7 @@ import com.web.equipe5.manutencaoequipamentos.repository.CategoriaRepository;
 import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter.AuthenticatedPrincipal;
 import com.web.equipe5.manutencaoequipamentos.exception.BusinessRuleException;
 import com.web.equipe5.manutencaoequipamentos.exception.ResourceNotFoundException;
+import com.web.equipe5.manutencaoequipamentos.mapper.SolicitacaoMapper;
 import com.web.equipe5.manutencaoequipamentos.state.EstadoSolicitacaoFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -238,14 +239,11 @@ public class SolicitacaoService {
         CategoriaEquipamento categoria = categoriaRepository.findById(request.categoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
-        Solicitacao solicitacao = new Solicitacao();
-        solicitacao.setDescricaoEquipamento(request.descricaoEquipamento());
-        solicitacao.setDescricaoDefeito(request.descricaoDefeito());
-        solicitacao.setCliente(cliente);
-        solicitacao.setCategoriaEquipamento(categoria);
-        solicitacao.setEstadoAtual(EstadoSolicitacao.ABERTA);
-        solicitacao.setDataHoraCriacao(LocalDateTime.now());
-        solicitacao.setAtivo(true);
+        Solicitacao solicitacao = SolicitacaoMapper.toEntity(
+            request,
+            cliente,
+            categoria
+        );
 
         Solicitacao solicitacaoSalva = repository.save(solicitacao);
 
@@ -351,38 +349,30 @@ public class SolicitacaoService {
             Pageable pageable
     ) {
 
-        if (filtro.equalsIgnoreCase("HOJE")) {
+        switch (filtro.toUpperCase()) {
 
+        case "HOJE":
             LocalDate hoje = LocalDate.now();
-
             return repository.findByDataHoraCriacaoBetween(
                     hoje.atStartOfDay(),
                     hoje.atTime(23, 59, 59),
                     pageable
             );
-        }
 
-        if (
-            filtro.equalsIgnoreCase("PERIODO") &&
-            dataInicio != null &&
-            dataFim != null
-        ) {
+        case "PERIODO":
+            if (dataInicio == null || dataFim == null) {
+                return Page.empty(pageable);
+            }
 
-            LocalDateTime inicio = LocalDate.parse(dataInicio)
-                    .atStartOfDay();
+            LocalDateTime inicio = LocalDate.parse(dataInicio).atStartOfDay();
+            LocalDateTime fim = LocalDate.parse(dataFim).atTime(23, 59, 59);
 
-            LocalDateTime fim = LocalDate.parse(dataFim)
-                    .atTime(23, 59, 59);
+            return repository.findByDataHoraCriacaoBetween(inicio, fim, pageable);
 
-            return repository.findByDataHoraCriacaoBetween(
-                    inicio,
-                    fim,
-                    pageable
-            );
-        }
-
-        return repository.findAll(pageable);
+        default:
+            return repository.findAll(pageable);
     }
+}
     private void exigirAutenticado(AuthenticatedPrincipal principal) {
         if (principal == null) {
             throw new AccessDeniedException("Usuário não autenticado");
