@@ -2,7 +2,7 @@ package com.web.equipe5.manutencaoequipamentos.mapper;
 
 import java.time.LocalDateTime;
 
-import com.web.equipe5.manutencaoequipamentos.dto.request.SolicitacaoRequestDTO;
+import com.web.equipe5.manutencaoequipamentos.dto.request.SolicitacaoCreateRequestDTO;
 import com.web.equipe5.manutencaoequipamentos.dto.response.SolicitacaoResponseDTO;
 import com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao;
 import com.web.equipe5.manutencaoequipamentos.model.CategoriaEquipamento;
@@ -14,7 +14,7 @@ public class SolicitacaoMapper {
 
 
     public static Solicitacao toEntity(
-    SolicitacaoRequestDTO dto,
+    SolicitacaoCreateRequestDTO dto,
     Cliente cliente,
     CategoriaEquipamento categoria
 ) {

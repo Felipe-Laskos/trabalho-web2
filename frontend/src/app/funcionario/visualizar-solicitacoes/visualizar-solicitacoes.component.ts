@@ -92,6 +92,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   paginaAtual: number = 0;
   itensPorPagina: number = 4;
   totalItens: number = 0;
+  totalPages: number = 0;
 
   ngOnInit(): void {
     this.carregarSolicitacoes();
@@ -114,7 +115,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
           this.solicitacoesFiltradas = pagina.content;
 
           this.totalItens = pagina.totalElements;
-        },
+          this.totalPages = pagina.totalPages;        },
 
         error: (erro) => {
 
@@ -197,7 +198,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   onPaginaChange(pagina: number) {
 
-    this.paginaAtual = pagina - 1;
+    this.paginaAtual = pagina;
 
     this.carregarSolicitacoes();
   }

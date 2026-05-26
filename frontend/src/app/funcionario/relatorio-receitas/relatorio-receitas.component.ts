@@ -45,8 +45,12 @@ export class RelatorioReceitasComponent implements OnInit {
   receitasPorDia: any[] = [];
   totalGeral: number = 0;
   quantidadeTotal: number = 0;
-  paginaAtual: number = 1;
+  paginaAtual: number = 0;
   itensPorPagina: number = 5;
+
+  get totalPaginas(): number {
+    return Math.ceil(this.receitasPorDia.length / this.itensPorPagina);
+  }
 
   colunasTabela: ColunaTabela[] = [
     { campo: 'data', titulo: 'Data', tipo: 'texto' },
@@ -55,7 +59,7 @@ export class RelatorioReceitasComponent implements OnInit {
   ];
 
   get dadosPaginados(): any[] {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const inicio = this.paginaAtual * this.itensPorPagina;
     return this.receitasPorDia.slice(inicio, inicio + this.itensPorPagina);
   }
 
@@ -104,7 +108,7 @@ export class RelatorioReceitasComponent implements OnInit {
       return;
     }
 
-    this.paginaAtual = 1;
+    this.paginaAtual = 0;
 
     this.solicitacaoService
       .buscarReceitasPeriodo(this.dataInicio, this.dataFim)
