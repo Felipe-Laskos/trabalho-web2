@@ -120,9 +120,8 @@ export class FuncionarioService implements IFuncionarioService {
   } 
 
   remover(id: number): Observable<Funcionario> {
-    return this.http.patch<Funcionario>(
+    return this.http.delete<Funcionario>(
         `${this.apiUrl}/${id}`,
-        { ativo: false },
         defaultHttpOptions
     ).pipe(
         catchError(error => {

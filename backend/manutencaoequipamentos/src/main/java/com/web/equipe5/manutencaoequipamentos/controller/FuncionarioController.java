@@ -12,6 +12,7 @@ import com.web.equipe5.manutencaoequipamentos.mapper.FuncionarioMapper;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
@@ -20,6 +21,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+
+import com.web.equipe5.manutencaoequipamentos.config.JwtAuthenticationFilter;
 
 @RestController
 @RequestMapping("/api/funcionarios")
@@ -83,8 +86,8 @@ public class FuncionarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<FuncionarioResponseDTO> deletar(
         @PathVariable Long id, 
-        @RequestHeader("funcionario-id") Long idFuncionarioLogado) {
-        Funcionario fun = service.deletar(id, idFuncionarioLogado);  
+        @AuthenticationPrincipal JwtAuthenticationFilter.AuthenticatedPrincipal usuarioLogado) {
+        Funcionario fun = service.deletar(id, usuarioLogado.id());  
         return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
     }
 }

@@ -40,7 +40,7 @@ export class CrudCategoriaComponent implements OnInit {
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
-  mostrarInativas: boolean = true;
+  mostrarApenasAtivas: boolean = true;
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
@@ -76,7 +76,7 @@ export class CrudCategoriaComponent implements OnInit {
       c.id?.toString().includes(termo)
     );
 
-    if (this.mostrarInativas) {
+    if (this.mostrarApenasAtivas) {
       filtradas = filtradas.filter(c => c.ativo === true);
     }
 
@@ -90,7 +90,7 @@ export class CrudCategoriaComponent implements OnInit {
   }
 
   toggleInativas(): void {
-    this.mostrarInativas = !this.mostrarInativas;
+    this.mostrarApenasAtivas = !this.mostrarApenasAtivas;
   }
 
   selecionarLinha(item: any): void {

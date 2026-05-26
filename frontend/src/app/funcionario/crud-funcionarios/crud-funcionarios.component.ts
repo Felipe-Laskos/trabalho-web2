@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { Funcionario } from '../../core/models/funcionario.model';
 import { FuncionarioService } from '../../core/services/funcionario.service';
-import { ClienteService } from '../../core/services/cliente.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { PaginacaoComponent } from '../../shared/paginacao/paginacao.component';
@@ -31,7 +30,6 @@ import { NotificationService } from '../../core/services/notification.service';
 export class CrudFuncionariosComponent implements OnInit {
 
   private funcionarioService = inject(FuncionarioService);
-  private clienteService = inject(ClienteService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private notificationService = inject(NotificationService);
@@ -50,7 +48,7 @@ export class CrudFuncionariosComponent implements OnInit {
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
-  mostrarInativas: boolean = true;
+  mostrarApenasAtivas: boolean = true;
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
@@ -89,7 +87,7 @@ export class CrudFuncionariosComponent implements OnInit {
       f.email.toLowerCase().includes(termo)
     );
 
-    if (this.mostrarInativas) {
+    if (this.mostrarApenasAtivas) {
       filtrados = filtrados.filter(f => f.ativo === true);
     }
 
@@ -103,7 +101,7 @@ export class CrudFuncionariosComponent implements OnInit {
   }
 
   toggleInativas(): void {
-    this.mostrarInativas = !this.mostrarInativas;
+    this.mostrarApenasAtivas = !this.mostrarApenasAtivas;
   }
 
   selecionarLinha(item: any): void {
@@ -138,21 +136,6 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
-        const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
-        if (emailEmFuncionario || emailEmCliente) {
-          this.notificationService.exibirAviso('E-mail já cadastrado no sistema. Realize nova tentativa.');
-          return;
-        }
-
-        const cpfEmFuncionario = this.funcionarioService.buscarPorCpf(result.cpf);
-        const cpfEmCliente = this.clienteService.buscarPorCpf(result.cpf);
-
-        if (cpfEmFuncionario || cpfEmCliente) {
-          this.notificationService.exibirAviso('CPF já cadastrado no sistema. Realize nova tentativa.');
-          return;
-        }
-
         if (result.senha.length < 4) {
           this.notificationService.exibirAviso('A senha deve conter no mínimo 4 caracteres. Realize nova tentativa.');
           return;
@@ -172,7 +155,6 @@ export class CrudFuncionariosComponent implements OnInit {
           ...result,
           ativo: true
         };
-        this.notificationService.exibirSucesso('Funcionário cadastrado com sucesso!');
         this.funcionarioService.inserir(novo).subscribe(() => this.carregarDados());
       }
     });
@@ -200,15 +182,6 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && this.funcionarioSelecionado) {
-        if (result.email !== this.funcionarioSelecionado.email) {
-          const emailEmFuncionario = this.funcionarioService.buscarPorEmail(result.email);
-          const emailEmCliente = this.clienteService.buscarPorEmail(result.email);
-          if (emailEmFuncionario || emailEmCliente) {
-            this.notificationService.exibirAviso('E-mail já cadastrado no sistema. Realize nova tentativa.');
-            return;
-          }
-        }
-
         if (result.dataNascimento) {
           const dataNascimento = new Date(result.dataNascimento);
           const hoje = new Date();
@@ -224,7 +197,6 @@ export class CrudFuncionariosComponent implements OnInit {
           ...result,
           ativo: true
         };
-        this.notificationService.exibirSucesso('Funcionário atualizado com sucesso!');
         this.funcionarioService.atualizar(atualizado).subscribe(() => {
           this.carregarDados();
           this.funcionarioSelecionado = undefined;
@@ -244,12 +216,6 @@ export class CrudFuncionariosComponent implements OnInit {
       return;
     }
 
-    const ativos = this.dados.filter(f => f.ativo !== false);
-    if (ativos.length <= 1) {
-      this.notificationService.exibirAviso('Não é possível remover o último funcionário!');
-      return;
-    }
-
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
       data: {
         tipo: 'confirmacao',
@@ -262,8 +228,7 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        funcionario.ativo = false;
-        this.funcionarioService.atualizar(funcionario).subscribe(() => {
+        this.funcionarioService.remover(funcionario.id).subscribe(() => {
           this.notificationService.exibirSucesso('Funcionário desativado com sucesso!');
           this.carregarDados();
           this.funcionarioSelecionado = undefined;
