@@ -39,10 +39,11 @@ export class CategoriaService implements ICategoriaService {
   }
 
   listarAtivas(): Observable<CategoriaEquipamento[]> {
-    return this.http.get<CategoriaEquipamento[]>(
+    return this.http.get<CategoriaEquipamento[] | Page<CategoriaEquipamento>>(
       `${this.apiUrl}/ativas`,
       defaultHttpOptions
     ).pipe(
+      map(response => Array.isArray(response) ? response : response.content),
       catchError(error => {
         this.notificationService.exibirErro('Erro ao listar categorias ativas.');
         throw error;
