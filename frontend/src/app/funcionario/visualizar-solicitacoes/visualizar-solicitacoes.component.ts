@@ -198,7 +198,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
 
   onPaginaChange(pagina: number) {
 
-    this.paginaAtual = pagina - 1;
+    this.paginaAtual = pagina;
 
     this.carregarSolicitacoes();
   }

@@ -48,6 +48,10 @@ export class RelatorioReceitasComponent implements OnInit {
   paginaAtual: number = 0;
   itensPorPagina: number = 5;
 
+  get totalPaginas(): number {
+    return Math.ceil(this.receitasPorDia.length / this.itensPorPagina);
+  }
+
   colunasTabela: ColunaTabela[] = [
     { campo: 'data', titulo: 'Data', tipo: 'texto' },
     { campo: 'quantidade', titulo: 'Qtd. Serviços', tipo: 'texto' },

@@ -72,6 +72,7 @@
 
         <app-paginacao
           [totalElements]="receitasPorDia.length"
+          [totalPaginas]="totalPaginas"
           [itensPorPagina]="itensPorPagina"
           [number]="paginaAtual"
           (paginaChange)="onPaginaMudou($event)">
