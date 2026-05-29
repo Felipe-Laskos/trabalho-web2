@@ -42,6 +42,7 @@ export class InputComponent {
   }
 
   @Output() mudou = new EventEmitter<string>();
+  @Output() enter = new EventEmitter<void>();
 
   msgDirective: string = ''; 
 

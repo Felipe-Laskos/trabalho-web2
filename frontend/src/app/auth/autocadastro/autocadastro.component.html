@@ -16,10 +16,10 @@
 
         <div class="linha-flex-ajustada recuo-superior">
           <div class="flex-1">
-            <app-input titulo="CPF" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.cpf" (mudou)="usuario.cpf = $event" mask="000.000.000-00" [erro]="errorsFromServer?.cpf" altura="34px" largura="100%" [maxLength]="14"></app-input>
+            <app-input titulo="CPF" [obrigatorio]="true" [valor]="usuario.cpf" (mudou)="usuario.cpf = $event" mask="000.000.000-00" [erro]="errorsFromServer?.cpf" altura="34px" largura="100%" [maxLength]="14"></app-input>
           </div>
           <div class="flex-1">
-            <app-input titulo="Telefone" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.telefone" (mudou)="usuario.telefone = $event" mask="(00) 00000-0000" [erro]="errorsFromServer?.telefone" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%" [maxLength]="15"></app-input>
+            <app-input titulo="Telefone" [obrigatorio]="true" [valor]="usuario.telefone" (mudou)="usuario.telefone = $event" mask="(00) 00000-0000" [erro]="errorsFromServer?.telefone" (focusout)="camposTocados.telefone = true" altura="34px" largura="100%" [maxLength]="15"></app-input>
           </div>
         </div>
       </div>
@@ -28,7 +28,7 @@
         <h3 class="titulo-secao">Endereço (ViaCEP)</h3>
         <div class="linha-flex-ajustada">
           <div class="flex-1">
-            <app-input titulo="CEP" [obrigatorio]="true" [inteiro]="true" [valor]="usuario.cep" (mudou)="usuario.cep = $event" mask="00000-000" [erro]="errorsFromServer?.['endereco.cep'] || errorsFromServer?.cep" (focusout)="buscarCep(); camposTocados.cep = true" altura="34px" largura="100%" [maxLength]="9"></app-input>
+            <app-input titulo="CEP" [obrigatorio]="true" [valor]="usuario.cep" (mudou)="usuario.cep = $event" (enter)="buscarCep()" mask="00000-000" [erro]="errorsFromServer?.['endereco.cep'] || errorsFromServer?.cep" (focusout)="buscarCep(); camposTocados.cep = true" altura="34px" largura="100%" [maxLength]="9"></app-input>
           </div>
           <div class="flex-1">
             <app-input titulo="Cidade" [obrigatorio]="true" [texto]="true" [valor]="usuario.cidade" (mudou)="usuario.cidade = $event" [erro]="errorsFromServer?.['endereco.cidade'] || errorsFromServer?.cidade" (focusout)="camposTocados.cidade = true" altura="34px" largura="100%"></app-input>

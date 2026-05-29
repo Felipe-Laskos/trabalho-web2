@@ -19,6 +19,7 @@
     [placeholder]="placeholder"
     [value]="valor"
     (input)="aoDigitar($event)"
+    (keyup.enter)="enter.emit()"
     [type]="tipo"
     [attr.maxlength]="maxLength"
     (avisoEmitido)="onAvisoEmitido($any($event))"
