@@ -20,10 +20,18 @@
       <p><strong>Email:</strong> {{ solicitacao.cliente?.email }}</p>
       <p><strong>Telefone:</strong> {{ solicitacao.cliente?.telefone | telefone }}</p>
       <p><strong>CPF:</strong> {{ solicitacao.cliente?.cpf | cpf }}</p>
-      <p><strong>Endereço:</strong> {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }} 
-      @if (solicitacao.cliente?.endereco?.complemento) { - {{ solicitacao.cliente?.endereco?.complemento }}}</p>
-      <p><strong>Bairro/Cidade:</strong> {{ solicitacao.cliente?.endereco?.bairro }} - {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}</p>
-      <p> <strong>CEP:</strong> {{ solicitacao.cliente?.endereco?.cep | cep }}</p>
+      @if (solicitacao.cliente?.endereco) {
+        <p>
+          <strong>Endereço:</strong>
+          {{ solicitacao.cliente?.endereco?.logradouro }}, {{ solicitacao.cliente?.endereco?.numero }}
+          @if (solicitacao.cliente?.endereco?.complemento) {
+            - {{ solicitacao.cliente?.endereco?.complemento }}
+          }
+        </p>
+        <p><strong>Bairro:</strong> {{ solicitacao.cliente?.endereco?.bairro }}</p>
+        <p><strong>Cidade:</strong> {{ solicitacao.cliente?.endereco?.cidade }}/{{ solicitacao.cliente?.endereco?.uf }}</p>
+        <p><strong>CEP:</strong> {{ solicitacao.cliente?.endereco?.cep | cep }}</p>
+      }
     </div>
   </div>
   }
@@ -87,24 +95,6 @@
         cor="accent">
     </app-botao>
       </div>
-
-    <div class="modal-overlay" *ngIf="exibirModal">
-    <div class="modal-box">
-    <div *ngIf="estadoModal === 'confirmacao'">
-      <h2>Confirmar Manutenção?</h2>
-      <p id="paragrafo1">Ao confirmar, a manutenção será registrada.</p>
-      <div class="modal-actions">
-        <app-botao-cancelar 
-        class="btn-cancelar" 
-        (click)="fecharModal()">Cancelar</app-botao-cancelar>
-
-        <app-botao-aprovar 
-        class="btn-confirmar" 
-        (click)="confirmarManutencao()">Confirmar</app-botao-aprovar> 
-       </div>
-      </div>
-    </div>
-   </div>
 
  </form>
   }

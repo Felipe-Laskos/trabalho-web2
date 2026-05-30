@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit, inject } from '@angular/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
@@ -16,6 +17,7 @@ import { BotaoComponent } from '../../shared/botao/botao.component';
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
+import { ModalGenericoComponent, ModalDados } from '../../shared/modal-generico/modal-generico.component';
 import { NotificationService } from '../../core/services/notification.service';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 import { CpfPipe } from '../../shared/pipes/cpf.pipe';
@@ -28,6 +30,7 @@ import { CepPipe } from '../../shared/pipes/cep.pipe';
     CommonModule,
     ReactiveFormsModule,
     MatSnackBarModule,
+    MatDialogModule,
     CardVisualizacaoComponent,
     BotaoComponent,
     TextAreaComponent,
@@ -45,21 +48,14 @@ export class EfetuarManutencaoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private aviso = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
   private notificationService = inject(NotificationService);
 
   solicitacao?: Solicitacao;
   mostrarFormulario = false;
   dataHoraAcesso: Date = new Date();
-  exibirModal: boolean = false;
   botaoDesativado: boolean = false;
   exibirToastSucesso: boolean = false;
-
-  estadoModal:
-    | 'confirmacao'
-    | 'sucesso'
-    | 'confirmarRejeicao'
-    | 'motivoRejeicao'
-    | 'sucessoRejeicao' = 'confirmacao';
 
   form = new FormGroup({
     descricao: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]),
@@ -119,8 +115,6 @@ export class EfetuarManutencaoComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.form.reset();
-        this.exibirModal = false;
-        this.estadoModal = 'confirmacao';
         this.mostrarFormulario = false;
         this.exibirToastSucesso = true;
 
@@ -147,15 +141,6 @@ export class EfetuarManutencaoComponent implements OnInit {
     }
   }
 
-  fecharModal() {
-    this.exibirModal = false;
-    this.estadoModal = 'confirmacao';
-
-    if (!this.exibirToastSucesso) {
-      this.botaoDesativado = false;
-    }
-  }
-
   aprovarServico(): void {
     if (this.form.invalid) {
       this.aviso.open(
@@ -167,8 +152,21 @@ export class EfetuarManutencaoComponent implements OnInit {
     }
 
     if (this.botaoDesativado) return;
-    this.estadoModal = 'confirmacao';
-    this.exibirModal = true;
+
+    const dialogRef = this.dialog.open(ModalGenericoComponent, {
+      data: {
+        tipo: 'confirmacao',
+        titulo: 'Confirmar Manutenção?',
+        mensagem: 'Ao confirmar, a manutenção será registrada.',
+        textoConfirmar: 'Confirmar',
+        textoCancelar: 'Cancelar'
+      } as ModalDados
+    });
+
+    dialogRef.afterClosed().subscribe((confirmou) => {
+      if (!confirmou) return;
+      this.confirmarManutencao();
+    });
   }
 
   cancelarFormulario() {
