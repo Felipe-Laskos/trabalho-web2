@@ -44,17 +44,27 @@ export class CrudCategoriaComponent implements OnInit {
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
+  mostrarInativas: boolean = false;
 
   ngOnInit(): void {
     this.carregarDados();
   }
 
   private carregarDados(): void {
-    this.categoriaService
-      .listarTodos(
-        this.paginaAtual,
-        this.itensPorPagina
-      ).subscribe({
+    const requisicao =
+      this.mostrarInativas
+      ? this.categoriaService
+          .listarInativas(
+            this.paginaAtual,
+            this.itensPorPagina
+          )
+      : this.categoriaService
+        .listarAtivas(
+          this.paginaAtual,
+          this.itensPorPagina
+      );
+      
+    requisicao.subscribe({
       next: (response) => {
         this.dados = response.content;
         this.totalPaginas = response.totalPages;
@@ -70,17 +80,7 @@ export class CrudCategoriaComponent implements OnInit {
   }
 
   get categoriasFiltradas(): CategoriaEquipamento[] {
-    const termo = this.termoPesquisa.toLowerCase();
-    let filtradas = this.dados.filter(c =>
-      c.nome.toLowerCase().includes(termo) ||
-      c.id?.toString().includes(termo)
-    );
-
-    if (this.mostrarApenasAtivas) {
-      filtradas = filtradas.filter(c => c.ativo === true);
-    }
-
-    return filtradas;
+    return this.dados;
   }
 
   pesquisar(termo: string): void {
@@ -90,7 +90,9 @@ export class CrudCategoriaComponent implements OnInit {
   }
 
   toggleInativas(): void {
-    this.mostrarApenasAtivas = !this.mostrarApenasAtivas;
+    this.mostrarInativas = !this.mostrarInativas;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   selecionarLinha(item: any): void {
@@ -174,5 +176,26 @@ export class CrudCategoriaComponent implements OnInit {
         });
       }
     });
+  }
+
+  reativar(): void {
+    if (!this.categoriaSelecionada) return;
+
+    this.categoriaService
+      .reativar(
+        this.categoriaSelecionada.id!
+      )
+      .subscribe(() => {
+
+        this.notificationService
+          .exibirSucesso(
+            'Categoria reativada.'
+          );
+
+        this.carregarDados();
+
+        this.categoriaSelecionada =
+          undefined;
+      });
   }
 }

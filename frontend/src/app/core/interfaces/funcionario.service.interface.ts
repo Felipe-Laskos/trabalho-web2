@@ -7,7 +7,8 @@ export interface IFuncionarioService {
   buscarPorId(id: number): Observable<Funcionario | undefined>;
   buscarPorEmail(email: string): Observable<Funcionario | undefined>;
   buscarPorCpf(cpf: string): Observable<Funcionario | undefined>;
-  listarAtivos(): Observable<Funcionario[]>;
+  listarAtivos(page: number, size: number): Observable<Page<Funcionario>>;
+  listarInativos(page: number, size: number): Observable<Page<Funcionario>>;
   inserir(funcionario: Funcionario): Observable<Funcionario>;
   atualizar(funcionario: Funcionario): Observable<Funcionario>;
   remover(id: number): Observable<Funcionario>;

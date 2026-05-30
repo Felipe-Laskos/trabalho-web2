@@ -42,19 +42,22 @@ public class RelatorioController {
     }
 
     @GetMapping("/receitas-categoria")
-    public ResponseEntity<Page<ReceitaPorCategoriaProjection>> gerarRelatorioCategorias(@PageableDefault(size = 10, sort = "nome") Pageable pageable) {
-        Page<ReceitaPorCategoriaProjection> categorias = relatorioService.gerarRelatorioCategorias(pageable);
+    public ResponseEntity<Page<ReceitaPorCategoriaProjection>> gerarRelatorioCategorias(
+        @RequestParam(required = false) String categoria,
+        @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+        Page<ReceitaPorCategoriaProjection> categorias = relatorioService.gerarRelatorioCategorias(categoria, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(categorias);
     }
 
-    @GetMapping("/receitas-categoria/pdf")
-    public ResponseEntity<byte[]> gerarRelatorioCategoriasPDF() throws IOException {
-
-        byte[] pdf = relatorioPdfService.gerarRelatorioCategorias();
+    @GetMapping("/receitas-categoria/pdf") 
+    public ResponseEntity<byte[]> baixarPdfCategorias(
+            @RequestParam(required = false) String categoria) throws IOException {
+        
+        byte[] pdf = relatorioPdfService.gerarRelatorioCategorias(categoria);
         
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=RelatorioCategoria.pdf")
+                        "attachment; filename=relatorio-categorias.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }

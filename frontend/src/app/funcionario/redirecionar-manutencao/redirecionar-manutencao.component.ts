@@ -70,9 +70,9 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
     const emailLogado = this.authService.getEmail();
 
-    this.funcionarioService.listarAtivos().subscribe({
-      next: funcionarios => {
-        this.funcionarios = funcionarios;
+    this.funcionarioService.listarAtivos(0,100).subscribe({
+      next: response => {
+        this.funcionarios = response.content;
 
         this.funcionarioService.buscarPorEmail(emailLogado).subscribe({
           next: funcionarioLogado => {

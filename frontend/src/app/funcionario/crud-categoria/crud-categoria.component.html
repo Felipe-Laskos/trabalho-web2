@@ -56,4 +56,11 @@
     Desativar
   </app-botao>
 
+  @if (mostrarInativas) {
+    <app-botao
+        texto="Reativar"
+        (clicou)="reativar()">
+    </app-botao>
+  }
+
 </div>

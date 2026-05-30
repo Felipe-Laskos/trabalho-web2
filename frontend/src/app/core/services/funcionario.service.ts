@@ -106,18 +106,37 @@ export class FuncionarioService implements IFuncionarioService {
     );
   }
 
-  listarAtivos(): Observable<Funcionario[]> {
-      return this.http.get<Funcionario[]>(
-        `${this.apiUrl}/ativos`,
-        defaultHttpOptions
-      ).pipe(
-      map(funcionarios => funcionarios.filter(f => f.ativo)),
+  listarAtivos(page:number, size:number): Observable<Page<Funcionario>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    return this.http.get<Page<Funcionario>>(
+      `${this.apiUrl}/ativos`,
+      { params }
+    ).pipe(
       catchError(error => {
         this.notificationService.exibirErro('Erro ao listar funcionários ativos.');
         throw error;
       })
     );
   } 
+
+  listarInativos(page:number, size:number): Observable<Page<Funcionario>> {
+  const params = new HttpParams()
+    .set('page', page)
+    .set('size', size);
+
+  return this.http.get<Page<Funcionario>>(
+    `${this.apiUrl}/inativos`,
+    { params }
+  ).pipe(
+    catchError(error => {
+      this.notificationService.exibirErro('Erro ao listar funcionários inativos.');
+      throw error;
+    })
+  );
+}
 
   remover(id: number): Observable<Funcionario> {
     return this.http.delete<Funcionario>(
@@ -128,6 +147,19 @@ export class FuncionarioService implements IFuncionarioService {
             this.notificationService.exibirErro('Erro ao remover funcionário.');
             throw error;
         })
+    );
+  }
+
+  reativar(id:number): Observable<Funcionario>{
+    return this.http.patch<Funcionario>(
+      `${this.apiUrl}/${id}/reativar`,
+      {},
+      defaultHttpOptions
+    ).pipe(
+      catchError(error=>{
+        this.notificationService.exibirErro(error);
+        throw error;
+      })
     );
   }
 }

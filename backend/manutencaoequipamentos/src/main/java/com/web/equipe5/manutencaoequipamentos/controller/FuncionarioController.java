@@ -15,9 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -43,11 +40,18 @@ public class FuncionarioController {
     }
 
     @GetMapping("/ativos")
-    public ResponseEntity<List<FuncionarioResponseDTO>> listarAtivos() {
-        List<Funcionario> lista = service.listarAtivos();
-        List<FuncionarioResponseDTO> response = lista.stream()
-            .map(FuncionarioMapper::toDTO)
-            .collect(Collectors.toList());
+    public ResponseEntity<Page<FuncionarioResponseDTO>> listarAtivos(
+        @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+        Page<Funcionario> lista = service.listarAtivos(pageable);
+        Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/inativos")
+    public ResponseEntity<Page<FuncionarioResponseDTO>> listarInativos(
+        @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+        Page<Funcionario> lista = service.listarInativos(pageable);
+        Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -89,5 +93,11 @@ public class FuncionarioController {
         @AuthenticationPrincipal JwtAuthenticationFilter.AuthenticatedPrincipal usuarioLogado) {
         Funcionario fun = service.deletar(id, usuarioLogado.id());  
         return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(fun));
+    }
+
+    @PatchMapping("/{id}/reativar")
+    public ResponseEntity<FuncionarioResponseDTO> reativar(@PathVariable Long id){
+        Funcionario funcionario = service.reativar(id);
+        return ResponseEntity.status(HttpStatus.OK).body(FuncionarioMapper.toDTO(funcionario));
     }
 }

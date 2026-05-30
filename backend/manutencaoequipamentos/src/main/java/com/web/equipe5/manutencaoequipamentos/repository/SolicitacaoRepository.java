@@ -89,7 +89,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     );
     
 
-    // Consulta LIST para PDF
+    // LIST para PDF
     @Query(value = """
         SELECT
             c.nome as nome,
@@ -99,12 +99,14 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
         JOIN categorias c
             ON s.categoria_id = c.id
         WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+          AND (:categoria IS NULL OR :categoria = '' OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :categoria, '%')))
         GROUP BY c.nome
         """, nativeQuery = true)
-    List<ReceitaPorCategoriaProjection>
-    findReceitasAgrupadasPorCategoria();
+    List<ReceitaPorCategoriaProjection> findReceitasAgrupadasPorCategoria(
+        @Param("categoria") String categoria
+    );
 
-    // Consulta PAGE para tela
+    // PAGE para a tabela
     @Query(value = """
         SELECT
             c.nome as nome,
@@ -114,6 +116,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
         JOIN categorias c
             ON s.categoria_id = c.id
         WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+          AND (:categoria IS NULL OR :categoria = '' OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :categoria, '%')))
         GROUP BY c.nome
         """,
         countQuery = """
@@ -122,11 +125,12 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
             JOIN categorias c
                 ON s.categoria_id = c.id
             WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+              AND (:categoria IS NULL OR :categoria = '' OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :categoria, '%')))
             """,
         nativeQuery = true
     )
-    Page<ReceitaPorCategoriaProjection>
-    findReceitasAgrupadasPorCategoria(Pageable pageable);
-
-    
+    Page<ReceitaPorCategoriaProjection> findReceitasAgrupadasPorCategoria(
+        @Param("categoria") String categoria, 
+        Pageable pageable
+    );
 }

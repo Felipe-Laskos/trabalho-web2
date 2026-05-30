@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,8 +35,12 @@ public class FuncionarioService {
         return repository.findAll(pageable);
     }
     
-    public List<Funcionario> listarAtivos() {
-        return repository.findByAtivoTrue();
+    public Page<Funcionario> listarAtivos(Pageable pageable) {
+        return repository.findByAtivoTrue(pageable);
+    }
+
+    public Page<Funcionario> listarInativos(Pageable pageable) {
+        return repository.findByAtivoFalse(pageable);
     }
 
     public Funcionario buscarPorId(Long id) {
@@ -161,7 +164,13 @@ public class FuncionarioService {
         }    
 
         Funcionario fun = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Funcionario não encontrado")); 
+                .orElseThrow(() -> new ResourceNotFoundException("Funcionario não encontrado"));
+                
+        if(Boolean.FALSE.equals(fun.getAtivo())){
+            throw new BusinessRuleException(
+                "Funcionário já está inativo."
+            );
+        }
 
         long totalAtivos = repository.countByAtivoTrue();
         if (totalAtivos <= 1) {
@@ -170,5 +179,29 @@ public class FuncionarioService {
             
         fun.setAtivo(false);
         return repository.save(fun);
+    }
+
+    public Funcionario reativar(Long id) {
+        Funcionario funcionario =
+            repository.findById(id)
+            .orElseThrow(() ->
+                new ResourceNotFoundException(
+                    "Funcionário não encontrado"
+                )
+            );
+
+        if(Boolean.TRUE.equals(
+            funcionario.getAtivo()
+        )){
+            throw new BusinessRuleException(
+                "Funcionário já está ativo."
+            );
+        }
+
+        funcionario.setAtivo(true);
+
+        return repository.save(
+            funcionario
+        );
     }
 }

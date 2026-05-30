@@ -52,9 +52,9 @@ export class SolicitarManutencaoComponent implements OnInit {
   constructor(public router: Router, private aviso: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.categoriaService.listarAtivas().subscribe({
-      next: categorias => {
-        this.categoriasLista = categorias.map(c => ({
+    this.categoriaService.listarAtivas(0,100).subscribe({
+      next: (response) => {
+        this.categoriasLista = response.content.map(c => ({
           value: c.id!,
           viewValue: c.nome
         }));

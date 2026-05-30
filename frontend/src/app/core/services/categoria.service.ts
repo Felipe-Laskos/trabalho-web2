@@ -38,14 +38,41 @@ export class CategoriaService implements ICategoriaService {
     );
   }
 
-  listarAtivas(): Observable<CategoriaEquipamento[]> {
-    return this.http.get<CategoriaEquipamento[] | Page<CategoriaEquipamento>>(
+  listarAtivas(page: number, size: number): Observable<Page<CategoriaEquipamento>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'nome,asc');
+
+    return this.http.get<Page<CategoriaEquipamento>>(
       `${this.apiUrl}/ativas`,
-      defaultHttpOptions
+      {
+        ...defaultHttpOptions,
+        params
+      }
     ).pipe(
-      map(response => Array.isArray(response) ? response : response.content),
       catchError(error => {
         this.notificationService.exibirErro('Erro ao listar categorias ativas.');
+        throw error;
+      })
+    );
+  }
+
+  listarInativas(page: number, size: number): Observable<Page<CategoriaEquipamento>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'nome,asc');
+
+    return this.http.get<Page<CategoriaEquipamento>>(
+      `${this.apiUrl}/inativas`,
+      {
+        ...defaultHttpOptions,
+        params
+      }
+    ).pipe(
+      catchError(error => {
+        this.notificationService.exibirErro('Erro ao listar categorias inativas.');
         throw error;
       })
     );
@@ -97,10 +124,14 @@ export class CategoriaService implements ICategoriaService {
     );
   }
 
-  getReceitasCategoria(page: number, size: number) {
-    const params = new HttpParams()
+  getReceitasCategoria(page: number, size: number, categoria?: string): Observable<any> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size);
+
+    if (categoria && categoria.trim() !== '') {
+      params = params.set('categoria', categoria);
+    }
 
     return this.http.get(
       `${API_URL}/relatorios/receitas-categoria`,
@@ -111,13 +142,29 @@ export class CategoriaService implements ICategoriaService {
     );
   }
 
-baixarRelatorioPdf() {
-  return this.http.get(
-    `${API_URL}/relatorios/receitas-categoria/pdf`,
-    {
-      headers: defaultHttpOptions.headers,
-      responseType: 'blob'
+  baixarRelatorioPdf(categoria?: string): Observable<Blob> {
+    let params = new HttpParams();
+    
+    if (categoria && categoria.trim() !== '') {
+      params = params.set('categoria', categoria.trim());
     }
-  );
-}
+    
+    return this.http.get(`${this.apiUrl}/receitas-categoria/pdf`, {
+      params: params, 
+      responseType: 'blob' 
+    });
+  }
+
+  reativar(id: number): Observable<CategoriaEquipamento> {
+    return this.http.patch<CategoriaEquipamento>(
+      `${this.apiUrl}/${id}/reativar`,
+      {},
+      defaultHttpOptions
+    ).pipe(
+      catchError(error => {
+        this.notificationService.exibirErro(error);
+        throw error;
+      })
+    );
+  }
 }
