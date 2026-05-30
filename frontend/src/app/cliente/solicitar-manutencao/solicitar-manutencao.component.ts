@@ -99,13 +99,21 @@ export class SolicitarManutencaoComponent implements OnInit {
       categoriaId: Number(this.solicitacao.categoriaId)
     };
 
+    this.enviou = true; 
+
     this.solicitacaoService.inserir(novaSolicitacao).subscribe({
       next: () => {
+        this.enviou = false; 
         this.aviso.open('Solicitação enviada com sucesso!', 'OK', { duration: 4000, verticalPosition: 'top' });
         this.router.navigate(['/cliente']);
       },
-      error: () => {
-        this.aviso.open('Erro ao enviar solicitação.', 'OK', { duration: 3000 });
+      error: (err) => {
+        this.enviou = false; 
+        
+        if (err.status === 400 && err.error?.fieldErrors?.descricaoDefeito) {
+          this.erroDefeito = err.error.fieldErrors.descricaoDefeito;
+        }
+        this.aviso.open(err.error?.mensagem || 'Erro ao enviar solicitação.', 'OK', { duration: 3000 });
       }
     });
   }
