@@ -3,8 +3,12 @@
   type="button"
   class="btn-aprovar"
   (click)="onClick()"
-  [disabled]="desabilitado">
+  [disabled]="desabilitado || carregando">
 
-  <ng-content></ng-content>
+  @if (carregando) {
+    <span>Aguarde...</span>
+  } @else {
+    <ng-content></ng-content>
+  }
 
 </button>

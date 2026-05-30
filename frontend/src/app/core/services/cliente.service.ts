@@ -21,6 +21,10 @@ export class ClienteService implements IClienteService {
     return this.http.post<ClienteResponse>(this.apiUrl, requisicao, defaultHttpOptions);
   }
 
+  buscarCepViaCep(cep: string): Observable<any> {
+    return this.http.get<any>(`https://viacep.com.br/ws/${cep}/json/`);
+  }
+
   // FUNÇÕES EXTRAS/AUXILIARES PARA OUTRAS TELAS
 
   listarTodos(): Observable<Cliente[]> {

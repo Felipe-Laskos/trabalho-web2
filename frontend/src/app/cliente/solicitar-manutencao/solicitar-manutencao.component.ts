@@ -48,6 +48,7 @@ export class SolicitarManutencaoComponent implements OnInit {
   };
 
   enviou: boolean = false;
+  erroDefeito: string = '';
 
   constructor(public router: Router, private aviso: MatSnackBar) {}
 
@@ -66,6 +67,9 @@ export class SolicitarManutencaoComponent implements OnInit {
   }
 
   solicitarManutencao(): void {
+    if (this.enviou) return;
+    this.erroDefeito = '';
+
     const faltando: string[] = [];
     if (!this.solicitacao.categoriaId) faltando.push('Categoria do Equipamento');
     if (!this.solicitacao.modelo) faltando.push('Descrição do Equipamento');
@@ -83,19 +87,33 @@ export class SolicitarManutencaoComponent implements OnInit {
       return;
     }
 
+    if (this.solicitacao.descricaoDefeito.trim().length < 20) {
+      this.erroDefeito = 'A descrição deve conter no mínimo 20 caracteres.';
+      this.aviso.open('Descreva melhor o defeito do equipamento.', 'OK', { duration: 3000 });
+      return;
+    }
+
     const novaSolicitacao = {
       descricaoEquipamento: this.solicitacao.modelo,
       descricaoDefeito: this.solicitacao.descricaoDefeito,
       categoriaId: Number(this.solicitacao.categoriaId)
     };
 
+    this.enviou = true; 
+
     this.solicitacaoService.inserir(novaSolicitacao).subscribe({
       next: () => {
+        this.enviou = false; 
         this.aviso.open('Solicitação enviada com sucesso!', 'OK', { duration: 4000, verticalPosition: 'top' });
         this.router.navigate(['/cliente']);
       },
-      error: () => {
-        this.aviso.open('Erro ao enviar solicitação.', 'OK', { duration: 3000 });
+      error: (err) => {
+        this.enviou = false; 
+        
+        if (err.status === 400 && err.error?.fieldErrors?.descricaoDefeito) {
+          this.erroDefeito = err.error.fieldErrors.descricaoDefeito;
+        }
+        this.aviso.open(err.error?.mensagem || 'Erro ao enviar solicitação.', 'OK', { duration: 3000 });
       }
     });
   }

@@ -13,9 +13,13 @@ import { MatButtonModule } from '@angular/material/button';
 export class BotaoAprovarComponent {
   @Input() desabilitado = false;
 
+  @Input() carregando = false;
+
   @Output() clicou = new EventEmitter<void>();
 
   onClick() {
-    this.clicou.emit();
+    if (!this.desabilitado && !this.carregando) {
+      this.clicou.emit();
+    }
   }
 }
