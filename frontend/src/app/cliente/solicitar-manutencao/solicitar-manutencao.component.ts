@@ -21,7 +21,6 @@ import { CategoriaService } from '../../core/services/categoria.service';
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     MatSnackBarModule,
     MatCardModule,
     ComboComponent,

@@ -12,10 +12,10 @@ import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
-import { TextAreaComponent } from '../../shared/text-area/text-area.component';
-import { BotaoComponent } from '../../shared/botao/botao.component';
 import { NotificationService } from '../../core/services/notification.service';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 
 @Component({
   selector: 'app-mostrar-orcamento',
@@ -26,8 +26,6 @@ import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
     BotaoCancelarComponent,
     BotaoAprovarComponent,
     FormsModule,
-    TextAreaComponent,
-    BotaoComponent,
     TelefonePipe
   ],
   templateUrl: './mostrar-orcamento.component.html',
@@ -40,21 +38,13 @@ export class MostrarOrcamentoComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private notificationService = inject(NotificationService);
-  
+  private dialog = inject(MatDialog);
   solicitacao: Solicitacao | undefined;
   cliente: Cliente | undefined;
   funcionario: Funcionario | undefined;
   dataHoraAcesso: Date = new Date();
 
   carregamento = false;
-
-  exibirModal: boolean = false;
-  estadoModal:
-    | 'confirmacao'
-    | 'sucesso'
-    | 'confirmarRejeicao'
-    | 'motivoRejeicao'
-    | 'sucessoRejeicao' = 'confirmacao';
   motivoRejeicao: string = '';
   exibirDefeitoCompleto: boolean = false;
 
@@ -106,9 +96,26 @@ export class MostrarOrcamentoComponent implements OnInit {
   }
 
   aprovarServico(): void {
-    this.estadoModal = 'confirmacao';
-    this.exibirModal = true;
-  }
+  const dialogRef = this.dialog.open(
+    ModalGenericoComponent,
+    {
+      width: '500px',
+      data: {
+        tipo: 'confirmacao',
+        titulo: 'Confirmar Aprovação?',
+        mensagem: 'Ao confirmar, o serviço será agendado.',
+        textoConfirmar: 'Sim, Confirmar',
+        textoCancelar: 'Cancelar'
+      }
+    }
+  );
+
+  dialogRef.afterClosed().subscribe((confirmou) => {
+    if (confirmou) {
+      this.confirmarAprovacao();
+    }
+  });
+}
 
   async confirmarAprovacao(): Promise<void> {
     this.carregamento = true;
@@ -119,7 +126,8 @@ export class MostrarOrcamentoComponent implements OnInit {
         );
 
         this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
-        this.estadoModal = 'sucesso';
+        this.notificationService.exibirSucesso('Serviço aprovado com sucesso!');
+        this.router.navigate(['/cliente']);
       } catch (erro) {
         this.notificationService.exibirErro(erro as HttpErrorResponse);
       } finally {
@@ -129,18 +137,50 @@ export class MostrarOrcamentoComponent implements OnInit {
   }
 
   clickCancelar(): void {
-    this.abrirModalRejeicao();
-  }
+  const dialogRef = this.dialog.open(
+    ModalGenericoComponent,
+    {
+      width: '500px',
+      data: { tipo: 'confirmacao',
+      titulo: 'Cancelar Serviço?', 
+      mensagem:'Tem certeza de que deseja cancelar este orçamento?', 
+      textoConfirmar: 'Sim, Cancelar', 
+      textoCancelar: 'Não, vou pensar melhor' }
+    }
+  );
 
-  abrirModalRejeicao(): void {
-    this.motivoRejeicao = '';
-    this.estadoModal = 'confirmarRejeicao';
-    this.exibirModal = true;
-  }
+  dialogRef.afterClosed().subscribe((confirmou) => {
+    if (confirmou) {
+      this.abrirModalMotivoRejeicao();
+    }
+  });
+}
 
-  irParaMotivoRejeicao(): void {
-    this.estadoModal = 'motivoRejeicao';
-  }
+abrirModalMotivoRejeicao(): void {
+  const dialogRef = this.dialog.open(
+    ModalGenericoComponent,
+    {
+      width: '600px',
+      data: {
+        tipo: 'formulario',
+        titulo: 'Motivo do Cancelamento',
+        textoConfirmar: 'Confirmar Motivo',
+        textoCancelar: 'Cancelar',
+        campos: [
+          { label:'Por favor, escreva abaixo o motivo de estar cancelando o serviço:', 
+            campo: 'motivo', 
+            obrigatorio: true }
+        ]
+      }
+    }
+  );
+  dialogRef.afterClosed().subscribe((resultado) => {
+    if (resultado?.motivo) {
+      this.motivoRejeicao = resultado.motivo;
+      this.finalizarRejeicao();
+    }
+  });
+}
 
   async finalizarRejeicao(): Promise<void> {
     this.carregamento = true;
@@ -155,26 +195,14 @@ export class MostrarOrcamentoComponent implements OnInit {
 
         this.solicitacao.estadoAtual = SolicitacaoENUM.REJEITADA;
         this.solicitacao.motivoRejeicao = this.motivoRejeicao;
-        this.estadoModal = 'sucessoRejeicao'; 
         this.notificationService.exibirSucesso('Serviço rejeitado com sucesso!');
+        this.router.navigate(['/cliente']);
       } catch (erro) {
         this.notificationService.exibirErro(erro as HttpErrorResponse);
       } finally {
         this.carregamento = false;
       }
     }
-  }
-
-  fecharERedirecionar(): void {
-    this.exibirModal = false;
-    this.estadoModal = 'confirmacao';
-    this.router.navigate(['/cliente']);
-  }
-
-  fecharModal(): void {
-    this.exibirModal = false;
-    this.estadoModal = 'confirmacao';
-    this.motivoRejeicao = '';
   }
 
   obterCorDoBadge(estado: string | undefined): string {
