@@ -59,23 +59,8 @@
         </div>
       </div>
     </app-card-visualizacao>
-
-    <div class="modal-overlay" *ngIf="exibirModalConfirmacao">
-      <div class="modal-box">
-        <h2>Confirmar Pagamento?</h2>
-        <p>O serviço ficou no valor de:</p>
-        <div class="valor-confirmacao">
-          {{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
-        </div>
-        <div class="modal-actions">
-
-          <app-botao-cancelar (click)="cancelar()">Não, Voltar</app-botao-cancelar> 
-          <app-botao-aprovar (click)="finalizarPagamento()">Sim, Confirmar</app-botao-aprovar> 
-        </div>
-      </div>
-    </div>
-
-  </ng-container>
+    
+  </ng-container> 
   <ng-template #statusIncorreto>
   <div class="container-erro">
     <app-card-visualizacao>

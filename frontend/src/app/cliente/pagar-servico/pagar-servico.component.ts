@@ -8,9 +8,9 @@ import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
-import { BotaoCancelarComponent } from '../../shared/botao-cancelar/botao-cancelar.component';
-import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
 import { NotificationService } from '../../core/services/notification.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 
 @Component({
   selector: 'app-pagar-servico',
@@ -21,8 +21,6 @@ import { NotificationService } from '../../core/services/notification.service';
     MatSnackBarModule,
     CardVisualizacaoComponent,
     BotaoComponent,
-    BotaoCancelarComponent,
-    BotaoAprovarComponent,
   ],
   templateUrl: './pagar-servico.component.html',
   styleUrl: './pagar-servico.component.css',
@@ -33,7 +31,7 @@ export class PagarServicoComponent implements OnInit {
   private router = inject(Router);
   private aviso = inject(MatSnackBar);
   private notificationService = inject(NotificationService);
-
+  private dialog = inject(MatDialog);
   solicitacao: Solicitacao | undefined;
   dataHoraAcesso: Date = new Date();
 
@@ -50,9 +48,30 @@ export class PagarServicoComponent implements OnInit {
       });
   }
 
-  confirmarPagamento(): void {
+    confirmarPagamento(): void {
     if (this.solicitacao?.estadoAtual === SolicitacaoENUM.ARRUMADA) {
-      this.exibirModalConfirmacao = true;
+      
+      const valorFormatado = new Intl.NumberFormat('pt-BR', { 
+        style: 'currency', 
+        currency: 'BRL' 
+      }).format(this.solicitacao.valorOrcado || 0);
+
+      const dialogRef = this.dialog.open(ModalGenericoComponent, {
+        width: '400px',
+        data: {
+          tipo: 'confirmacao',
+          titulo: 'Confirmar Pagamento?',
+          mensagem: `<p>O serviço ficou no valor de:</p> <div class="valor-confirmacao" style="font-size: 1.5rem; font-weight: bold; margin-top: 10px;">${valorFormatado}</div>`,
+          textoConfirmar: 'Sim, Confirmar',
+          textoCancelar: 'Não, Voltar'
+        }
+      });
+      dialogRef.afterClosed().subscribe(resultado => {
+        if (resultado === true) {
+          this.finalizarPagamento();
+        }
+      });
+
     } else {
       this.aviso.open('O serviço ainda não está pronto para pagamento.', 'OK', {
         duration: 3000,
@@ -90,10 +109,6 @@ export class PagarServicoComponent implements OnInit {
     const minutos = String(data.getMinutes()).padStart(2, '0');
 
     return `${ano}-${mes}-${dia} ${horas}:${minutos}`;
-  }
-
-  cancelar(): void {
-    this.exibirModalConfirmacao = false;
   }
 
   voltar(): void {

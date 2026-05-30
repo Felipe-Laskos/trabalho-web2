@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BotaoAprovarComponent } from '../../shared/botao-aprovar/botao-aprovar.component';
@@ -13,6 +14,7 @@ import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { ModalGenericoComponent } from '../../shared/modal-generico/modal-generico.component';
 
 @Component({
   selector: 'app-home-cliente',
@@ -34,6 +36,7 @@ export class HomeClienteComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
+  private dialog = inject(MatDialog);
 
   nomeUsuario: string = 'Cliente';
   listaSolicitacoes: Solicitacao[] = [];
@@ -150,23 +153,36 @@ export class HomeClienteComponent implements OnInit {
 
   aprovar(item: Solicitacao) { this.router.navigate(['/cliente/mostrar-orcamento', item.id]); }
 
-  resgatar(item: Solicitacao) {
-    if (confirm(`Deseja resgatar a solicitação do equipamento: ${item.descricaoEquipamento}?`)) {
-      this.carregamento = true;
-
-      this.solicitacaoService.resgatar(item.id!).subscribe({
+  resgatar(item: Solicitacao): void {
+  const dialogRef = this.dialog.open(
+    ModalGenericoComponent,
+    {
+      width: '500px',
+      data: {
+        tipo: 'confirmacao',
+        titulo: 'Resgatar Solicitação',
+        mensagem: `Deseja resgatar a solicitação do equipamento <strong>${item.descricaoEquipamento}</strong>?`,
+        textoConfirmar: 'Sim, Resgatar',
+        textoCancelar: 'Cancelar'
+      }
+    }
+  );
+  dialogRef.afterClosed().subscribe((confirmou) => {
+    if (!confirmou) return;
+    this.carregamento = true;
+    this.solicitacaoService.resgatar(item.id!).subscribe({
       next: () => {
         this.carregarSolicitacoes();
 
-        this.notificationService.exibirSucesso('Serviço resgatado com sucesso!')
+        this.notificationService.exibirSucesso( 'Serviço resgatado com sucesso!' );
         this.carregamento = false;
       },
-      error: (err) => { 
+      error: (err) => {
         this.notificationService.exibirErro(err);
         this.carregamento = false;
       }
     });
-  }
+  });
 }
   pagar(item: Solicitacao) { this.router.navigate(['/cliente/pagar', item.id]); } // RF010 Laura
 
