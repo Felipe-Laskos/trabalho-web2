@@ -30,9 +30,8 @@
 
     <p>
       <b>Telefone:</b>
-      ({{ solicitacao.cliente?.telefone | telefone }})
-      {{ solicitacao.cliente?.telefone | telefone }}-
       {{ solicitacao.cliente?.telefone | telefone }}
+
     </p>
 
     @if (solicitacao.cliente?.endereco) {
@@ -70,9 +69,7 @@
     </div>
   </div>
 
-</div>
+ </div>
+</app-card-visualizacao>
 
-
-    </app-card-visualizacao>
-
-  }
+}
