@@ -70,26 +70,25 @@ export class RelatorioReceitasComponent implements OnInit {
   ngOnInit(): void {
 
     const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
 
     const primeiroDia = new Date(
       hoje.getFullYear(),
       hoje.getMonth(),
       1
     );
+    primeiroDia.setHours(0, 0, 0, 0);
 
     const ultimoDia = new Date(
       hoje.getFullYear(),
       hoje.getMonth() + 1,
       0
     );
+    ultimoDia.setHours(23, 59, 59, 999);
 
-    this.dataInicio = primeiroDia
-      .toISOString()
-      .split('T')[0];
+    this.dataInicio = this.formatarDataParaFiltro(primeiroDia);
 
-    this.dataFim = ultimoDia
-      .toISOString()
-      .split('T')[0];
+    this.dataFim = this.formatarDataParaFiltro(ultimoDia);
 
     this.filtrar();
   }
@@ -118,8 +117,7 @@ export class RelatorioReceitasComponent implements OnInit {
 
           this.receitasPorDia = dados.map((item: any) => ({
 
-            data: new Date(item.data)
-              .toLocaleDateString('pt-BR'),
+            data: this.formatarDataRecebida(item.data),
 
             quantidade: item.quantidade,
 
@@ -185,5 +183,19 @@ export class RelatorioReceitasComponent implements OnInit {
       style: 'currency',
       currency: 'BRL',
     });
+  }
+
+  private formatarDataParaFiltro(data: Date): string {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  private formatarDataRecebida(data: string): string {
+    const [ano, mes, dia] = data.split('-').map(Number);
+
+    return new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR');
   }
 }
