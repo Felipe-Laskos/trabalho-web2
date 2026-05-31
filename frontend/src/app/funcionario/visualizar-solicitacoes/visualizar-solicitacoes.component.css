@@ -19,12 +19,12 @@
 h2 {
   color: #000; 
   font-weight: 700;
-  font-size:
-   2rem;
+  font-size: 2rem;
   margin-bottom: 30px;
   text-align: center;
   width: 100%;
 }
+
 .filtros-container {
   width: 100%;
   max-width: 1000px; 
@@ -37,17 +37,11 @@ h2 {
 
 .filtros {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   width: 100%;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
-}
-app-tabela,
-app-tabela .mat-table,
-.tabela {
-  background-color: transparent;
-  
 }
 
 app-tabela {
@@ -62,11 +56,6 @@ app-tabela {
   color: #555;
   font-weight: 500;
 }
-
-.filtros {
-  display: flex;
-  gap: 12px;
- align-items: flex-end; }
 
 app-combo {
   display: block;
