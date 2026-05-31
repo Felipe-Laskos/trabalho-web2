@@ -2,8 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { first, firstValueFrom } from 'rxjs'; 
-import { HttpClient,HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { Funcionario } from '../../core/models/funcionario.model';
 import { Cliente } from '../../core/models/cliente.model';
@@ -36,9 +35,10 @@ export class MostrarOrcamentoComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private http = inject(HttpClient);
+  private http = inject(HttpClient); 
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
+  
   solicitacao: Solicitacao | undefined;
   cliente: Cliente | undefined;
   funcionario: Funcionario | undefined;
@@ -48,47 +48,44 @@ export class MostrarOrcamentoComponent implements OnInit {
   motivoRejeicao: string = '';
   exibirDefeitoCompleto: boolean = false;
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) return;
 
     const id = Number(idParam);
+    this.carregamento = true;
 
-    try {
-      this.carregamento = true;
+    this.solicitacaoService.buscarPorId(id).subscribe({
+      next: (dadosSolicitacao: Solicitacao) => {
+        this.solicitacao = dadosSolicitacao;
+        
+        if (this.solicitacao) {
+          const estado = this.solicitacao.estadoAtual?.toUpperCase();
 
-      this.solicitacao = await firstValueFrom(
-      this.solicitacaoService.buscarPorId(id),
-      );
+          if (estado === 'ARRUMADA') {
+            this.router.navigate(['/cliente/pagar', id]);
+            return;
+          }
 
-      if (this.solicitacao) {
-        const estado = this.solicitacao.estadoAtual?.toUpperCase();
+          const estadosBloqueados = ['PAGA', 'APROVADA', 'REJEITADA', 'FINALIZADA'];
 
-        if (estado === 'ARRUMADA') {
-          this.router.navigate(['/cliente/pagar', id]);
-          return;
+          if (estado && estadosBloqueados.includes(estado)) {
+            this.router.navigate(['/cliente']);
+            return;
+          }
+
+          this.cliente = this.solicitacao.cliente;
+          this.funcionario = this.solicitacao.funcionarioResponsavel;
         }
-
-        const estadosBloqueados = [
-          'PAGA',
-          'APROVADA',
-          'REJEITADA',
-          'FINALIZADA',
-        ];
-
-        if (estado && estadosBloqueados.includes(estado)) {
-          this.router.navigate(['/cliente']);
-          return;
-        }
-
-        this.cliente = this.solicitacao.cliente;
-        this.funcionario = this.solicitacao.funcionarioResponsavel;
+      },
+      error: (erro: HttpErrorResponse) => {
+        this.notificationService.exibirErro(erro);
+        this.carregamento = false;
+      },
+      complete: () => {
+        this.carregamento = false;
       }
-    } catch (erro) {
-      this.notificationService.exibirErro(erro as HttpErrorResponse); 
-    } finally {
-      this.carregamento = false;
-    }
+    });
   }
 
   alternarLeiaMais(): void {
@@ -96,136 +93,137 @@ export class MostrarOrcamentoComponent implements OnInit {
   }
 
   aprovarServico(): void {
-  const dialogRef = this.dialog.open(
-    ModalGenericoComponent,
-    {
-      width: '500px',
-      data: {
-        tipo: 'confirmacao',
-        titulo: 'Confirmar Aprovação?',
-        mensagem: 'Ao confirmar, o serviço será agendado.',
-        textoConfirmar: 'Sim, Confirmar',
-        textoCancelar: 'Cancelar'
+    const dialogRef = this.dialog.open(
+      ModalGenericoComponent,
+      {
+        width: '500px',
+        data: {
+          tipo: 'confirmacao',
+          titulo: 'Confirmar Aprovação?',
+          mensagem: 'Ao confirmar, o serviço será agendado.',
+          textoConfirmar: 'Sim, Confirmar',
+          textoCancelar: 'Cancelar'
+        }
       }
-    }
-  );
+    );
 
-  dialogRef.afterClosed().subscribe((confirmou) => {
-    if (confirmou) {
-      this.confirmarAprovacao();
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe((confirmou) => {
+      if (confirmou) {
+        this.confirmarAprovacao();
+      }
+    });
+  }
 
-  async confirmarAprovacao(): Promise<void> {
-    this.carregamento = true;
+  confirmarAprovacao(): void {
     if (this.solicitacao && this.solicitacao.id) {
-      try {
-        await firstValueFrom(
-          this.solicitacaoService.aprovar(this.solicitacao.id) ,
-        );
-
-        this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
-        this.notificationService.exibirSucesso('Serviço aprovado com sucesso!');
-        this.router.navigate(['/cliente']);
-      } catch (erro) {
-        this.notificationService.exibirErro(erro as HttpErrorResponse);
-      } finally {
-        this.carregamento = false;
-      }
+      this.carregamento = true;
+      
+      this.solicitacaoService.aprovar(this.solicitacao.id).subscribe({
+        next: () => {
+          if (this.solicitacao) {
+             this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
+          }
+          this.notificationService.exibirSucesso('Serviço aprovado com sucesso!');
+          this.router.navigate(['/cliente']);
+        },
+        error: (erro: HttpErrorResponse) => {
+          this.notificationService.exibirErro(erro);
+          this.carregamento = false;
+        },
+        complete: () => {
+          this.carregamento = false;
+        }
+      });
     }
   }
 
   clickCancelar(): void {
-  const dialogRef = this.dialog.open(
-    ModalGenericoComponent,
-    {
-      width: '500px',
-      data: { tipo: 'confirmacao',
-      titulo: 'Cancelar Serviço?', 
-      mensagem:'Tem certeza de que deseja cancelar este orçamento?', 
-      textoConfirmar: 'Sim, Cancelar', 
-      textoCancelar: 'Não, vou pensar melhor' }
-    }
-  );
-
-  dialogRef.afterClosed().subscribe((confirmou) => {
-    if (confirmou) {
-      this.abrirModalMotivoRejeicao();
-    }
-  });
-}
-
-abrirModalMotivoRejeicao(): void {
-  const dialogRef = this.dialog.open(
-    ModalGenericoComponent,
-    {
-      width: '600px',
-      data: {
-        tipo: 'formulario',
-        titulo: 'Motivo do Cancelamento',
-        textoConfirmar: 'Confirmar Motivo',
-        textoCancelar: 'Cancelar',
-        campos: [
-          { label:'Por favor, escreva abaixo o motivo de estar cancelando o serviço:', 
-            campo: 'motivo', 
-            obrigatorio: true }
-        ]
+    const dialogRef = this.dialog.open(
+      ModalGenericoComponent,
+      {
+        width: '500px',
+        data: { 
+          tipo: 'confirmacao',
+          titulo: 'Cancelar Serviço?', 
+          mensagem:'Tem certeza de que deseja cancelar este orçamento?', 
+          textoConfirmar: 'Sim, Cancelar', 
+          textoCancelar: 'Não, vou pensar melhor' 
+        }
       }
-    }
-  );
-  dialogRef.afterClosed().subscribe((resultado) => {
-    if (resultado?.motivo) {
-      this.motivoRejeicao = resultado.motivo;
-      this.finalizarRejeicao();
-    }
-  });
-}
+    );
 
-  async finalizarRejeicao(): Promise<void> {
-    this.carregamento = true;
+    dialogRef.afterClosed().subscribe((confirmou) => {
+      if (confirmou) {
+        this.abrirModalMotivoRejeicao();
+      }
+    });
+  }
+
+  abrirModalMotivoRejeicao(): void {
+    const dialogRef = this.dialog.open(
+      ModalGenericoComponent,
+      {
+        width: '600px',
+        data: {
+          tipo: 'formulario',
+          titulo: 'Motivo do Cancelamento',
+          textoConfirmar: 'Confirmar Motivo',
+          textoCancelar: 'Cancelar',
+          campos: [
+            { 
+              label:'Por favor, escreva abaixo o motivo de estar cancelando o serviço:', 
+              campo: 'motivo', 
+              obrigatorio: true 
+            }
+          ]
+        }
+      }
+    );
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado?.motivo) {
+        this.motivoRejeicao = resultado.motivo;
+        this.finalizarRejeicao();
+      }
+    });
+  }
+
+  finalizarRejeicao(): void {
     if (this.solicitacao && this.solicitacao.id) {
-      try {
-        await firstValueFrom(
-           this.solicitacaoService.rejeitar(
-            this.solicitacao.id,
-            this.motivoRejeicao,
-          )
-        );
-
-        this.solicitacao.estadoAtual = SolicitacaoENUM.REJEITADA;
-        this.solicitacao.motivoRejeicao = this.motivoRejeicao;
-        this.notificationService.exibirSucesso('Serviço rejeitado com sucesso!');
-        this.router.navigate(['/cliente']);
-      } catch (erro) {
-        this.notificationService.exibirErro(erro as HttpErrorResponse);
-      } finally {
-        this.carregamento = false;
-      }
+      this.carregamento = true;
+      
+      this.solicitacaoService.rejeitar(this.solicitacao.id, this.motivoRejeicao).subscribe({
+        next: () => {
+          if (this.solicitacao) {
+            this.solicitacao.estadoAtual = SolicitacaoENUM.REJEITADA;
+            this.solicitacao.motivoRejeicao = this.motivoRejeicao;
+          }
+          this.notificationService.exibirSucesso('Serviço rejeitado com sucesso!');
+          this.router.navigate(['/cliente']);
+        },
+        error: (erro: HttpErrorResponse) => {
+          this.notificationService.exibirErro(erro);
+          this.carregamento = false;
+        },
+        complete: () => {
+          this.carregamento = false;
+        }
+      });
     }
   }
 
   obterCorDoBadge(estado: string | undefined): string {
     if (!estado) return 'badge-cinza';
     switch (estado.toUpperCase()) {
-      case 'ABERTA':
-        return 'badge-cinza';
-      case 'ORCADA':
-        return 'badge-marrom';
-      case 'REJEITADA':
-        return 'badge-vermelho';
-      case 'APROVADA':
-        return 'badge-amarelo';
-      case 'REDIRECIONADA':
-        return 'badge-roxo';
-      case 'ARRUMADA':
-        return 'badge-azul';
-      case 'PAGA':
-        return 'badge-alaranjado';
-      case 'FINALIZADA':
-        return 'badge-verde';
-      default:
-        return 'badge-cinza';
+      case 'ABERTA': return 'badge-cinza';
+      case 'ORCADA': return 'badge-marrom';
+      case 'REJEITADA': return 'badge-vermelho';
+      case 'APROVADA': return 'badge-amarelo';
+      case 'REDIRECIONADA': return 'badge-roxo';
+      case 'ARRUMADA': return 'badge-azul';
+      case 'PAGA': return 'badge-alaranjado';
+      case 'FINALIZADA': return 'badge-verde';
+      default: return 'badge-cinza';
     }
   }
 }
