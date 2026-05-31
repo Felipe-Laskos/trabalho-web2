@@ -157,6 +157,7 @@ public class SolicitacaoService {
     ) {
 
         exigirFuncionario(principal);
+        Long funcionarioId = principal.id();
 
         LocalDateTime inicio = null;
         LocalDateTime fim = null;
@@ -173,6 +174,7 @@ public class SolicitacaoService {
                 estado,
                 inicio,
                 fim,
+                funcionarioId,
                 pageable
         );
 }
@@ -354,35 +356,42 @@ public class SolicitacaoService {
         Long funcionarioId = principal.id();
 
         switch (filtro.toUpperCase()) {
+            case "HOJE":
+                LocalDate hoje = LocalDate.now();
+                return repository.buscarComFiltros(
+                        null,
+                        hoje.atStartOfDay(),
+                        hoje.atTime(23, 59, 59),
+                        funcionarioId,
+                        pageable
+                );
 
-        case "HOJE":
-            LocalDate hoje = LocalDate.now();
-            return repository.findByFuncionarioResponsavelIdAndDataHoraCriacaoBetween(
-                    funcionarioId,
-                    hoje.atStartOfDay(),
-                    hoje.atTime(23, 59, 59),
-                    pageable
-            );
+            case "PERIODO":
+                if (dataInicio == null || dataFim == null) {
+                    return Page.empty(pageable);
+                }
 
-        case "PERIODO":
-            if (dataInicio == null || dataFim == null) {
-                return Page.empty(pageable);
-            }
+                LocalDateTime inicio = LocalDate.parse(dataInicio).atStartOfDay();
+                LocalDateTime fim = LocalDate.parse(dataFim).atTime(23, 59, 59);
 
-            LocalDateTime inicio = LocalDate.parse(dataInicio).atStartOfDay();
-            LocalDateTime fim = LocalDate.parse(dataFim).atTime(23, 59, 59);
+                return repository.buscarComFiltros(
+                        null,
+                        inicio,
+                        fim,
+                        funcionarioId,
+                        pageable
+                );
 
-            return repository.findByFuncionarioResponsavelIdAndDataHoraCriacaoBetween(
-                    funcionarioId,
-                    inicio,
-                    fim,
-                    pageable
-            );
-
-        default:
-            return repository.findByFuncionarioResponsavelId(funcionarioId, pageable);
+            default:
+                return repository.buscarComFiltros(
+                        null,
+                        null,
+                        null,
+                        funcionarioId,
+                        pageable
+                );
+        }
     }
-}
     private void exigirAutenticado(AuthenticatedPrincipal principal) {
         if (principal == null) {
             throw new AccessDeniedException("Usuário não autenticado");
