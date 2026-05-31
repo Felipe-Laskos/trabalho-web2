@@ -17,10 +17,14 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class RelatorioService {
+
+    private static final DateTimeFormatter FORMATO_DATA_BR =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final SolicitacaoRepository solicitacaoRepository;
 
@@ -32,8 +36,8 @@ public class RelatorioService {
             LocalDate inicio,
             LocalDate fim
     ) {
-        LocalDateTime inicioDia = inicio.atStartOfDay();
-        LocalDateTime fimDia = fim.atTime(LocalTime.MAX);
+        LocalDateTime inicioDia = normalizarInicio(inicio);
+        LocalDateTime fimDia = normalizarFim(fim);
 
         return solicitacaoRepository.findReceitasAgrupadasPorDia(inicioDia, fimDia);
     }
@@ -58,17 +62,40 @@ public class RelatorioService {
         Document document = new Document(pdf);
 
         document.add(new Paragraph("Relatório de Receitas"));
-        document.add(new Paragraph("Período: " + inicio + " até " + fim));
+        document.add(new Paragraph("Período: " + formatarPeriodo(inicio, fim)));
         document.add(new Paragraph(" "));
 
         for (ReceitaPorDiaProjection item : dados) {
             document.add(new Paragraph(
-                    item.getData() + " - R$ " + item.getTotal()
+                    formatarData(item.getData()) + " - R$ " + item.getTotal()
             ));
         }
 
         document.close();
 
         return output.toByteArray();
+    }
+
+    private String formatarData(LocalDate data) {
+        return data.format(FORMATO_DATA_BR);
+    }
+
+    private LocalDateTime normalizarInicio(LocalDate inicio) {
+        return inicio != null
+                ? inicio.atStartOfDay()
+                : LocalDate.of(1900, 1, 1).atStartOfDay();
+    }
+
+    private LocalDateTime normalizarFim(LocalDate fim) {
+        return fim != null
+                ? fim.atTime(LocalTime.MAX)
+                : LocalDate.now().atTime(LocalTime.MAX);
+    }
+
+    private String formatarPeriodo(LocalDate inicio, LocalDate fim) {
+        String inicioFormatado = inicio != null ? formatarData(inicio) : "início";
+        String fimFormatado = fim != null ? formatarData(fim) : "hoje";
+
+        return inicioFormatado + " até " + fimFormatado;
     }
 }

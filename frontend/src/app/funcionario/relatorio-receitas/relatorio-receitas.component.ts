@@ -103,10 +103,6 @@ export class RelatorioReceitasComponent implements OnInit {
 
   filtrar(): void {
 
-    if (!this.dataInicio || !this.dataFim) {
-      return;
-    }
-
     this.paginaAtual = 0;
 
     this.solicitacaoService
