@@ -90,7 +90,7 @@ export class VisualizarSolicitacoesComponent implements OnInit {
   ];
 
   paginaAtual: number = 0;
-  itensPorPagina: number = 4;
+  itensPorPagina: number = 10;
   totalItens: number = 0;
   totalPages: number = 0;
 
