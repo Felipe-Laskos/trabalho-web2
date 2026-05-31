@@ -18,6 +18,15 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     Page<Solicitacao> findByClienteId(Long clienteId, Pageable pageable);
 
     Page<Solicitacao> findByEstadoAtual(EstadoSolicitacao estadoAtual, Pageable pageable);
+
+    Page<Solicitacao> findByFuncionarioResponsavelId(Long funcionarioResponsavelId, Pageable pageable);
+
+    Page<Solicitacao> findByFuncionarioResponsavelIdAndDataHoraCriacaoBetween(
+            Long funcionarioResponsavelId,
+            LocalDateTime inicio,
+            LocalDateTime fim,
+            Pageable pageable
+    );
     
     @Query(
         value = """

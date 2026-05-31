@@ -97,11 +97,12 @@ public class SolicitacaoController {
             @RequestParam String filtro,
             @RequestParam(required = false) String dataInicio,
             @RequestParam(required = false) String dataFim,
-            Pageable pageable
+            Pageable pageable,
+            @AuthenticationPrincipal AuthenticatedPrincipal principal
     ) {
 
         Page<SolicitacaoResponseDTO> solicitacoes = service
-                .listarComFiltros(filtro, dataInicio, dataFim, pageable)
+                .listarComFiltros(filtro, dataInicio, dataFim, pageable, principal)
                 .map(SolicitacaoResponseDTO::new);
 
         return ResponseEntity.ok(solicitacoes);
