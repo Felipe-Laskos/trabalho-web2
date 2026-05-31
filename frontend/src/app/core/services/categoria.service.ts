@@ -149,7 +149,7 @@ export class CategoriaService implements ICategoriaService {
       params = params.set('categoria', categoria.trim());
     }
     
-    return this.http.get(`${this.apiUrl}/receitas-categoria/pdf`, {
+    return this.http.get(`${API_URL}/relatorios/receitas-categoria/pdf`, {
       params: params, 
       responseType: 'blob' 
     });

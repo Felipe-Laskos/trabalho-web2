@@ -37,6 +37,7 @@ export class CrudCategoriaComponent implements OnInit {
 
   dados: CategoriaEquipamento[] = [];
   categoriaSelecionada?: CategoriaEquipamento;
+  categoriasFiltradas: CategoriaEquipamento[] = [];
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
@@ -70,8 +71,28 @@ export class CrudCategoriaComponent implements OnInit {
         this.totalPaginas = response.totalPages;
         this.totalElements = response.totalElements;
         this.paginaAtual = response.number;
+        this.atualizarFiltro();
       }
     });
+  }
+
+  private atualizarFiltro(): void {
+    const termo = (this.termoPesquisa ?? '').toLowerCase().trim();
+
+    if (!this.dados) {
+      this.categoriasFiltradas = [];
+      return;
+    }
+
+    if (termo === '') {
+      this.categoriasFiltradas = [...this.dados];
+      return;
+    }
+
+    this.categoriasFiltradas = this.dados.filter(c =>
+      (c.nome ?? '').toLowerCase().includes(termo) ||
+      c.id?.toString().includes(termo)
+    );
   }
 
   selecionarPagina(pagina: number): void {
@@ -79,14 +100,9 @@ export class CrudCategoriaComponent implements OnInit {
     this.carregarDados();
   }
 
-  get categoriasFiltradas(): CategoriaEquipamento[] {
-    return this.dados;
-  }
-
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.paginaAtual = 0;
-    this.carregarDados();
+    this.atualizarFiltro();
   }
 
   toggleInativas(): void {
