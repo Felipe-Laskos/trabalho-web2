@@ -23,6 +23,7 @@ import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 
 @RestController
@@ -97,6 +98,7 @@ public class SolicitacaoController {
             @RequestParam String filtro,
             @RequestParam(required = false) String dataInicio,
             @RequestParam(required = false) String dataFim,
+            @PageableDefault(size = 4, sort = "dataHoraCriacao", direction = Sort.Direction.ASC)
             Pageable pageable,
             @AuthenticationPrincipal AuthenticatedPrincipal principal
     ) {
