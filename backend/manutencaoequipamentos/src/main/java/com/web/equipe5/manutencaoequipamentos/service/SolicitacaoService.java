@@ -157,6 +157,7 @@ public class SolicitacaoService {
     ) {
 
         exigirFuncionario(principal);
+        Long funcionarioId = principal.id();
 
         LocalDateTime inicio = null;
         LocalDateTime fim = null;
@@ -173,6 +174,7 @@ public class SolicitacaoService {
                 estado,
                 inicio,
                 fim,
+                funcionarioId,
                 pageable
         );
 }
@@ -292,16 +294,16 @@ public class SolicitacaoService {
         Solicitacao s = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
-        validarTransicao(s, EstadoSolicitacao.ARRUMADA);
-
         Funcionario funcionario = funcionarioRepository.findById(principal.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
+
+        exigirFuncionarioResponsavelAtual(s, funcionario);
+        validarTransicao(s, EstadoSolicitacao.ARRUMADA);
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
         s.setDescricaoManutencao(dto.descricaoManutencao());
         s.setOrientacoesCliente(dto.orientacoesCliente());
-        s.setFuncionarioResponsavel(funcionario);
         s.setDataHoraManutencao(LocalDateTime.now());
         s.setEstadoAtual(EstadoSolicitacao.ARRUMADA);
 
@@ -324,11 +326,11 @@ public class SolicitacaoService {
         Funcionario funcionario = funcionarioRepository.findById(principal.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado"));
 
+        exigirFuncionarioResponsavelAtual(s, funcionario);
         validarTransicao(s, EstadoSolicitacao.FINALIZADA);
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 
-        s.setFuncionarioResponsavel(funcionario);
         s.setEstadoAtual(EstadoSolicitacao.FINALIZADA);
         s.setDataHoraFinalizacao(LocalDateTime.now());
 
@@ -346,33 +348,50 @@ public class SolicitacaoService {
             String filtro,
             String dataInicio,
             String dataFim,
-            Pageable pageable
+            Pageable pageable,
+            AuthenticatedPrincipal principal
     ) {
 
+        exigirFuncionario(principal);
+        Long funcionarioId = principal.id();
+
         switch (filtro.toUpperCase()) {
+            case "HOJE":
+                LocalDate hoje = LocalDate.now();
+                return repository.buscarComFiltros(
+                        null,
+                        hoje.atStartOfDay(),
+                        hoje.atTime(23, 59, 59),
+                        funcionarioId,
+                        pageable
+                );
 
-        case "HOJE":
-            LocalDate hoje = LocalDate.now();
-            return repository.findByDataHoraCriacaoBetween(
-                    hoje.atStartOfDay(),
-                    hoje.atTime(23, 59, 59),
-                    pageable
-            );
+            case "PERIODO":
+                if (dataInicio == null || dataFim == null) {
+                    return Page.empty(pageable);
+                }
 
-        case "PERIODO":
-            if (dataInicio == null || dataFim == null) {
-                return Page.empty(pageable);
-            }
+                LocalDateTime inicio = LocalDate.parse(dataInicio).atStartOfDay();
+                LocalDateTime fim = LocalDate.parse(dataFim).atTime(23, 59, 59);
 
-            LocalDateTime inicio = LocalDate.parse(dataInicio).atStartOfDay();
-            LocalDateTime fim = LocalDate.parse(dataFim).atTime(23, 59, 59);
+                return repository.buscarComFiltros(
+                        null,
+                        inicio,
+                        fim,
+                        funcionarioId,
+                        pageable
+                );
 
-            return repository.findByDataHoraCriacaoBetween(inicio, fim, pageable);
-
-        default:
-            return repository.findAll(pageable);
+            default:
+                return repository.buscarComFiltros(
+                        null,
+                        null,
+                        null,
+                        funcionarioId,
+                        pageable
+                );
+        }
     }
-}
     private void exigirAutenticado(AuthenticatedPrincipal principal) {
         if (principal == null) {
             throw new AccessDeniedException("Usuário não autenticado");
@@ -407,6 +426,13 @@ public class SolicitacaoService {
         exigirCliente(principal);
         if (!clienteId.equals(principal.id())) {
             throw new AccessDeniedException("Você não tem permissão para acessar solicitações de outro cliente.");
+        }
+    }
+
+    private void exigirFuncionarioResponsavelAtual(Solicitacao solicitacao, Funcionario funcionario) {
+        if (solicitacao.getFuncionarioResponsavel() == null
+                || !solicitacao.getFuncionarioResponsavel().getId().equals(funcionario.getId())) {
+            throw new AccessDeniedException("Você não é o funcionário responsável por esta solicitação.");
         }
     }
 

@@ -165,7 +165,8 @@ export class SolicitacaoService implements ISolicitacaoService {
   let params = new HttpParams()
     .set('filtro', filtro)
     .set('page', page)
-    .set('size', size);
+    .set('size', size)
+    .set('sort', 'dataHoraCriacao,asc');
     if (dataInicio) {
     params = params.set('dataInicio', dataInicio);
   }
@@ -219,13 +220,19 @@ listarPorEstadoPaginado(estado: SolicitacaoENUM | string, page = 0, size = 5): O
   }
 
   buscarReceitasPeriodo(
-  dataInicio: string,
-  dataFim: string
+  dataInicio?: string,
+  dataFim?: string
 ): Observable<any[]> {
 
-  const params = new HttpParams()
-    .set('dataInicio', dataInicio)
-    .set('dataFim', dataFim);
+  let params = new HttpParams();
+
+  if (dataInicio) {
+    params = params.set('dataInicio', dataInicio);
+  }
+
+  if (dataFim) {
+    params = params.set('dataFim', dataFim);
+  }
 
   return this.http.get<any[]>(
     `${API_URL}/relatorios/receitas-periodo`,

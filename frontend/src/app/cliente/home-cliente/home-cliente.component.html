@@ -18,12 +18,14 @@
         </app-input>
       </div>
 
-      <app-botao-aprovar (clicou)="irParaSolicitacao()">
-        <div class="conteudo-botao">
-          <mat-icon>add</mat-icon> 
-          <span>Solicitar Manutenção</span>
-        </div>
-      </app-botao-aprovar>
+      <div class="wrapper-botao-custom">
+        <app-botao-aprovar (clicou)="irParaSolicitacao()">
+          <div class="conteudo-botao">
+            <mat-icon>add</mat-icon> 
+            <span>Solicitar Manutenção</span>
+          </div>
+        </app-botao-aprovar>
+      </div>
     </div>
 
     <div class="area-solicitacoes">

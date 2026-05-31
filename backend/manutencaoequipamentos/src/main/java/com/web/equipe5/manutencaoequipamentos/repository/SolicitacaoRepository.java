@@ -18,7 +18,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     Page<Solicitacao> findByClienteId(Long clienteId, Pageable pageable);
 
     Page<Solicitacao> findByEstadoAtual(EstadoSolicitacao estadoAtual, Pageable pageable);
-    
+
     @Query(
         value = """
             SELECT s
@@ -26,6 +26,10 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
             WHERE
                 (CAST(:estado AS string) IS NULL
                 OR s.estadoAtual = :estado)
+
+            AND
+                ((s.estadoAtual <> com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao.REDIRECIONADA)
+                OR s.funcionarioResponsavel.id = :funcionarioId)
 
             AND
                 (CAST(:dataInicio AS timestamp) IS NULL
@@ -42,6 +46,10 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
             WHERE
                 (CAST(:estado AS string) IS NULL
                 OR s.estadoAtual = :estado)
+
+            AND
+                ((s.estadoAtual <> com.web.equipe5.manutencaoequipamentos.enums.EstadoSolicitacao.REDIRECIONADA)
+                OR s.funcionarioResponsavel.id = :funcionarioId)
 
             AND
                 (CAST(:dataInicio AS timestamp) IS NULL
@@ -61,6 +69,9 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
 
             @Param("dataFim")
             LocalDateTime dataFim,
+
+            @Param("funcionarioId")
+            Long funcionarioId,
 
             Pageable pageable
     );

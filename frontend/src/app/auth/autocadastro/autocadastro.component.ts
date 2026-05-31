@@ -48,8 +48,8 @@ export class AutocadastroComponent {
 
   exibirModal = false;
   camposTocados: any = {};
-  enviando = false;
   
+  enviando = false;
   errorsFromServer: any = {};
 
   private clienteService = inject(ClienteService);
@@ -62,7 +62,7 @@ export class AutocadastroComponent {
     const cepLimpo = this.usuario.cep ? this.usuario.cep.replace(/\D/g, '') : '';
     
     if (cepLimpo.length === 8) {
-      this.http.get<any>(`https://viacep.com.br/ws/${cepLimpo}/json/`).subscribe(dados => {
+      this.clienteService.buscarCepViaCep(cepLimpo).subscribe(dados => {
         if (!dados.erro) {
           this.usuario.logradouro = dados.logradouro;
           this.usuario.bairro = dados.bairro;

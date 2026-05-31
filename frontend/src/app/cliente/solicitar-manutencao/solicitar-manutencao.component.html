@@ -39,8 +39,12 @@
           [valor]="solicitacao.descricaoDefeito"
           [obrigatorio]="true"
           [textoNum]="true"
+          [erro]="erroDefeito"
           (mudou)="solicitacao.descricaoDefeito = $event">
         </app-text-area> <div class="previsao-externa-wrapper">
+          <small class="contador-caracteres" [class.erro-texto]="erroDefeito">
+            Mínimo de 20 caracteres. Restam: {{ 20 - solicitacao.descricaoDefeito.length > 0 ? 20 - solicitacao.descricaoDefeito.length : 0 }}
+          </small>
           <div class="previsao-tag">Previsão de análise 24h úteis</div>
         </div>
         
@@ -50,7 +54,7 @@
         <app-botao-cancelar
           (clicou)="confirmarCancelamento()">
           Cancelar Solicitação
-        </app-botao-cancelar> <app-botao-aprovar (clicou)="solicitarManutencao()">
+        </app-botao-cancelar> <app-botao-aprovar [carregando]="enviou" (clicou)="solicitarManutencao()">
           Enviar Solicitação
         </app-botao-aprovar> </div>
 

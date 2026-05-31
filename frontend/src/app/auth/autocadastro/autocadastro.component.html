@@ -67,7 +67,7 @@
 
       <div class="acoes-finais">
         <app-botao-cancelar (clicou)="router.navigate(['/login'])">Já sou cadastrado</app-botao-cancelar>
-        <app-botao-aprovar (clicou)="onSubmit(f)">Finalizar Cadastro</app-botao-aprovar>
+        <app-botao-aprovar [carregando]="enviando" (clicou)="onSubmit(f)">Finalizar Cadastro</app-botao-aprovar>
       </div>
     </form>
   </app-card-visualizacao>

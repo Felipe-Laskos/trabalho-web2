@@ -18,14 +18,14 @@ export class PaginacaoComponent implements OnChanges {
  
   @Output() paginaChange = new EventEmitter<number>();
 
-  paginas: number[] = [];
+  paginas: Array<number | 'ellipsis'> = [];
   primeiroItem: number = 0;
   ultimoItem: number = 0;
 
   ngOnChanges(): void {
     if (this.totalElements !== undefined && this.itensPorPagina && this.totalPaginas !== undefined) {
       const paginasCount = this.totalPaginas > 0 ? this.totalPaginas : 1;
-      this.paginas = Array.from({ length: paginasCount }, (_, i) => i);
+      this.paginas = this.criarPaginasVisiveis(paginasCount, this.number);
 
       if (this.totalElements === 0) {
         this.primeiroItem = 0;
@@ -35,6 +35,35 @@ export class PaginacaoComponent implements OnChanges {
         this.ultimoItem = Math.min((this.number + 1) * this.itensPorPagina, this.totalElements);
       }
     }
+  }
+
+  private criarPaginasVisiveis(totalPaginas: number, paginaAtual: number): Array<number | 'ellipsis'> {
+    const limite = 7;
+    if (totalPaginas <= limite) {
+      return Array.from({ length: totalPaginas }, (_, i) => i);
+    }
+
+    const paginas: Array<number | 'ellipsis'> = [];
+    const margem = 2;
+    const inicio = Math.max(1, paginaAtual - margem);
+    const fim = Math.min(totalPaginas - 2, paginaAtual + margem);
+
+    paginas.push(0);
+
+    if (inicio > 1) {
+      paginas.push('ellipsis');
+    }
+
+    for (let i = inicio; i <= fim; i++) {
+      paginas.push(i);
+    }
+
+    if (fim < totalPaginas - 2) {
+      paginas.push('ellipsis');
+    }
+
+    paginas.push(totalPaginas - 1);
+    return paginas;
   }
 
   irParaPagina(pagina: number): void {

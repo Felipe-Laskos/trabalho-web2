@@ -35,8 +35,8 @@ public class RelatorioController {
 
     @GetMapping("/receitas-periodo")
     public ResponseEntity<List<ReceitaPorDiaProjection>> gerarRelatorioReceitas(
-            @RequestParam("dataInicio") LocalDate inicioDia,
-            @RequestParam("dataFim") LocalDate fimDia) {
+            @RequestParam(value = "dataInicio", required = false) LocalDate inicioDia,
+            @RequestParam(value = "dataFim", required = false) LocalDate fimDia) {
         List<ReceitaPorDiaProjection> receitas = relatorioService.gerarRelatorioReceitas(inicioDia, fimDia);
         return ResponseEntity.status(HttpStatus.OK).body(receitas);
     }

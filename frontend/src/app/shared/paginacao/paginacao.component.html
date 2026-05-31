@@ -13,11 +13,15 @@
         >chevron_left</mat-icon>
 
         @for (pagina of paginas; track pagina) {
-            <span
-                class="paginacao__numero"
-                [class.paginacao__numero_ativo]="pagina === number"
-                (click)="irParaPagina(pagina)"
-            >{{ pagina + 1 }}</span>
+            @if (pagina === 'ellipsis') {
+                <span class="paginacao__ellipsis">…</span>
+            } @else {
+                <span
+                    class="paginacao__numero"
+                    [class.paginacao__numero_ativo]="pagina === number"
+                    (click)="irParaPagina(pagina)"
+                >{{ pagina + 1 }}</span>
+            }
         }
 
         <mat-icon
