@@ -132,7 +132,7 @@ export class CrudFuncionariosComponent implements OnInit {
           { label: 'Email', campo: 'email', tipo: 'text', validacao: 'email', obrigatorio: true  },
           { label: 'Data de Nascimento', campo: 'dataNascimento', tipo: 'date', obrigatorio: true  },
           { label: 'Cargo', campo: 'cargo', tipo: 'text', obrigatorio: true, validacao: 'textoNum' },
-          { senha: true, label: 'Senha', campo: 'senha', tipo: 'password', obrigatorio: true }
+          { senha: true, label: 'Senha (opcional)', campo: 'senha', tipo: 'password', obrigatorio: false }
         ],
         formData: {
           nome: '',
@@ -147,7 +147,7 @@ export class CrudFuncionariosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        if (result.senha.length < 4) {
+        if (result.senha && result.senha.length < 4) {
           this.notificationService.exibirAviso('A senha deve conter no mínimo 4 caracteres. Realize nova tentativa.');
           return;
         }
