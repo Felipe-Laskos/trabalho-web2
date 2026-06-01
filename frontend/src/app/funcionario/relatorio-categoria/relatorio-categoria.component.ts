@@ -114,7 +114,7 @@ export class RelatorioCategoriasComponent implements OnInit {
 
   gerarPdf(): void {
     this.categoriaService
-      .baixarRelatorioPdf()
+      .baixarRelatorioPdf(this.categoria)
       .subscribe({
 
         next: (pdf: Blob) => {
