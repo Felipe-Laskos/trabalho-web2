@@ -93,11 +93,15 @@ export class SolicitacaoService implements ISolicitacaoService {
     );
   }
 
-  listarPorClientePaginado(clienteId: number, page = 0, size = 5): Observable<Page<Solicitacao>> {
-    const params = new HttpParams()
+  listarPorClientePaginado(clienteId: number, page = 0, size = 5, termo?: string): Observable<Page<Solicitacao>> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size)
       .set('sort', 'dataHoraCriacao,desc');
+
+    if (termo?.trim()) {
+      params = params.set('termo', termo.trim());
+    }
 
     return this.http.get<Page<Solicitacao>>(
       `${this.base}/cliente/${clienteId}`,
@@ -221,10 +225,14 @@ listarPorEstadoPaginado(estado: SolicitacaoENUM | string, page = 0, size = 5): O
 
   buscarReceitasPeriodo(
   dataInicio?: string,
-  dataFim?: string
-): Observable<any[]> {
+  dataFim?: string,
+  page = 0,
+  size = 5
+): Observable<Page<any>> {
 
-  let params = new HttpParams();
+  let params = new HttpParams()
+    .set('page', page)
+    .set('size', size);
 
   if (dataInicio) {
     params = params.set('dataInicio', dataInicio);
@@ -234,7 +242,7 @@ listarPorEstadoPaginado(estado: SolicitacaoENUM | string, page = 0, size = 5): O
     params = params.set('dataFim', dataFim);
   }
 
-  return this.http.get<any[]>(
+  return this.http.get<Page<any>>(
     `${API_URL}/relatorios/receitas-periodo`,
     {
       ...defaultHttpOptions,

@@ -33,24 +33,27 @@ public class FuncionarioController {
 
     @GetMapping
     public ResponseEntity<Page<FuncionarioResponseDTO>> listar(
+        @RequestParam(required = false) String termo,
         @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
-        Page<Funcionario> lista = service.listarTodos(pageable);
+        Page<Funcionario> lista = service.listarTodos(termo, pageable);
         Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/ativos")
     public ResponseEntity<Page<FuncionarioResponseDTO>> listarAtivos(
+        @RequestParam(required = false) String termo,
         @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
-        Page<Funcionario> lista = service.listarAtivos(pageable);
+        Page<Funcionario> lista = service.listarAtivos(termo, pageable);
         Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/inativos")
     public ResponseEntity<Page<FuncionarioResponseDTO>> listarInativos(
+        @RequestParam(required = false) String termo,
         @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
-        Page<Funcionario> lista = service.listarInativos(pageable);
+        Page<Funcionario> lista = service.listarInativos(termo, pageable);
         Page<FuncionarioResponseDTO> response = lista.map(FuncionarioMapper::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

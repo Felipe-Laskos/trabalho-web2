@@ -3,12 +3,12 @@ import { Funcionario } from '../models/funcionario.model';
 import { Page } from '../dto/response/page.dto';
 
 export interface IFuncionarioService {
-  listarTodos(page: number, size: number): Observable<Page<Funcionario>>;
+  listarTodos(page: number, size: number, termo?: string): Observable<Page<Funcionario>>;
   buscarPorId(id: number): Observable<Funcionario | undefined>;
   buscarPorEmail(email: string): Observable<Funcionario | undefined>;
   buscarPorCpf(cpf: string): Observable<Funcionario | undefined>;
-  listarAtivos(page: number, size: number): Observable<Page<Funcionario>>;
-  listarInativos(page: number, size: number): Observable<Page<Funcionario>>;
+  listarAtivos(page: number, size: number, termo?: string): Observable<Page<Funcionario>>;
+  listarInativos(page: number, size: number, termo?: string): Observable<Page<Funcionario>>;
   inserir(funcionario: Funcionario): Observable<Funcionario>;
   atualizar(funcionario: Funcionario): Observable<Funcionario>;
   remover(id: number): Observable<Funcionario>;

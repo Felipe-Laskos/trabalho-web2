@@ -17,12 +17,16 @@ export class FuncionarioService implements IFuncionarioService {
 
   constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
-  listarTodos(page: number, size: number): Observable<Page<Funcionario>> {
+  listarTodos(page: number, size: number, termo?: string): Observable<Page<Funcionario>> {
 
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size)
       .set('sort', 'nome,asc');
+
+    if (termo?.trim()) {
+      params = params.set('termo', termo.trim());
+    }
 
     return this.http.get<Page<Funcionario>>(
       this.apiUrl,
@@ -106,10 +110,14 @@ export class FuncionarioService implements IFuncionarioService {
     );
   }
 
-  listarAtivos(page:number, size:number): Observable<Page<Funcionario>> {
-    const params = new HttpParams()
+  listarAtivos(page:number, size:number, termo?: string): Observable<Page<Funcionario>> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size);
+
+    if (termo?.trim()) {
+      params = params.set('termo', termo.trim());
+    }
 
     return this.http.get<Page<Funcionario>>(
       `${this.apiUrl}/ativos`,
@@ -122,10 +130,14 @@ export class FuncionarioService implements IFuncionarioService {
     );
   } 
 
-  listarInativos(page:number, size:number): Observable<Page<Funcionario>> {
-  const params = new HttpParams()
+  listarInativos(page:number, size:number, termo?: string): Observable<Page<Funcionario>> {
+  let params = new HttpParams()
     .set('page', page)
     .set('size', size);
+
+  if (termo?.trim()) {
+    params = params.set('termo', termo.trim());
+  }
 
   return this.http.get<Page<Funcionario>>(
     `${this.apiUrl}/inativos`,

@@ -64,11 +64,13 @@ export class CrudFuncionariosComponent implements OnInit {
       this.mostrarInativos
         ? this.funcionarioService.listarInativos(
             this.paginaAtual,
-            this.itensPorPagina
+            this.itensPorPagina,
+            this.termoPesquisa
           )
         : this.funcionarioService.listarAtivos(
             this.paginaAtual,
-            this.itensPorPagina
+            this.itensPorPagina,
+            this.termoPesquisa
           );
 
     requisicao.subscribe({
@@ -83,24 +85,12 @@ export class CrudFuncionariosComponent implements OnInit {
   }
 
   private atualizarFiltro(): void {
-    const termo = (this.termoPesquisa ?? '').toLowerCase().trim();
-
     if (!this.dados) {
       this.funcionariosFiltrados = [];
       return;
     }
 
-    if (termo === '') {
-      this.funcionariosFiltrados = [...this.dados];
-      return;
-    }
-
-    this.funcionariosFiltrados = this.dados.filter(f =>
-      (f.nome ?? '').toLowerCase().includes(termo) ||
-      (f.email ?? '').toLowerCase().includes(termo) ||
-      (f.cargo ?? '').toLowerCase().includes(termo) ||
-      f.id?.toString().includes(termo)
-    );
+    this.funcionariosFiltrados = [...this.dados];
   }
 
   selecionarPagina(pagina: number): void {
@@ -111,7 +101,9 @@ export class CrudFuncionariosComponent implements OnInit {
 
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.atualizarFiltro();
+    this.paginaAtual = 0;
+    this.funcionarioSelecionado = undefined;
+    this.carregarDados();
   }
 
   toggleInativos(): void {

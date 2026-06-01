@@ -72,10 +72,11 @@ public class SolicitacaoController {
     @GetMapping("/cliente/{clienteId}") 
     public ResponseEntity<Page<SolicitacaoResponseDTO>> listarPorCliente(
             @PathVariable Long clienteId,
+            @RequestParam(required = false) String termo,
             @AuthenticationPrincipal AuthenticatedPrincipal principal,
             @PageableDefault(size = 5, sort = "dataHoraCriacao") Pageable pageable) {
         Page<SolicitacaoResponseDTO> dtos = service
-                .listarPorCliente(clienteId, pageable, principal)
+                .listarPorCliente(clienteId, termo, pageable, principal)
                 .map(SolicitacaoResponseDTO::new);
         return ResponseEntity.ok(dtos);
     }

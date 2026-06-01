@@ -42,6 +42,17 @@ public class RelatorioService {
         return solicitacaoRepository.findReceitasAgrupadasPorDia(inicioDia, fimDia);
     }
 
+    public Page<ReceitaPorDiaProjection> gerarRelatorioReceitas(
+            LocalDate inicio,
+            LocalDate fim,
+            Pageable pageable
+    ) {
+        LocalDateTime inicioDia = normalizarInicio(inicio);
+        LocalDateTime fimDia = normalizarFim(fim);
+
+        return solicitacaoRepository.findReceitasAgrupadasPorDia(inicioDia, fimDia, pageable);
+    }
+
     public List<ReceitaPorCategoriaProjection> gerarRelatorioCategorias(String categoria) {
         return solicitacaoRepository.findReceitasAgrupadasPorCategoria(categoria);
     }

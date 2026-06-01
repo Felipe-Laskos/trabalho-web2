@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.io.IOException;
 
 import org.springframework.http.HttpHeaders;
@@ -34,10 +33,11 @@ public class RelatorioController {
     }
 
     @GetMapping("/receitas-periodo")
-    public ResponseEntity<List<ReceitaPorDiaProjection>> gerarRelatorioReceitas(
+    public ResponseEntity<Page<ReceitaPorDiaProjection>> gerarRelatorioReceitas(
             @RequestParam(value = "dataInicio", required = false) LocalDate inicioDia,
-            @RequestParam(value = "dataFim", required = false) LocalDate fimDia) {
-        List<ReceitaPorDiaProjection> receitas = relatorioService.gerarRelatorioReceitas(inicioDia, fimDia);
+            @RequestParam(value = "dataFim", required = false) LocalDate fimDia,
+            @PageableDefault(size = 10) Pageable pageable) {
+        Page<ReceitaPorDiaProjection> receitas = relatorioService.gerarRelatorioReceitas(inicioDia, fimDia, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(receitas);
     }
 
