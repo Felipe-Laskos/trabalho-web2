@@ -9,7 +9,7 @@
     </app-pesquisa>
 
     <app-botao
-      [texto]="mostrarApenasAtivas ? 'Mostrar inativas' : 'Apenas ativas'"
+      [texto]="mostrarInativos ? 'Apenas ativas' : 'Mostrar inativas'"
         icone="visibility"
         cor="primary" 
       (clicou)="toggleInativos()">
@@ -33,9 +33,10 @@
 
 <div class="container-botoes">
   <app-botao
-    texto="Adicionar"
+    [texto]="inserindo ? 'Adicionando...' : 'Adicionar'"
     icone="add"
     cor="primary"
+    [desabilitado]="inserindo"
     (clicou)="adicionar()">
   </app-botao>
 
@@ -52,14 +53,15 @@
     icone="delete"
     cor="warn"
     (clicou)="excluir()"
-    [desabilitado]="!funcionarioSelecionado">
+    [desabilitado]="!funcionarioSelecionado || mostrarInativos">
     Desativar
   </app-botao>
 
   @if (mostrarInativos) {
     <app-botao
         texto="Reativar"
-        (clicou)="reativar()">
+        (clicou)="reativar()"
+        [desabilitado]="!funcionarioSelecionado">
     </app-botao>
   }
 

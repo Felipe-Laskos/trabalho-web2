@@ -41,7 +41,6 @@ export class CrudCategoriaComponent implements OnInit {
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
-  mostrarApenasAtivas: boolean = true;
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
@@ -97,6 +96,7 @@ export class CrudCategoriaComponent implements OnInit {
 
   selecionarPagina(pagina: number): void {
     this.paginaAtual = pagina;
+    this.categoriaSelecionada = undefined;
     this.carregarDados();
   }
 
@@ -108,6 +108,7 @@ export class CrudCategoriaComponent implements OnInit {
   toggleInativas(): void {
     this.mostrarInativas = !this.mostrarInativas;
     this.paginaAtual = 0;
+    this.categoriaSelecionada = undefined;
     this.carregarDados();
   }
 

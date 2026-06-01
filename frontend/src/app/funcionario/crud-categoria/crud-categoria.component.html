@@ -9,7 +9,7 @@
     </app-pesquisa>
 
     <app-botao
-      [texto]="mostrarApenasAtivas ? 'Mostrar inativas' : 'Apenas ativas'"
+      [texto]="mostrarInativas ? 'Apenas ativas' : 'Mostrar inativas'"
         icone="visibility"
         cor="primary" 
       (clicou)="toggleInativas()">
@@ -52,14 +52,15 @@
     icone="delete"
     cor="warn"
     (clicou)="excluir()"
-    [desabilitado]="!categoriaSelecionada">
+    [desabilitado]="!categoriaSelecionada || mostrarInativas">
     Desativar
   </app-botao>
 
   @if (mostrarInativas) {
     <app-botao
         texto="Reativar"
-        (clicou)="reativar()">
+        (clicou)="reativar()"
+        [desabilitado]="!categoriaSelecionada">
     </app-botao>
   }
 
