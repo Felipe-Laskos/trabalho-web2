@@ -6,10 +6,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> {
 
-    List<Funcionario> findByAtivoTrue();
+    Page<Funcionario> findByAtivoTrue(Pageable pageable);
+    Page<Funcionario> findByAtivoFalse(Pageable pageable);
 
     List<Funcionario> findAll();
     Optional<Funcionario> findByEmail(String email);

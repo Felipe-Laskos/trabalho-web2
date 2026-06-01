@@ -12,7 +12,7 @@
       [texto]="mostrarApenasAtivas ? 'Mostrar inativas' : 'Apenas ativas'"
         icone="visibility"
         cor="primary" 
-      (clicou)="toggleInativas()">
+      (clicou)="toggleInativos()">
     </app-botao>
   </div>
 </div>
@@ -55,5 +55,12 @@
     [desabilitado]="!funcionarioSelecionado">
     Desativar
   </app-botao>
+
+  @if (mostrarInativos) {
+    <app-botao
+        texto="Reativar"
+        (clicou)="reativar()">
+    </app-botao>
+  }
 
 </div>

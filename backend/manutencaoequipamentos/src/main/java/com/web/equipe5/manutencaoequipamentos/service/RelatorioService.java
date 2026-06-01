@@ -42,12 +42,12 @@ public class RelatorioService {
         return solicitacaoRepository.findReceitasAgrupadasPorDia(inicioDia, fimDia);
     }
 
-    public List<ReceitaPorCategoriaProjection> gerarRelatorioCategorias() {
-        return solicitacaoRepository.findReceitasAgrupadasPorCategoria();
+    public List<ReceitaPorCategoriaProjection> gerarRelatorioCategorias(String categoria) {
+        return solicitacaoRepository.findReceitasAgrupadasPorCategoria(categoria);
     }
 
-    public Page<ReceitaPorCategoriaProjection> gerarRelatorioCategorias(Pageable pageable) {
-        return solicitacaoRepository.findReceitasAgrupadasPorCategoria(pageable);
+    public Page<ReceitaPorCategoriaProjection> gerarRelatorioCategorias(String categoria, Pageable pageable) {
+        return solicitacaoRepository.findReceitasAgrupadasPorCategoria(categoria, pageable);
     }
     
     public byte[] gerarPdf(LocalDate inicio, LocalDate fim) throws IOException {

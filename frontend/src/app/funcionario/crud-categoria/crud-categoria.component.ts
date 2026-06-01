@@ -37,6 +37,7 @@ export class CrudCategoriaComponent implements OnInit {
 
   dados: CategoriaEquipamento[] = [];
   categoriaSelecionada?: CategoriaEquipamento;
+  categoriasFiltradas: CategoriaEquipamento[] = [];
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
@@ -44,24 +45,54 @@ export class CrudCategoriaComponent implements OnInit {
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
+  mostrarInativas: boolean = false;
 
   ngOnInit(): void {
     this.carregarDados();
   }
 
   private carregarDados(): void {
-    this.categoriaService
-      .listarTodos(
-        this.paginaAtual,
-        this.itensPorPagina
-      ).subscribe({
+    const requisicao =
+      this.mostrarInativas
+      ? this.categoriaService
+          .listarInativas(
+            this.paginaAtual,
+            this.itensPorPagina
+          )
+      : this.categoriaService
+        .listarAtivas(
+          this.paginaAtual,
+          this.itensPorPagina
+      );
+      
+    requisicao.subscribe({
       next: (response) => {
         this.dados = response.content;
         this.totalPaginas = response.totalPages;
         this.totalElements = response.totalElements;
         this.paginaAtual = response.number;
+        this.atualizarFiltro();
       }
     });
+  }
+
+  private atualizarFiltro(): void {
+    const termo = (this.termoPesquisa ?? '').toLowerCase().trim();
+
+    if (!this.dados) {
+      this.categoriasFiltradas = [];
+      return;
+    }
+
+    if (termo === '') {
+      this.categoriasFiltradas = [...this.dados];
+      return;
+    }
+
+    this.categoriasFiltradas = this.dados.filter(c =>
+      (c.nome ?? '').toLowerCase().includes(termo) ||
+      c.id?.toString().includes(termo)
+    );
   }
 
   selecionarPagina(pagina: number): void {
@@ -69,28 +100,15 @@ export class CrudCategoriaComponent implements OnInit {
     this.carregarDados();
   }
 
-  get categoriasFiltradas(): CategoriaEquipamento[] {
-    const termo = this.termoPesquisa.toLowerCase();
-    let filtradas = this.dados.filter(c =>
-      c.nome.toLowerCase().includes(termo) ||
-      c.id?.toString().includes(termo)
-    );
-
-    if (this.mostrarApenasAtivas) {
-      filtradas = filtradas.filter(c => c.ativo === true);
-    }
-
-    return filtradas;
-  }
-
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.paginaAtual = 0;
-    this.carregarDados();
+    this.atualizarFiltro();
   }
 
   toggleInativas(): void {
-    this.mostrarApenasAtivas = !this.mostrarApenasAtivas;
+    this.mostrarInativas = !this.mostrarInativas;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   selecionarLinha(item: any): void {
@@ -174,5 +192,26 @@ export class CrudCategoriaComponent implements OnInit {
         });
       }
     });
+  }
+
+  reativar(): void {
+    if (!this.categoriaSelecionada) return;
+
+    this.categoriaService
+      .reativar(
+        this.categoriaSelecionada.id!
+      )
+      .subscribe(() => {
+
+        this.notificationService
+          .exibirSucesso(
+            'Categoria reativada.'
+          );
+
+        this.carregarDados();
+
+        this.categoriaSelecionada =
+          undefined;
+      });
   }
 }

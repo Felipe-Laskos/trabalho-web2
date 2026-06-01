@@ -66,6 +66,7 @@ export class RelatorioCategoriasComponent implements OnInit {
 
   onCategoriaMudou(valor: string): void {
     this.categoria = valor;
+    this.filtrar(true);
   }
 
   filtrar(resetarPagina = true): void {
@@ -75,7 +76,8 @@ export class RelatorioCategoriasComponent implements OnInit {
 
     this.categoriaService.getReceitasCategoria(
       this.paginaAtual,
-      this.itensPorPagina
+      this.itensPorPagina,
+      this.categoria
     ).subscribe({
 
        next: (response: any) => {
@@ -112,7 +114,7 @@ export class RelatorioCategoriasComponent implements OnInit {
 
   gerarPdf(): void {
     this.categoriaService
-      .baixarRelatorioPdf()
+      .baixarRelatorioPdf(this.categoria)
       .subscribe({
 
         next: (pdf: Blob) => {

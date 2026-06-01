@@ -44,6 +44,16 @@ public class CategoriaEquipamentoController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/inativas")
+    public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarInativas(
+        @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+        Page<CategoriaEquipamento> categorias = service.listarInativas(pageable);
+
+        Page<CategoriaEquipamentoResponseDTO> response = categorias.map(CategoriaEquipamentoMapper::toDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaEquipamentoResponseDTO> buscarPorId(@PathVariable Long id) {
         CategoriaEquipamento categoria = service.buscarPorId(id);
@@ -51,10 +61,15 @@ public class CategoriaEquipamentoController {
     }
     
     @PostMapping
-    public ResponseEntity<CategoriaEquipamentoResponseDTO> criar(
-        @Valid @RequestBody CategoriaEquipamentoRequestDTO requisicao) {
+    public ResponseEntity<CategoriaEquipamentoResponseDTO> criar(@Valid @RequestBody CategoriaEquipamentoRequestDTO requisicao) {
         CategoriaEquipamento novaCategoria = service.salvar(requisicao);
         return ResponseEntity.status(HttpStatus.CREATED).body(CategoriaEquipamentoMapper.toDTO(novaCategoria));
+    }
+
+    @PatchMapping("/{id}/reativar")
+    public ResponseEntity<CategoriaEquipamentoResponseDTO> reativar(@PathVariable Long id) {
+        CategoriaEquipamento categoria = service.reativar(id);
+        return ResponseEntity.status(HttpStatus.OK).body(CategoriaEquipamentoMapper.toDTO(categoria));
     }
 
     @PatchMapping("/{id}")

@@ -45,6 +45,7 @@ export class CrudFuncionariosComponent implements OnInit {
 
   dados: Funcionario[] = [];
   funcionarioSelecionado?: Funcionario;
+  funcionariosFiltrados: Funcionario[] = [];
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
@@ -52,25 +53,54 @@ export class CrudFuncionariosComponent implements OnInit {
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
+  mostrarInativos: boolean = false;
 
   ngOnInit(): void {
     this.carregarDados();
   }
 
   private carregarDados(): void {
-    this.funcionarioService
-    .listarTodos(
-      this.paginaAtual,
-      this.itensPorPagina
-    )
-    .subscribe({
+    const requisicao =
+      this.mostrarInativos
+        ? this.funcionarioService.listarInativos(
+            this.paginaAtual,
+            this.itensPorPagina
+          )
+        : this.funcionarioService.listarAtivos(
+            this.paginaAtual,
+            this.itensPorPagina
+          );
+
+    requisicao.subscribe({
       next: (response) => {
         this.dados = response.content;
         this.totalPaginas = response.totalPages;
         this.totalElements = response.totalElements;
         this.paginaAtual = response.number;
+        this.atualizarFiltro()
       }
     });
+  }
+
+  private atualizarFiltro(): void {
+    const termo = (this.termoPesquisa ?? '').toLowerCase().trim();
+
+    if (!this.dados) {
+      this.funcionariosFiltrados = [];
+      return;
+    }
+
+    if (termo === '') {
+      this.funcionariosFiltrados = [...this.dados];
+      return;
+    }
+
+    this.funcionariosFiltrados = this.dados.filter(f =>
+      (f.nome ?? '').toLowerCase().includes(termo) ||
+      (f.email ?? '').toLowerCase().includes(termo) ||
+      (f.cargo ?? '').toLowerCase().includes(termo) ||
+      f.id?.toString().includes(termo)
+    );
   }
 
   selecionarPagina(pagina: number): void {
@@ -78,30 +108,15 @@ export class CrudFuncionariosComponent implements OnInit {
     this.carregarDados();
   }
 
-  get funcionariosFiltrados(): Funcionario[] {
-    const termo = this.termoPesquisa.toLowerCase();
-    let filtrados = this.dados.filter(f =>
-      f.id?.toString().includes(termo) ||
-      f.nome.toLowerCase().includes(termo) ||
-      f.cargo.toLowerCase().includes(termo) ||
-      f.email.toLowerCase().includes(termo)
-    );
-
-    if (this.mostrarApenasAtivas) {
-      filtrados = filtrados.filter(f => f.ativo === true);
-    }
-
-    return filtrados;
-  }
-
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.paginaAtual = 0;
-    this.carregarDados();
+    this.atualizarFiltro();
   }
 
-  toggleInativas(): void {
-    this.mostrarApenasAtivas = !this.mostrarApenasAtivas;
+  toggleInativos(): void {
+    this.mostrarInativos = !this.mostrarInativos;
+    this.paginaAtual = 0;
+    this.carregarDados();
   }
 
   selecionarLinha(item: any): void {
@@ -235,5 +250,21 @@ export class CrudFuncionariosComponent implements OnInit {
         });
       }
     });
+  }
+
+  reativar(): void {
+    if(!this.funcionarioSelecionado) return;
+
+    this.funcionarioService.reativar(this.funcionarioSelecionado.id!)
+      .subscribe(()=>{
+        this.notificationService
+          .exibirSucesso(
+            'Funcionário reativado.'
+          );
+        this.carregarDados();
+
+        this.funcionarioSelecionado =
+          undefined;
+      });
   }
 }

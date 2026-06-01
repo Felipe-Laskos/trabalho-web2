@@ -23,10 +23,10 @@ public class RelatorioPdfService {
         this.relatorioService = relatorioService;
     }
 
-    public byte[] gerarRelatorioCategorias() throws IOException {
+    public byte[] gerarRelatorioCategorias(String categoria) throws IOException {
 
         List<ReceitaPorCategoriaProjection> categorias =
-                relatorioService.gerarRelatorioCategorias();
+                relatorioService.gerarRelatorioCategorias(categoria);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
@@ -36,13 +36,18 @@ public class RelatorioPdfService {
 
         document.add(new Paragraph("Relatório de Receita por Categoria"));
 
-        for (ReceitaPorCategoriaProjection categoria : categorias) {
+        if (categoria != null && !categoria.trim().isEmpty()) {
+            document.add(new Paragraph("Filtro aplicado: " + categoria));
+        }
+        document.add(new Paragraph(" "));
+
+        for (ReceitaPorCategoriaProjection item : categorias) {
 
             document.add(
                 new Paragraph(
-                    categoria.getNome()
+                    item.getNome()
                     + " - R$ "
-                    + categoria.getTotal()
+                    + item.getTotal()
                 )
             );
         }
