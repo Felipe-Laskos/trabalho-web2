@@ -153,7 +153,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
             data: {
               tipo: 'confirmacao',
               titulo: 'Erro no Redirecionamento',
-              mensagem: erro.error?.message || 'Ocorreu um erro de comunicação com o servidor.',
+              mensagem: erro?.error?.mensagem || erro?.message || 'Ocorreu um erro de comunicação com o servidor.',
               textoConfirmar: 'Ok',
               textoCancelar: ''
             } as ModalDados

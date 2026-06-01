@@ -97,7 +97,7 @@ export class SolicitacaoService implements ISolicitacaoService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size)
-      .set('sort', 'dataHoraCriacao,desc');
+      .set('sort', 'dataHoraCriacao,asc');
 
     if (termo?.trim()) {
       params = params.set('termo', termo.trim());

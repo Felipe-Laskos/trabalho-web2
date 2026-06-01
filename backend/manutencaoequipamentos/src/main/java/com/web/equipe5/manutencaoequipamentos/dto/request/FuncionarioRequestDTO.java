@@ -24,6 +24,9 @@ public record FuncionarioRequestDTO(
         @NotBlank(message = "O cargo é obrigatório.")
         String cargo,
 
+        @Size(min = 4, message = "A senha deve ter no mínimo 4 caracteres.")
+        String senha,
+
         @NotNull(message = "A data de nascimento é obrigatória.")
         @Past(message = "A data de nascimento deve ser uma data no passado.")
         LocalDate dataNascimento

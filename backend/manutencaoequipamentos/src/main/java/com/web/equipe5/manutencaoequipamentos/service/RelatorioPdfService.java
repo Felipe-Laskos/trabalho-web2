@@ -46,8 +46,8 @@ public class RelatorioPdfService {
             document.add(
                 new Paragraph(
                     item.getNome()
-                    + " - R$ "
-                    + item.getTotal()
+                    + " - "
+                    + relatorioService.formatarMoeda(item.getTotal())
                 )
             );
         }
