@@ -12,6 +12,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Solicitacao } from '../../core/models/solicitacao.model';
 import { SolicitacaoENUM } from '../../core/models/solicitacaoENUM.model';
 import { SolicitacaoService } from '../../core/services/solicitacao.service';
+import { AuthService } from '../../core/services/auth.service';
 import { CardVisualizacaoComponent } from '../../shared/card-visualizacao/card-visualizacao.component';
 import { BotaoComponent } from '../../shared/botao/botao.component';
 import { TextAreaComponent } from '../../shared/text-area/text-area.component';
@@ -47,6 +48,7 @@ export class EfetuarManutencaoComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private authService = inject(AuthService);
   private aviso = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private notificationService = inject(NotificationService);
@@ -72,6 +74,12 @@ export class EfetuarManutencaoComponent implements OnInit {
           (res.estadoAtual === SolicitacaoENUM.APROVADA ||
             res.estadoAtual === SolicitacaoENUM.REDIRECIONADA)
         ) {
+          if (!this.funcionarioLogadoEhResponsavel(res)) {
+            this.notificationService.exibirAviso('Você não é o funcionário responsável por esta solicitação.');
+            this.router.navigate(['/funcionario/visualizar-solicitacoes']);
+            return;
+          }
+
           this.solicitacao = res;
         } else {
           this.aviso.open(
@@ -91,6 +99,11 @@ export class EfetuarManutencaoComponent implements OnInit {
 
   abrirFormulario() {
     if (this.botaoDesativado) return;
+    if (!this.solicitacao || !this.funcionarioLogadoEhResponsavel(this.solicitacao)) {
+      this.notificationService.exibirAviso('Você não é o funcionário responsável por esta solicitação.');
+      return;
+    }
+
     this.mostrarFormulario = true;
   }
 
@@ -108,6 +121,11 @@ export class EfetuarManutencaoComponent implements OnInit {
     }
 
     if (!this.solicitacao) return;
+
+    if (!this.funcionarioLogadoEhResponsavel(this.solicitacao)) {
+      this.notificationService.exibirAviso('Você não é o funcionário responsável por esta solicitação.');
+      return;
+    }
 
     this.solicitacaoService.efetuarManutencao(this.solicitacao.id!, {
       descricaoManutencao: descricao,
@@ -131,6 +149,11 @@ export class EfetuarManutencaoComponent implements OnInit {
 
   redirecionar() {
     if (this.botaoDesativado) return;
+    if (!this.solicitacao || !this.funcionarioLogadoEhResponsavel(this.solicitacao)) {
+      this.notificationService.exibirAviso('Você não é o funcionário responsável por esta solicitação.');
+      return;
+    }
+
     if (this.solicitacao) {
       this.router.navigate([
         '/funcionario/redirecionar-manutencao',
@@ -173,6 +196,11 @@ export class EfetuarManutencaoComponent implements OnInit {
     this.mostrarFormulario = false;
     this.form.reset();
     this.botaoDesativado = false;
+  }
+
+  private funcionarioLogadoEhResponsavel(solicitacao: Solicitacao): boolean {
+    const funcionarioId = this.authService.getId();
+    return !!funcionarioId && solicitacao.funcionarioResponsavel?.id === funcionarioId;
   }
 
   obterCorDoBadge(estado: string | undefined): string {

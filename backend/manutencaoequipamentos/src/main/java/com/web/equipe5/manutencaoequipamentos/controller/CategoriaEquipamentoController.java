@@ -28,16 +28,18 @@ public class CategoriaEquipamentoController {
 
     @GetMapping
     public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarTodas(
+        @RequestParam(required = false) String termo,
         @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
-        Page<CategoriaEquipamento> categorias = service.listarTodas(pageable);
+        Page<CategoriaEquipamento> categorias = service.listarTodas(termo, pageable);
         Page<CategoriaEquipamentoResponseDTO> response = categorias.map(CategoriaEquipamentoMapper::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/ativas")
     public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarAtivas(
+        @RequestParam(required = false) String termo,
         @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
-        Page<CategoriaEquipamento> categorias = service.listarAtivas(pageable);
+        Page<CategoriaEquipamento> categorias = service.listarAtivas(termo, pageable);
 
         Page<CategoriaEquipamentoResponseDTO> response = categorias.map(CategoriaEquipamentoMapper::toDTO);
 
@@ -46,8 +48,9 @@ public class CategoriaEquipamentoController {
 
     @GetMapping("/inativas")
     public ResponseEntity<Page<CategoriaEquipamentoResponseDTO>> listarInativas(
+        @RequestParam(required = false) String termo,
         @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
-        Page<CategoriaEquipamento> categorias = service.listarInativas(pageable);
+        Page<CategoriaEquipamento> categorias = service.listarInativas(termo, pageable);
 
         Page<CategoriaEquipamentoResponseDTO> response = categorias.map(CategoriaEquipamentoMapper::toDTO);
 

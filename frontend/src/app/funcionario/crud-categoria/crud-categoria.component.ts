@@ -41,7 +41,6 @@ export class CrudCategoriaComponent implements OnInit {
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
-  mostrarApenasAtivas: boolean = true;
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
@@ -57,12 +56,14 @@ export class CrudCategoriaComponent implements OnInit {
       ? this.categoriaService
           .listarInativas(
             this.paginaAtual,
-            this.itensPorPagina
+            this.itensPorPagina,
+            this.termoPesquisa
           )
       : this.categoriaService
         .listarAtivas(
           this.paginaAtual,
-          this.itensPorPagina
+          this.itensPorPagina,
+          this.termoPesquisa
       );
       
     requisicao.subscribe({
@@ -77,37 +78,31 @@ export class CrudCategoriaComponent implements OnInit {
   }
 
   private atualizarFiltro(): void {
-    const termo = (this.termoPesquisa ?? '').toLowerCase().trim();
-
     if (!this.dados) {
       this.categoriasFiltradas = [];
       return;
     }
 
-    if (termo === '') {
-      this.categoriasFiltradas = [...this.dados];
-      return;
-    }
-
-    this.categoriasFiltradas = this.dados.filter(c =>
-      (c.nome ?? '').toLowerCase().includes(termo) ||
-      c.id?.toString().includes(termo)
-    );
+    this.categoriasFiltradas = [...this.dados];
   }
 
   selecionarPagina(pagina: number): void {
     this.paginaAtual = pagina;
+    this.categoriaSelecionada = undefined;
     this.carregarDados();
   }
 
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.atualizarFiltro();
+    this.paginaAtual = 0;
+    this.categoriaSelecionada = undefined;
+    this.carregarDados();
   }
 
   toggleInativas(): void {
     this.mostrarInativas = !this.mostrarInativas;
     this.paginaAtual = 0;
+    this.categoriaSelecionada = undefined;
     this.carregarDados();
   }
 

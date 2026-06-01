@@ -16,11 +16,15 @@ export class CategoriaService implements ICategoriaService {
 
   constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
-  listarTodos(page: number, size: number): Observable<Page<CategoriaEquipamento>> {
-    const params = new HttpParams()
+  listarTodos(page: number, size: number, termo?: string): Observable<Page<CategoriaEquipamento>> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size)
       .set('sort', 'nome,asc');
+
+    if (termo?.trim()) {
+      params = params.set('termo', termo.trim());
+    }
 
     return this.http.get<Page<CategoriaEquipamento>>(
       this.apiUrl,
@@ -38,11 +42,15 @@ export class CategoriaService implements ICategoriaService {
     );
   }
 
-  listarAtivas(page: number, size: number): Observable<Page<CategoriaEquipamento>> {
-    const params = new HttpParams()
+  listarAtivas(page: number, size: number, termo?: string): Observable<Page<CategoriaEquipamento>> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size)
       .set('sort', 'nome,asc');
+
+    if (termo?.trim()) {
+      params = params.set('termo', termo.trim());
+    }
 
     return this.http.get<Page<CategoriaEquipamento>>(
       `${this.apiUrl}/ativas`,
@@ -58,11 +66,15 @@ export class CategoriaService implements ICategoriaService {
     );
   }
 
-  listarInativas(page: number, size: number): Observable<Page<CategoriaEquipamento>> {
-    const params = new HttpParams()
+  listarInativas(page: number, size: number, termo?: string): Observable<Page<CategoriaEquipamento>> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size)
       .set('sort', 'nome,asc');
+
+    if (termo?.trim()) {
+      params = params.set('termo', termo.trim());
+    }
 
     return this.http.get<Page<CategoriaEquipamento>>(
       `${this.apiUrl}/inativas`,

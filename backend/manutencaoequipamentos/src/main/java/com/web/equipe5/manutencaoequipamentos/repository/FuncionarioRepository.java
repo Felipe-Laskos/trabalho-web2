@@ -14,6 +14,9 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
 
     Page<Funcionario> findByAtivoTrue(Pageable pageable);
     Page<Funcionario> findByAtivoFalse(Pageable pageable);
+    Page<Funcionario> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+    Page<Funcionario> findByAtivoTrueAndNomeContainingIgnoreCase(String nome, Pageable pageable);
+    Page<Funcionario> findByAtivoFalseAndNomeContainingIgnoreCase(String nome, Pageable pageable);
 
     List<Funcionario> findAll();
     Optional<Funcionario> findByEmail(String email);

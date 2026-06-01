@@ -31,16 +31,38 @@ public class FuncionarioService {
         this.emailService = emailService;
     }
 
-    public Page<Funcionario> listarTodos(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Funcionario> listarTodos(String termo, Pageable pageable) {
+        String termoNormalizado = normalizarTermo(termo);
+
+        if (termoNormalizado.isEmpty()) {
+            return repository.findAll(pageable);
+        }
+
+        return repository.findByNomeContainingIgnoreCase(termoNormalizado, pageable);
     }
     
-    public Page<Funcionario> listarAtivos(Pageable pageable) {
-        return repository.findByAtivoTrue(pageable);
+    public Page<Funcionario> listarAtivos(String termo, Pageable pageable) {
+        String termoNormalizado = normalizarTermo(termo);
+
+        if (termoNormalizado.isEmpty()) {
+            return repository.findByAtivoTrue(pageable);
+        }
+
+        return repository.findByAtivoTrueAndNomeContainingIgnoreCase(termoNormalizado, pageable);
     }
 
-    public Page<Funcionario> listarInativos(Pageable pageable) {
-        return repository.findByAtivoFalse(pageable);
+    public Page<Funcionario> listarInativos(String termo, Pageable pageable) {
+        String termoNormalizado = normalizarTermo(termo);
+
+        if (termoNormalizado.isEmpty()) {
+            return repository.findByAtivoFalse(pageable);
+        }
+
+        return repository.findByAtivoFalseAndNomeContainingIgnoreCase(termoNormalizado, pageable);
+    }
+
+    private String normalizarTermo(String termo) {
+        return termo == null ? "" : termo.trim();
     }
 
     public Funcionario buscarPorId(Long id) {

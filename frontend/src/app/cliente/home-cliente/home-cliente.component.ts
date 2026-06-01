@@ -93,7 +93,12 @@ export class HomeClienteComponent implements OnInit {
 
     this.carregamento = true;
 
-    this.solicitacaoService.listarPorClientePaginado(this.clienteId, this.paginaAtual, this.itensPorPagina).subscribe({
+    this.solicitacaoService.listarPorClientePaginado(
+      this.clienteId,
+      this.paginaAtual,
+      this.itensPorPagina,
+      this.termoBusca
+    ).subscribe({
     next: (pagina) => {
       this.listaSolicitacoes = pagina.content;
       this.totalElements = pagina.totalElements;
@@ -112,26 +117,14 @@ export class HomeClienteComponent implements OnInit {
 }
 
   onBusca(valor: string) {
-    this.termoBusca = valor.toLowerCase();
-    this.aplicarBuscaNaPaginaAtual();
+    this.termoBusca = valor.toLowerCase().trim();
+    this.paginaAtual = 0;
+    this.carregarSolicitacoes();
   }
 
   private aplicarBuscaNaPaginaAtual(): void {
-    const termo = this.termoBusca;
-
-    if (!termo) {
-      this.dadosFiltrados = this.listaSolicitacoes;
-      this.dadosExibidos = this.listaSolicitacoes;
-      return;
-    }
-
-    this.dadosFiltrados = this.listaSolicitacoes.filter(s =>
-      s.id?.toString().includes(termo) ||
-      s.descricaoEquipamento.toLowerCase().includes(termo) ||
-      s.estadoAtual.toLowerCase().includes(termo) ||
-      s.dataHoraCriacao?.toLowerCase().includes(termo)
-    );
-    this.dadosExibidos = this.dadosFiltrados;
+    this.dadosFiltrados = this.listaSolicitacoes;
+    this.dadosExibidos = this.listaSolicitacoes;
   }
 
   aoMudarPagina(novaPagina: number) {

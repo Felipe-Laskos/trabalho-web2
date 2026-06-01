@@ -22,16 +22,38 @@ public class CategoriaEquipamentoService {
         this.repository = repository;
     } 
 
-    public Page<CategoriaEquipamento> listarTodas(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<CategoriaEquipamento> listarTodas(String termo, Pageable pageable) {
+        String termoNormalizado = normalizarTermo(termo);
+
+        if (termoNormalizado.isEmpty()) {
+            return repository.findAll(pageable);
+        }
+
+        return repository.findByNomeContainingIgnoreCase(termoNormalizado, pageable);
     }
 
-    public Page<CategoriaEquipamento> listarAtivas(Pageable pageable) {
-        return repository.findByAtivoTrue(pageable);
+    public Page<CategoriaEquipamento> listarAtivas(String termo, Pageable pageable) {
+        String termoNormalizado = normalizarTermo(termo);
+
+        if (termoNormalizado.isEmpty()) {
+            return repository.findByAtivoTrue(pageable);
+        }
+
+        return repository.findByAtivoTrueAndNomeContainingIgnoreCase(termoNormalizado, pageable);
     }
 
-    public Page<CategoriaEquipamento> listarInativas(Pageable pageable) {
-        return repository.findByAtivoFalse(pageable);
+    public Page<CategoriaEquipamento> listarInativas(String termo, Pageable pageable) {
+        String termoNormalizado = normalizarTermo(termo);
+
+        if (termoNormalizado.isEmpty()) {
+            return repository.findByAtivoFalse(pageable);
+        }
+
+        return repository.findByAtivoFalseAndNomeContainingIgnoreCase(termoNormalizado, pageable);
+    }
+
+    private String normalizarTermo(String termo) {
+        return termo == null ? "" : termo.trim();
     }
 
     public CategoriaEquipamento buscarPorId(Long id) {

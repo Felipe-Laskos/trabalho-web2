@@ -11,7 +11,7 @@ public record ErrorResponse(
         String erro,
         String mensagem,
         LocalDateTime timestamp,
-        Map<String, String> erros
+        Map<String, String> fieldErrors
 ) {
     public ErrorResponse(int status, String erro, String mensagem) {
         this(status, erro, mensagem, LocalDateTime.now(), null);

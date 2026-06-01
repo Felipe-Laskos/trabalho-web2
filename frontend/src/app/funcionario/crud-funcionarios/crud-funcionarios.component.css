@@ -10,24 +10,27 @@
 }
 
 .header-actions {
-  width: 100%;          
+  width: min(100%, 900px);
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
-  padding: 0 240px;       
+  gap: 16px;
+  padding: 0 16px;
 }
 
 .header-actions app-pesquisa {
-  flex: 1; 
+  flex: 1;
+  min-width: 0;
 }
 
 .container-botoes{
-  width: 100%;
+  width: min(100%, 900px);
   display: flex;
   justify-content: space-between;
-  padding: 0 250px;
+  gap: 12px;
+  padding: 0 16px;
   margin-bottom: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  flex-wrap: wrap;
 }
-
-
-

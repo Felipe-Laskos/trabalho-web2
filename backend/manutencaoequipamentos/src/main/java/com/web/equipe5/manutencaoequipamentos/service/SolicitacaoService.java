@@ -138,9 +138,27 @@ public class SolicitacaoService {
         return repository.save(s);
     }
 
-    public Page<Solicitacao> listarPorCliente(Long clienteId, Pageable pageable, AuthenticatedPrincipal principal) {
+    public Page<Solicitacao> listarPorCliente(
+            Long clienteId,
+            String termo,
+            Pageable pageable,
+        AuthenticatedPrincipal principal) {
         exigirClienteDono(clienteId, principal);
-        return repository.findByClienteId(clienteId, pageable);
+        String termoNormalizado = normalizarTermo(termo);
+
+        if (termoNormalizado.isEmpty()) {
+            return repository.findByClienteId(clienteId, pageable);
+        }
+
+        return repository.findByClienteIdAndDescricaoEquipamentoContainingIgnoreCase(
+                clienteId,
+                termoNormalizado,
+                pageable
+        );
+    }
+
+    private String normalizarTermo(String termo) {
+        return termo == null ? "" : termo.trim();
     }
 
     public Page<Solicitacao> listarPorEstado(EstadoSolicitacao estado, Pageable pageable, AuthenticatedPrincipal principal) {

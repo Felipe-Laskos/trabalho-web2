@@ -49,11 +49,11 @@ export class CrudFuncionariosComponent implements OnInit {
 
   paginaAtual: number = 0;
   itensPorPagina: number = 10;
-  mostrarApenasAtivas: boolean = true;
   termoPesquisa: string = '';
   totalPaginas: number = 0;
   totalElements: number = 0;
   mostrarInativos: boolean = false;
+  inserindo: boolean = false;
 
   ngOnInit(): void {
     this.carregarDados();
@@ -64,11 +64,13 @@ export class CrudFuncionariosComponent implements OnInit {
       this.mostrarInativos
         ? this.funcionarioService.listarInativos(
             this.paginaAtual,
-            this.itensPorPagina
+            this.itensPorPagina,
+            this.termoPesquisa
           )
         : this.funcionarioService.listarAtivos(
             this.paginaAtual,
-            this.itensPorPagina
+            this.itensPorPagina,
+            this.termoPesquisa
           );
 
     requisicao.subscribe({
@@ -83,39 +85,31 @@ export class CrudFuncionariosComponent implements OnInit {
   }
 
   private atualizarFiltro(): void {
-    const termo = (this.termoPesquisa ?? '').toLowerCase().trim();
-
     if (!this.dados) {
       this.funcionariosFiltrados = [];
       return;
     }
 
-    if (termo === '') {
-      this.funcionariosFiltrados = [...this.dados];
-      return;
-    }
-
-    this.funcionariosFiltrados = this.dados.filter(f =>
-      (f.nome ?? '').toLowerCase().includes(termo) ||
-      (f.email ?? '').toLowerCase().includes(termo) ||
-      (f.cargo ?? '').toLowerCase().includes(termo) ||
-      f.id?.toString().includes(termo)
-    );
+    this.funcionariosFiltrados = [...this.dados];
   }
 
   selecionarPagina(pagina: number): void {
     this.paginaAtual = pagina;
+    this.funcionarioSelecionado = undefined;
     this.carregarDados();
   }
 
   pesquisar(termo: string): void {
     this.termoPesquisa = termo;
-    this.atualizarFiltro();
+    this.paginaAtual = 0;
+    this.funcionarioSelecionado = undefined;
+    this.carregarDados();
   }
 
   toggleInativos(): void {
     this.mostrarInativos = !this.mostrarInativos;
     this.paginaAtual = 0;
+    this.funcionarioSelecionado = undefined;
     this.carregarDados();
   }
 
@@ -124,6 +118,8 @@ export class CrudFuncionariosComponent implements OnInit {
   }
 
   adicionar(): void {
+    if (this.inserindo) return;
+
     const dialogRef = this.dialog.open(ModalGenericoComponent, {
       width: '700px',
       maxWidth: '95vw',
@@ -170,7 +166,19 @@ export class CrudFuncionariosComponent implements OnInit {
           ...result,
           ativo: true
         };
-        this.funcionarioService.inserir(novo).subscribe(() => this.carregarDados());
+
+        this.inserindo = true;
+        this.funcionarioService.inserir(novo).subscribe({
+          next: () => {
+            this.carregarDados();
+          },
+          error: () => {
+            this.inserindo = false;
+          },
+          complete: () => {
+            this.inserindo = false;
+          }
+        });
       }
     });
   }

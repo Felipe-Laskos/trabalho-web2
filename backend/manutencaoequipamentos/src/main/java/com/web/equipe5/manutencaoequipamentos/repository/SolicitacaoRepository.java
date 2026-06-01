@@ -16,6 +16,11 @@ import org.springframework.data.domain.Pageable;
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> {
 
     Page<Solicitacao> findByClienteId(Long clienteId, Pageable pageable);
+    Page<Solicitacao> findByClienteIdAndDescricaoEquipamentoContainingIgnoreCase(
+            Long clienteId,
+            String descricaoEquipamento,
+            Pageable pageable
+    );
 
     Page<Solicitacao> findByEstadoAtual(EstadoSolicitacao estadoAtual, Pageable pageable);
 
@@ -91,6 +96,36 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
         List<ReceitaPorDiaProjection> findReceitasAgrupadasPorDia(
                 @Param("inicio") LocalDateTime inicio,
                 @Param("fim") LocalDateTime fim
+        );
+
+    @Query(value = """
+        SELECT
+                CAST(s.data_hora_pagamento AS DATE) as data,
+                COUNT(*) as quantidade,
+                SUM(s.valor_orcado) as total
+        FROM solicitacoes s
+        WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+        AND s.data_hora_pagamento >= :inicio
+        AND s.data_hora_pagamento <= :fim
+        GROUP BY CAST(s.data_hora_pagamento AS DATE)
+        ORDER BY data ASC
+        """,
+        countQuery = """
+        SELECT COUNT(*)
+        FROM (
+            SELECT CAST(s.data_hora_pagamento AS DATE)
+            FROM solicitacoes s
+            WHERE s.estado_atual IN ('PAGA', 'FINALIZADA')
+            AND s.data_hora_pagamento >= :inicio
+            AND s.data_hora_pagamento <= :fim
+            GROUP BY CAST(s.data_hora_pagamento AS DATE)
+        ) receitas_por_dia
+        """,
+        nativeQuery = true)
+        Page<ReceitaPorDiaProjection> findReceitasAgrupadasPorDia(
+                @Param("inicio") LocalDateTime inicio,
+                @Param("fim") LocalDateTime fim,
+                Pageable pageable
         );
 
     Page<Solicitacao> findByDataHoraCriacaoBetween(

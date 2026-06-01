@@ -47,10 +47,8 @@ export class RelatorioReceitasComponent implements OnInit {
   quantidadeTotal: number = 0;
   paginaAtual: number = 0;
   itensPorPagina: number = 5;
-
-  get totalPaginas(): number {
-    return Math.ceil(this.receitasPorDia.length / this.itensPorPagina);
-  }
+  totalElements: number = 0;
+  totalPaginas: number = 0;
 
   colunasTabela: ColunaTabela[] = [
     { campo: 'data', titulo: 'Data', tipo: 'texto' },
@@ -59,12 +57,12 @@ export class RelatorioReceitasComponent implements OnInit {
   ];
 
   get dadosPaginados(): any[] {
-    const inicio = this.paginaAtual * this.itensPorPagina;
-    return this.receitasPorDia.slice(inicio, inicio + this.itensPorPagina);
+    return this.receitasPorDia;
   }
 
   onPaginaMudou(pagina: number): void {
     this.paginaAtual = pagina;
+    this.filtrar(false);
   }
 
   ngOnInit(): void {
@@ -101,17 +99,24 @@ export class RelatorioReceitasComponent implements OnInit {
     this.dataFim = valor;
   }
 
-  filtrar(): void {
+  filtrar(resetarPagina = true): void {
 
-    this.paginaAtual = 0;
+    if (resetarPagina) {
+      this.paginaAtual = 0;
+    }
 
     this.solicitacaoService
-      .buscarReceitasPeriodo(this.dataInicio, this.dataFim)
+      .buscarReceitasPeriodo(
+        this.dataInicio,
+        this.dataFim,
+        this.paginaAtual,
+        this.itensPorPagina
+      )
       .subscribe({
 
-        next: (dados) => {
+        next: (pagina) => {
 
-          this.receitasPorDia = dados.map((item: any) => ({
+          this.receitasPorDia = pagina.content.map((item: any) => ({
 
             data: this.formatarDataRecebida(item.data),
 
@@ -139,6 +144,9 @@ export class RelatorioReceitasComponent implements OnInit {
               (acc, r) => acc + r.quantidade,
               0
             );
+          this.totalElements = pagina.totalElements;
+          this.totalPaginas = pagina.totalPages;
+          this.paginaAtual = pagina.number;
         },
 
         error: (erro) => {

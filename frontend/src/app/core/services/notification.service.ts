@@ -33,8 +33,8 @@ export class NotificationService {
     if (typeof erro === 'string') {
       msg = erro;
     } else {
-        if (erro.status === 400 && erro.error?.erros) {
-        const msgValidacao = Object.values(erro.error.erros);
+        if (erro.status === 400 && (erro.error?.fieldErrors || erro.error?.erros)) {
+        const msgValidacao = Object.values(erro.error.fieldErrors ?? erro.error.erros);
 
         if(msgValidacao.length > 0) {
             msg = msgValidacao[0] as string;
