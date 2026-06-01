@@ -121,8 +121,17 @@ public class FuncionarioService {
         if (repository.existsByEmail(requisicao.email())) {
             throw new BusinessRuleException("Já existe um funcionário com este email.");
         }
-        
-        String senhaBruta = hashService.gerarSenha();
+
+        String senhaBruta;
+        if (requisicao.senha() != null && !requisicao.senha().isBlank()) {
+            if (requisicao.senha().trim().length() < 4) {
+                throw new BusinessRuleException("A senha deve conter no mínimo 4 caracteres.");
+            }
+            senhaBruta = requisicao.senha();
+        } else {
+            senhaBruta = hashService.gerarSenha();
+        }
+
         String saltHex = hashService.gerarSaltHex();
         String hashHex = hashService.sha256Hex(senhaBruta, saltHex);
 

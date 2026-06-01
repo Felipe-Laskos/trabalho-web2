@@ -126,7 +126,7 @@ export class AutocadastroComponent {
             this.notificationService.exibirAviso('Por favor, corrija os erros no formulário.');
           
         } else {
-            this.notificationService.exibirAviso(err?.error?.message || 'Erro ao realizar cadastro. Por favor, tente novamente.');
+            this.notificationService.exibirAviso(err?.error?.mensagem || err?.message || 'Erro ao realizar cadastro. Por favor, tente novamente.');
         }
       }
     });

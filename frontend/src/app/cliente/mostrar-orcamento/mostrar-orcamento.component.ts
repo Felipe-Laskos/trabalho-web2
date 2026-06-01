@@ -119,12 +119,27 @@ export class MostrarOrcamentoComponent implements OnInit {
       this.carregamento = true;
       
       this.solicitacaoService.aprovar(this.solicitacao.id).subscribe({
-        next: () => {
+        next: (solicitacaoAtualizada) => {
           if (this.solicitacao) {
              this.solicitacao.estadoAtual = SolicitacaoENUM.APROVADA;
           }
-          this.notificationService.exibirSucesso('Serviço aprovado com sucesso!');
-          this.router.navigate(['/cliente']);
+
+          const valor = solicitacaoAtualizada?.valorOrcado ?? this.solicitacao?.valorOrcado ?? 0;
+          const valorFormatado = valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+          const aprovadoRef = this.dialog.open(ModalGenericoComponent, {
+            width: '500px',
+            data: {
+              titulo: 'Serviço Aprovado',
+              mensagem: `Serviço Aprovado no Valor ${valorFormatado}`,
+              textoConfirmar: 'OK',
+              textoCancelar: ''
+            }
+          });
+
+          aprovadoRef.afterClosed().subscribe(() => {
+            this.router.navigate(['/cliente']);
+          });
         },
         error: (erro: HttpErrorResponse) => {
           this.notificationService.exibirErro(erro);

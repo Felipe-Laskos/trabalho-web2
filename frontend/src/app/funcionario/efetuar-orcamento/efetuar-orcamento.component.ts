@@ -118,7 +118,7 @@ export class EfetuarOrcamentoComponent implements OnInit {
         this.dialog.open(ModalGenericoComponent, {
           data: {
             titulo: 'Erro',
-            mensagem: erro?.error?.message || 'Não foi possível registrar o orçamento.',
+            mensagem: erro?.error?.mensagem || erro?.message || 'Não foi possível registrar o orçamento.',
             textoConfirmar: 'OK',
             textoCancelar: ''
           }

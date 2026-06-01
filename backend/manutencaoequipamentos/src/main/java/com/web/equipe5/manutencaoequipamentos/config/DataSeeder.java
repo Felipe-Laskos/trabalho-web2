@@ -78,6 +78,7 @@ private void seedClientes() {
     c1.setTelefone("4199999999");
     c1.setAtivo(true);
     c1.setDataCadastro(LocalDateTime.of(2024, 1, 1, 0, 0));
+    c1.setEndereco(criarEndereco("80010000", "Rua XV de Novembro", "Centro", "Curitiba", "PR", "101", "Apto 1"));
 
     salvarCliente(c1, "1111");
 
@@ -88,6 +89,7 @@ private void seedClientes() {
     c2.setTelefone("4199999998");
     c2.setAtivo(true);
     c2.setDataCadastro(LocalDateTime.of(2024, 2, 15, 0, 0));
+    c2.setEndereco(criarEndereco("80060000", "Avenida João Gualberto", "Alto da Glória", "Curitiba", "PR", "200", ""));
 
     salvarCliente(c2, "2222");
 
@@ -98,6 +100,7 @@ private void seedClientes() {
     c3.setTelefone("4199999997");
     c3.setAtivo(true);
     c3.setDataCadastro(LocalDateTime.of(2024, 3, 10, 0, 0));
+    c3.setEndereco(criarEndereco("82530000", "Rua Nilo Cairo", "Boa Vista", "Curitiba", "PR", "350", "Casa"));
 
     salvarCliente(c3, "3333");
 
@@ -108,8 +111,21 @@ private void seedClientes() {
     c4.setTelefone("4199999996");
     c4.setAtivo(true);
     c4.setDataCadastro(LocalDateTime.of(2024, 4, 20, 0, 0));
+    c4.setEndereco(criarEndereco("81200000", "Rua Padre Anchieta", "Bigorrilho", "Curitiba", "PR", "420", "Bloco B"));
 
     salvarCliente(c4, "4444");
+}
+
+private Endereco criarEndereco(String cep, String logradouro, String bairro, String cidade, String uf, String numero, String complemento) {
+    Endereco endereco = new Endereco();
+    endereco.setCep(cep);
+    endereco.setLogradouro(logradouro);
+    endereco.setBairro(bairro);
+    endereco.setCidade(cidade);
+    endereco.setUf(uf);
+    endereco.setNumero(numero);
+    endereco.setComplemento(complemento);
+    return endereco;
 }
 
 private void seedCategorias() {

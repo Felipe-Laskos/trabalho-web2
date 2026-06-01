@@ -222,6 +222,10 @@ public class SolicitacaoService {
         Solicitacao s = repository.findById(idSolicitacao)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
+        Funcionario funcionarioOrigem = funcionarioRepository.findById(principal.id())
+                .orElseThrow(() -> new ResourceNotFoundException("Funcionário de origem não encontrado."));
+
+        exigirFuncionarioResponsavelAtual(s, funcionarioOrigem);
         validarTransicao(s, EstadoSolicitacao.REDIRECIONADA);
 
         if (principal.id().equals(idFuncionarioDestino)) {
@@ -230,8 +234,6 @@ public class SolicitacaoService {
 
         Funcionario novoFuncionario = funcionarioRepository.findById(idFuncionarioDestino)
                 .orElseThrow(() -> new ResourceNotFoundException("Funcionário de destino não encontrado."));
-        Funcionario funcionarioOrigem = funcionarioRepository.findById(principal.id())
-                .orElseThrow(() -> new ResourceNotFoundException("Funcionário de origem não encontrado."));
 
         EstadoSolicitacao anterior = s.getEstadoAtual();
 

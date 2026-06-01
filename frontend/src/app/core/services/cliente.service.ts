@@ -53,7 +53,7 @@ export class ClienteService implements IClienteService {
 
   buscarPorEmail(email: string): Observable<Cliente> {
     return this.http.get<Cliente>(
-      `${this.apiUrl}?email=${email}`,
+      `${this.apiUrl}/email/${email}`,
       defaultHttpOptions
     ).pipe(
       catchError(error => {
@@ -65,7 +65,7 @@ export class ClienteService implements IClienteService {
 
   buscarPorCpf(cpf: string): Observable<Cliente> {
     return this.http.get<Cliente>(
-      `${this.apiUrl}?cpf=${cpf}`,
+      `${this.apiUrl}/cpf/${cpf}`,
       defaultHttpOptions
     ).pipe(
       catchError(error => {

@@ -14,17 +14,21 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class RelatorioService {
 
     private static final DateTimeFormatter FORMATO_DATA_BR =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    private static final Locale LOCALE_BR = Locale.forLanguageTag("pt-BR");
 
     private final SolicitacaoRepository solicitacaoRepository;
 
@@ -78,13 +82,20 @@ public class RelatorioService {
 
         for (ReceitaPorDiaProjection item : dados) {
             document.add(new Paragraph(
-                    formatarData(item.getData()) + " - R$ " + item.getTotal()
+                    formatarData(item.getData()) + " - " + formatarMoeda(item.getTotal())
             ));
         }
 
         document.close();
 
         return output.toByteArray();
+    }
+
+    public String formatarMoeda(Number valor) {
+        if (valor == null) {
+            return NumberFormat.getCurrencyInstance(LOCALE_BR).format(0);
+        }
+        return NumberFormat.getCurrencyInstance(LOCALE_BR).format(valor);
     }
 
     private String formatarData(LocalDate data) {

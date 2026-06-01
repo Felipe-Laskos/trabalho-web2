@@ -123,7 +123,8 @@ export class VisualizarSolicitacoesComponent implements OnInit {
             data: {
               titulo: 'Erro',
               mensagem:
-                erro?.error?.message ||
+                erro?.error?.mensagem ||
+                erro?.message ||
                 'Não foi possível carregar as solicitações.',
               textoConfirmar: 'OK',
               textoCancelar: ''
